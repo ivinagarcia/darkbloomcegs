@@ -1,1 +1,3118 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Bloom • Portal CEG</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        bloom: {
+                            bg: '#0E0D12',
+                            surface: '#16151D',
+                            card: '#1D1B26',
+                            border: '#2B2838',
+                            purple: '#9D7BFF',
+                            purpleDark: '#6E4DD6',
+                            pink: '#F472B6',
+                            gold: '#FBBF24',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0E0D12;
+            color: #F3F4F6;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #16151D;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2B2838;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9D7BFF;
+        }
+        .glass-header {
+            background: rgba(14, 13, 18, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        /* Custom Checkbox */
+        .bloom-checkbox {
+            appearance: none;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 0.375rem;
+            border: 1.5px solid #4B4663;
+            background-color: #16151D;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+        .bloom-checkbox:checked {
+            background-color: #10B981;
+            border-color: #10B981;
+        }
+        .bloom-checkbox:checked::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: #0E0D12;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-bloom-purple selection:text-white">
 
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-xs w-full pointer-events-none"></div>
+
+    <!-- Header Navigation -->
+    <header class="glass-header sticky top-0 z-40 border-b border-bloom-border">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+            <!-- Brand -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-bloom-purple to-bloom-pink flex items-center justify-center shadow-lg shadow-bloom-purple/20">
+                    <i class="fa-solid fa-moon text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg tracking-tight text-white flex items-center gap-1.5">
+                        Dark Bloom
+                        <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-bloom-purple/20 text-bloom-purple border border-bloom-purple/30 font-semibold">CEG</span>
+                        <span id="cloud-sync-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-medium inline-flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                            <span>Conectando...</span>
+                        </span>
+                    </h1>
+                    <p class="text-xs text-gray-400 hidden sm:block">Portal de Acompanhamento & Financeiro</p>
+                </div>
+            </div>
+
+            <!-- Mode Switcher -->
+            <div class="flex items-center bg-bloom-surface p-1 rounded-xl border border-bloom-border overflow-x-auto max-w-full">
+                <button id="btn-mode-client" onclick="switchMode('client')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 bg-bloom-purple text-white shadow whitespace-nowrap">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Meus Pedidos</span>
+                </button>
+                <button id="btn-mode-forms" onclick="switchMode('forms')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-gray-400 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span>Fazer Pedido</span>
+                    <span id="open-forms-badge" class="text-[10px] px-1.5 py-0.2 rounded-full bg-bloom-pink/20 text-bloom-pink font-bold">0</span>
+                </button>
+                <button id="btn-mode-admin" onclick="requestAdminMode()" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-gray-400 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Admin</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Image Lightbox Modal (Ampliar foto do Set) -->
+    <div id="image-lightbox-modal" onclick="closeImageModal()" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div onclick="event.stopPropagation()" class="bg-bloom-card border border-bloom-border rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl">
+            <div class="p-3.5 border-b border-bloom-border flex items-center justify-between">
+                <h4 id="lightbox-title" class="text-sm font-bold text-white truncate pr-2">Foto do Set</h4>
+                <button onclick="closeImageModal()" class="w-8 h-8 rounded-lg bg-bloom-surface text-gray-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="bg-black flex items-center justify-center max-h-[70vh] overflow-auto">
+                <img id="lightbox-img" src="" alt="Referência do Set" class="max-w-full max-h-[68vh] object-contain">
+            </div>
+            <div id="lightbox-subtitle" class="p-3 text-xs text-gray-400 text-center bg-bloom-surface"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Envio de Comprovante (Espaço da Participante) -->
+    <div id="receipt-submit-modal" onclick="closeReceiptModal()" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+        <div onclick="event.stopPropagation()" class="bg-bloom-card border border-bloom-border rounded-2xl max-w-xl w-full p-5 sm:p-6 shadow-2xl my-auto max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3.5 border-b border-bloom-border">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Enviar Comprovante de Pagamento</h3>
+                        <p class="text-[11px] text-gray-400">Participante: <strong id="receipt-modal-participant" class="text-bloom-purple"></strong></p>
+                    </div>
+                </div>
+                <button onclick="closeReceiptModal()" class="w-8 h-8 rounded-lg bg-bloom-surface text-gray-400 hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="submitPaymentReceipt(event)" class="space-y-4 pt-4">
+                <!-- 1. Checklist de Pendências -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="text-xs font-semibold text-white">1. Marque o que você está pagando *</label>
+                        <button type="button" onclick="toggleSelectAllPending()" class="text-[11px] text-bloom-purple hover:underline font-medium">
+                            Marcar / Desmarcar todos
+                        </button>
+                    </div>
+                    <div id="receipt-pending-checklist" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        <!-- Preenchido via JS -->
+                    </div>
+                    <div class="mt-2.5 p-3 rounded-xl bg-bloom-surface border border-bloom-border flex items-center justify-between">
+                        <span class="text-xs text-gray-400">Total Selecionado neste Comprovante:</span>
+                        <span id="receipt-selected-total" class="text-lg font-extrabold text-emerald-400">R$ 0,00</span>
+                    </div>
+                </div>
+
+                <!-- 2. Descrição por Escrito -->
+                <div>
+                    <label class="block text-xs font-semibold text-white mb-1">2. Descrição do Pagamento *</label>
+                    <textarea id="receipt-description-input" rows="2" required placeholder="Ex: Paguei via Pix no nome de João Silva referente ao Card #1 do Wonho + Frete da Coreia 6." class="w-full bg-bloom-surface border border-bloom-border rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-bloom-purple"></textarea>
+                </div>
+
+                <!-- 3. Dupla Opção: Upload de Arquivo OU Link do Google Drive -->
+                <div class="space-y-3 bg-bloom-surface/70 border border-bloom-border rounded-xl p-3.5">
+                    <label class="block text-xs font-semibold text-white">3. Anexe a Foto/PDF ou Cole o Link do Google Drive *</label>
+                    
+                    <!-- Opção A: Upload Direto -->
+                    <div>
+                        <label class="flex items-center justify-center gap-2.5 w-full py-3 px-4 rounded-xl bg-bloom-card hover:bg-bloom-border border border-dashed border-bloom-purple/60 text-xs text-gray-200 cursor-pointer transition">
+                            <i class="fa-solid fa-cloud-arrow-up text-bloom-purple text-base"></i>
+                            <span id="receipt-file-label" class="truncate font-medium">Anexar imagem (JPG, PNG) ou PDF do comprovante</span>
+                            <input type="file" id="receipt-file-input" accept="image/*,.pdf,application/pdf" onchange="handleReceiptFileUpload(this)" class="hidden">
+                        </label>
+                        <p id="receipt-upload-feedback" class="text-[11px] text-gray-400 mt-1 hidden"></p>
+                        <div id="receipt-preview-box" class="mt-2 hidden relative rounded-xl overflow-hidden border border-bloom-border bg-black max-h-40 flex items-center justify-center">
+                            <img id="receipt-preview-img" src="" alt="Prévia do comprovante" class="max-h-40 object-contain">
+                            <button type="button" onclick="clearReceiptUpload()" class="absolute top-2 right-2 bg-red-600/90 text-white text-[10px] px-2 py-1 rounded-lg">
+                                Remover arquivo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-[10px] uppercase tracking-wider text-gray-500">
+                        <span class="flex-1 h-px bg-bloom-border"></span>
+                        <span>E / OU</span>
+                        <span class="flex-1 h-px bg-bloom-border"></span>
+                    </div>
+
+                    <!-- Opção B: Link do Google Drive (Redundância garantida) -->
+                    <div>
+                        <label class="block text-[11px] text-gray-300 mb-1">
+                            <i class="fa-brands fa-google-drive text-sky-400 mr-1"></i>
+                            Link do Comprovante no Google Drive (caso o botão de anexar não funcione)
+                        </label>
+                        <input type="url" id="receipt-drive-link" placeholder="https://drive.google.com/file/d/..." class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-sky-400">
+                        <p class="text-[10px] text-gray-500 mt-1">Lembre-se de deixar o link do Drive como "Qualquer pessoa com o link pode ver".</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeReceiptModal()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-bloom-surface hover:bg-bloom-border text-gray-300 text-xs font-semibold border border-bloom-border transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-950/30 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Enviar Comprovante para Análise</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin PIN Modal -->
+    <div id="admin-pin-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-bloom-card border border-bloom-border rounded-2xl max-w-sm w-full p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-lg bg-bloom-purple/20 text-bloom-purple flex items-center justify-center">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h3 class="font-bold text-white">Acesso Administrativo</h3>
+                </div>
+                <button onclick="closePinModal()" class="text-gray-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p class="text-xs text-gray-400 mb-3">Selecione seu perfil da equipe Dark Bloom e digite seu PIN individual (PIN padrão da Dona: <strong class="text-bloom-purple">1234</strong>).</p>
+            
+            <label class="block text-[11px] font-semibold text-gray-300 mb-1">Membro da Equipe</label>
+            <select id="admin-login-member-select" class="w-full bg-bloom-surface border border-bloom-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple mb-3">
+                <!-- Populated via JS -->
+            </select>
+
+            <label class="block text-[11px] font-semibold text-gray-300 mb-1">PIN de 4 dígitos</label>
+            <input type="password" id="admin-pin-input" maxlength="6" placeholder="••••" class="w-full bg-bloom-surface border border-bloom-border rounded-xl px-4 py-3 text-center text-xl tracking-[0.5em] text-white focus:outline-none focus:border-bloom-purple mb-4" onkeyup="if(event.key==='Enter') verifyAdminPin()">
+            <div class="flex gap-2">
+                <button onclick="verifyAdminPin()" class="flex-1 bg-bloom-purple hover:bg-bloom-purpleDark text-white font-semibold py-2.5 rounded-xl transition text-sm">
+                    Entrar no Painel
+                </button>
+                <button onclick="loginAdminDemo()" class="px-3 py-2.5 bg-bloom-surface hover:bg-bloom-border text-gray-300 rounded-xl text-xs font-medium border border-bloom-border transition" title="Entrar direto no perfil selecionado">
+                    Demo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================================
+         1. VISÃO DA PARTICIPANTE (PORTAL DO CLIENTE)
+    ====================================================================== -->
+    <main id="view-client" class="flex-1 max-w-5xl w-full mx-auto px-4 py-6 space-y-6">
+        
+        <!-- Participant Selector & Search Bar -->
+        <section class="bg-bloom-surface border border-bloom-border rounded-2xl p-4 sm:p-5 shadow-lg">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-bloom-pink flex items-center gap-1.5 mb-1">
+                        <i class="fa-solid fa-sparkles"></i> Espaço da Participante
+                    </span>
+                    <h2 class="text-lg sm:text-xl font-bold text-white">Olá! Selecione ou busque seu cadastro</h2>
+                    <p class="text-xs text-gray-400 mt-0.5">Confira seus itens, o andamento dos lotes e valores em aberto.</p>
+                </div>
+
+                <!-- Quick Selector + Search -->
+                <div class="flex flex-col sm:flex-row gap-2.5 w-full md:w-auto">
+                    <div class="relative flex-1 sm:w-60">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                        <input type="text" id="client-search-input" oninput="handleClientSearch(this.value)" placeholder="Buscar seu nome ou @..." class="w-full bg-bloom-card border border-bloom-border rounded-xl pl-9 pr-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-bloom-purple">
+                    </div>
+                    <select id="client-select-dropdown" onchange="selectParticipant(this.value)" class="bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-bloom-purple cursor-pointer">
+                        <!-- Populated via JS -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quick Pills for Demo Convenience -->
+            <div id="client-quick-pills" class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-bloom-border/60">
+                <span class="text-[11px] text-gray-500 mr-1">Acesso rápido:</span>
+                <!-- Populated via JS -->
+            </div>
+        </section>
+
+        <!-- Financial Summary Cards -->
+        <section id="client-summary-section" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <!-- Card 1: Total Devendo -->
+            <div class="bg-gradient-to-br from-[#23192D] to-bloom-card border border-bloom-pink/30 rounded-2xl p-5 relative overflow-hidden">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-pink-200/80">Total Devendo Agora</span>
+                    <div class="w-8 h-8 rounded-lg bg-bloom-pink/20 text-bloom-pink flex items-center justify-center">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                </div>
+                <div id="stat-total-due" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">R$ 0,00</div>
+                <p id="stat-due-breakdown" class="text-[11px] text-pink-200/70 mt-1.5">Nenhum valor pendente no momento</p>
+            </div>
+
+            <!-- Card 2: Total Já Pago -->
+            <div class="bg-bloom-card border border-bloom-border rounded-2xl p-5">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-gray-400">Total Já Pago</span>
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+                <div id="stat-total-paid" class="text-2xl sm:text-3xl font-bold text-emerald-400 tracking-tight">R$ 0,00</div>
+                <p class="text-[11px] text-gray-500 mt-1.5">Soma de itens, fretes e taxas quitados</p>
+            </div>
+
+            <!-- Card 3: Itens Ativos -->
+            <div class="bg-bloom-card border border-bloom-border rounded-2xl p-5">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-gray-400">Itens com a Dark Bloom</span>
+                    <div class="w-8 h-8 rounded-lg bg-bloom-purple/15 text-bloom-purple flex items-center justify-center">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                </div>
+                <div id="stat-total-items" class="text-2xl sm:text-3xl font-bold text-white tracking-tight">0</div>
+                <p id="stat-batches-count" class="text-[11px] text-gray-500 mt-1.5">Distribuídos em 0 lotes</p>
+            </div>
+        </section>
+
+        <!-- Pix & Receipt Quick Action Bar -->
+        <section class="bg-bloom-surface border border-bloom-border rounded-2xl p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
+                    <i class="fa-brands fa-pix text-lg"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-xs text-gray-400">Chave Pix Oficial Dark Bloom</p>
+                    <p id="display-pix-key" class="text-sm font-semibold text-white truncate">darkbloom.ceg@gmail.com</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap sm:flex-nowrap gap-2">
+                <button onclick="copyPixKey()" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-bloom-card hover:bg-bloom-border border border-bloom-border text-white text-xs font-semibold transition flex items-center justify-center gap-2">
+                    <i class="fa-regular fa-copy text-bloom-purple"></i>
+                    <span>Copiar Chave Pix</span>
+                </button>
+                <button onclick="openReceiptModal()" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/20">
+                    <i class="fa-solid fa-file-invoice-dollar text-sm"></i>
+                    <span>Anexar / Enviar Comprovante</span>
+                </button>
+                <button onclick="sendWhatsAppReceipt()" title="Avisar no WhatsApp" class="px-3 py-2.5 rounded-xl bg-bloom-card hover:bg-bloom-border border border-bloom-border text-emerald-400 text-xs font-semibold transition flex items-center justify-center gap-1.5">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span class="hidden md:inline">WhatsApp</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Histórico de Comprovantes Enviados pela Participante -->
+        <section id="client-receipts-history" class="hidden space-y-2.5">
+            <!-- Preenchido via JS quando a participante tiver comprovantes enviados -->
+        </section>
+
+        <!-- Filter Tabs for Participant's Orders -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-bloom-purple"></i>
+                <span>Meus Pedidos & Caixas</span>
+            </h3>
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+                <button onclick="setClientFilter('all')" id="filter-client-all" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-bloom-purple text-white whitespace-nowrap">Todos</button>
+                <button onclick="setClientFilter('pending')" id="filter-client-pending" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-bloom-card text-gray-400 hover:text-white border border-bloom-border whitespace-nowrap">Com Pendências</button>
+                <select id="filter-client-batch" onchange="renderClientDashboard()" class="bg-bloom-card border border-bloom-border rounded-lg px-3 py-1.5 text-xs text-gray-300 focus:outline-none focus:border-bloom-purple">
+                    <option value="ALL">Todas as Caixas</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Participant Orders List -->
+        <section id="client-orders-container" class="space-y-4 pb-10">
+            <!-- Rendered via JS -->
+        </section>
+
+    </main>
+
+    <!-- =====================================================================
+         1.5 ABA PÚBLICA: FAZER PEDIDO (CEGs ABERTAS)
+    ====================================================================== -->
+    <main id="view-forms" class="hidden flex-1 max-w-5xl w-full mx-auto px-4 py-6 space-y-6">
+        <section class="bg-gradient-to-r from-[#1E172B] to-bloom-surface border border-bloom-purple/30 rounded-2xl p-5 shadow-lg">
+            <span class="text-xs font-semibold uppercase tracking-wider text-bloom-purple flex items-center gap-1.5 mb-1">
+                <i class="fa-solid fa-sparkles"></i> Formulários de CEG Abertos
+            </span>
+            <h2 class="text-lg sm:text-xl font-bold text-white">Reserve seus itens na Dark Bloom</h2>
+            <p class="text-xs text-gray-400 mt-1">Selecione uma CEG aberta abaixo, confira a foto numerada do Set e envie seu pedido. Ele aparecerá automaticamente no seu painel!</p>
+        </section>
+
+        <!-- Grid of Available Order Forms -->
+        <div id="public-forms-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- Rendered via JS -->
+        </div>
+    </main>
+
+    <!-- =====================================================================
+         2. PAINEL ADMIN (GESTÃO DARK BLOOM)
+    ====================================================================== -->
+    <main id="view-admin" class="hidden flex-1 max-w-6xl w-full mx-auto px-4 py-6 space-y-6">
+        
+        <!-- Active Admin Operator Bar -->
+        <div class="bg-gradient-to-r from-[#1D1829] to-bloom-surface border border-bloom-purple/30 rounded-2xl px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-bloom-purple/20 border border-bloom-purple/40 text-bloom-purple flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs text-gray-400">Operador(a) logado(a):</span>
+                        <strong id="active-admin-name" class="text-sm text-white">Ivy</strong>
+                        <span id="active-admin-role" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-bloom-purple/20 text-bloom-purple border border-bloom-purple/30">Administradora Principal</span>
+                    </div>
+                    <p id="active-admin-perms-summary" class="text-[11px] text-gray-400 mt-0.5">Acesso total ao sistema</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 self-end sm:self-center">
+                <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-400 flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Online
+                </span>
+                <button onclick="logoutAdmin()" class="px-3 py-1.5 rounded-xl bg-bloom-card hover:bg-bloom-border border border-bloom-border text-xs text-gray-300 hover:text-white font-medium transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-right-from-bracket text-bloom-pink"></i>
+                    <span>Trocar Operador / Sair</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Admin Sub-navigation Tabs -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-bloom-surface p-2 rounded-2xl border border-bloom-border">
+            <div class="flex flex-wrap gap-1.5">
+                <button onclick="switchAdminTab('orders')" id="tab-admin-orders" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-bloom-purple text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Pedidos & Cobranças</span>
+                </button>
+                <button onclick="switchAdminTab('receipts')" id="tab-admin-receipts" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span>Comprovantes</span>
+                    <span id="admin-pending-receipts-badge" class="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold">0</span>
+                </button>
+                <button onclick="switchAdminTab('batches')" id="tab-admin-batches" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    <span>Caixas & Sets (Fotos)</span>
+                </button>
+                <button onclick="switchAdminTab('forms')" id="tab-admin-forms" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-file-pen"></i>
+                    <span>Formulários</span>
+                </button>
+                <button onclick="switchAdminTab('team')" id="tab-admin-team" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>Equipe & Permissões</span>
+                </button>
+                <button onclick="switchAdminTab('settings')" id="tab-admin-settings" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Configurações</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB A: PEDIDOS & COBRANÇAS -->
+        <div id="admin-panel-orders" class="space-y-6">
+            
+            <!-- Add New Order Form -->
+            <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5">
+                <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-bloom-purple"></i>
+                    <span>Adicionar Item / Participante Manualmente</span>
+                </h3>
+                <form onsubmit="addNewOrder(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+                    <div class="lg:col-span-1">
+                        <label class="block text-[11px] text-gray-400 mb-1">Participante *</label>
+                        <input type="text" id="new-order-participant" list="participants-datalist" required placeholder="Ex: Karyna Alves" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                        <datalist id="participants-datalist"></datalist>
+                    </div>
+                    <div class="lg:col-span-1">
+                        <label class="block text-[11px] text-gray-400 mb-1">Caixa / Lote *</label>
+                        <select id="new-order-batch" onchange="syncSetDropdownForNewOrder()" required class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                            <!-- Populated via JS -->
+                        </select>
+                    </div>
+                    <div class="lg:col-span-1">
+                        <label class="block text-[11px] text-gray-400 mb-1">Set Aberto na Caixa *</label>
+                        <select id="new-order-set" onchange="autoFillPriceFromSet()" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                            <!-- Populated via JS -->
+                        </select>
+                    </div>
+                    <div class="lg:col-span-1">
+                        <label class="block text-[11px] text-gray-400 mb-1">Item / Nº / Membro *</label>
+                        <input type="text" id="new-order-item" required placeholder="Ex: Card #1 ou Set" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 lg:col-span-2">
+                        <div>
+                            <label class="block text-[11px] text-gray-400 mb-1">Valor Item (R$)</label>
+                            <input type="number" step="0.01" id="new-order-price" value="0" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-gray-400 mb-1">Frete Inter (R$)</label>
+                            <input type="number" step="0.01" id="new-order-shipping" value="0" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-gray-400 mb-1">Taxa Alf. (R$)</label>
+                            <input type="number" step="0.01" id="new-order-tax" value="0" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-2 lg:col-span-6 flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-bloom-border/60">
+                        <div class="flex flex-wrap items-center gap-4 text-xs text-gray-300">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="new-order-paid-item" class="bloom-checkbox">
+                                <span>Item Pago</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="new-order-paid-shipping" class="bloom-checkbox">
+                                <span>Frete Pago</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="new-order-paid-tax" class="bloom-checkbox">
+                                <span>Taxa Paga</span>
+                            </label>
+                        </div>
+                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-bloom-purple hover:bg-bloom-purpleDark text-white text-xs font-semibold transition flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Cadastrar na Planilha</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Bulk Action Tool (Aplicar Frete/Taxa para todo um Lote) -->
+            <div class="bg-bloom-card border border-bloom-border rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-bloom-gold/15 text-bloom-gold flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-white">Lançamento Rápido em Lote</h4>
+                        <p class="text-[11px] text-gray-400">Aplique frete internacional ou taxa alfandegária para todos os itens de um lote de uma só vez.</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <select id="bulk-batch-select" class="bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                        <!-- Populated via JS -->
+                    </select>
+                    <select id="bulk-field-select" class="bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                        <option value="shipping">Frete Internacional</option>
+                        <option value="tax">Taxa Alfandegária</option>
+                    </select>
+                    <input type="number" step="0.01" id="bulk-amount-input" placeholder="Valor R$" class="w-24 bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
+                    <button onclick="applyBulkFee()" class="px-3.5 py-2 rounded-xl bg-bloom-gold/20 hover:bg-bloom-gold/30 text-bloom-gold border border-bloom-gold/30 text-xs font-semibold transition">
+                        Aplicar na Caixa
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters & Editable Orders Table -->
+            <div class="bg-bloom-surface border border-bloom-border rounded-2xl overflow-hidden">
+                <div class="p-4 border-b border-bloom-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <input type="text" id="admin-search-input" oninput="renderAdminOrders()" placeholder="Filtrar participante, set ou item..." class="bg-bloom-card border border-bloom-border rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                        <select id="admin-filter-batch" onchange="renderAdminOrders()" class="bg-bloom-card border border-bloom-border rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none">
+                            <option value="ALL">Todas as Caixas</option>
+                        </select>
+                        <label class="flex items-center gap-1.5 text-xs text-gray-300 bg-bloom-card px-3 py-1.5 rounded-xl border border-bloom-border cursor-pointer">
+                            <input type="checkbox" id="admin-filter-pending" onchange="renderAdminOrders()" class="rounded text-bloom-purple">
+                            <span>Apenas com pendências</span>
+                        </label>
+                    </div>
+                    <span id="admin-orders-count" class="text-xs text-gray-400">0 registros</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-bloom-border bg-bloom-card/60 text-[11px] uppercase tracking-wider text-gray-400">
+                                <th class="py-3 px-4">Participante</th>
+                                <th class="py-3 px-4">Caixa • Set & Item</th>
+                                <th class="py-3 px-4">Valor Item</th>
+                                <th class="py-3 px-4">Frete Inter</th>
+                                <th class="py-3 px-4">Taxa Alf.</th>
+                                <th class="py-3 px-4 text-right">Devendo</th>
+                                <th class="py-3 px-4 text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-orders-tbody" class="divide-y divide-bloom-border/60 text-xs">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB A2: CONFERÊNCIA DE COMPROVANTES (ADMIN) -->
+        <div id="admin-panel-receipts" class="hidden space-y-6">
+            <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-file-circle-check text-emerald-400"></i>
+                        <span>Conferência de Comprovantes Enviados</span>
+                    </h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Confira a foto anexada ou o link do Google Drive. Ao clicar em <strong class="text-emerald-400">Aprovar e Dar Baixa</strong>, os pagamentos são marcados automaticamente na planilha.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="setAdminReceiptFilter('pending')" id="filter-admin-rec-pending" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                        Pendentes
+                    </button>
+                    <button onclick="setAdminReceiptFilter('all')" id="filter-admin-rec-all" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-bloom-card text-gray-400 hover:text-white border border-bloom-border">
+                        Todos / Histórico
+                    </button>
+                </div>
+            </div>
+
+            <div id="admin-receipts-list" class="space-y-4">
+                <!-- Preenchido via JS -->
+            </div>
+        </div>
+
+        <!-- TAB B: CAIXAS & SETS ABERTOS COM FOTO (MASTERLIST) -->
+        <div id="admin-panel-batches" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <!-- 1. Create New Batch (Caixa) -->
+                <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5">
+                    <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-box-archive text-bloom-purple"></i>
+                        <span>1. Criar Nova Caixa na Masterlist</span>
+                    </h3>
+                    <form onsubmit="addNewBatch(event)" class="space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <input type="text" id="new-batch-name" required placeholder="Nome da Caixa (ex: COREIA 7 - PHOTOCARDS)" class="bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                            <input type="text" id="new-batch-deadline" placeholder="Obs / Prazo Geral" class="bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                        </div>
+                        <div class="flex gap-2">
+                            <select id="new-batch-status" class="flex-1 bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                                <option value="abertas">abertas</option>
+                                <option value="em andamento">em andamento</option>
+                                <option value="na warehouse">na warehouse</option>
+                                <option value="a caminho">a caminho</option>
+                                <option value="em mãos">em mãos</option>
+                                <option value="concluídas">concluídas</option>
+                            </select>
+                            <button type="submit" class="px-5 py-2.5 rounded-xl bg-bloom-purple hover:bg-bloom-purpleDark text-white text-xs font-semibold transition">
+                                Criar Caixa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 2. Create New Set inside a Box (With Photo Upload / URL) -->
+                <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5">
+                    <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-images text-bloom-pink"></i>
+                        <span>2. Adicionar Set Aberto + Foto dentro de uma Caixa</span>
+                    </h3>
+                    <form onsubmit="addNewSet(event)" class="space-y-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <select id="new-set-batch" required class="bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                                <!-- Populated via JS -->
+                            </select>
+                            <input type="text" id="new-set-name" required placeholder="Nome do Set (ex: WONHO [CORE] POBs)" class="bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <input type="text" id="new-set-deadline" placeholder="Prazo (ex: PRAZO ATÉ 10/09)" class="bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                            <input type="number" step="0.01" id="new-set-price" placeholder="Valor unitário padrão (R$)" class="bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                        </div>
+                        <!-- Photo Upload or URL -->
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            <label class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-bloom-card hover:bg-bloom-border border border-dashed border-bloom-purple/50 text-xs text-gray-300 cursor-pointer transition">
+                                <i class="fa-solid fa-camera text-bloom-purple"></i>
+                                <span id="new-set-file-label" class="truncate">Escolher Foto da Galeria</span>
+                                <input type="file" id="new-set-photo-file" accept="image/*" onchange="handleSetPhotoUpload(this)" class="hidden">
+                            </label>
+                            <input type="url" id="new-set-photo-url" placeholder="Ou cole link da imagem..." class="flex-1 bg-bloom-card border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                            <button type="submit" class="px-4 py-2 rounded-xl bg-bloom-pink hover:bg-pink-500 text-white text-xs font-semibold transition whitespace-nowrap">
+                                Salvar Set
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Legend matching user's Notion screenshot -->
+            <div class="bg-bloom-card/60 border border-bloom-border rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+                <div><span class="text-purple-400 font-semibold">● abertas</span> → ainda aceitando pedidos</div>
+                <div><span class="text-pink-400 font-semibold">● em andamento</span> → pedido feito + indo p/ warehouse</div>
+                <div><span class="text-sky-400 font-semibold">● na warehouse</span> → chegou na warehouse + aguardando envio</div>
+                <div><span class="text-orange-400 font-semibold">● a caminho</span> → CEGs a caminho para o Brasil</div>
+                <div><span class="text-amber-400 font-semibold">● em mãos</span> → chegou até mim + empacotamento</div>
+                <div><span class="text-emerald-400 font-semibold">● concluídas</span> → todos os itens enviados e finalizados</div>
+            </div>
+
+            <!-- Boxes & Their Sets Container -->
+            <div id="admin-batches-grid" class="space-y-5">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+
+        <!-- TAB C: CRIADOR DE FORMULÁRIOS DE PEDIDO -->
+        <div id="admin-panel-forms" class="hidden space-y-6">
+            <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5">
+                <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-bloom-pink"></i>
+                    <span>Criar Formulário para Receber Pedidos</span>
+                </h3>
+                <p class="text-xs text-gray-400 mb-4">Escolha a Caixa e o Set (com a foto já cadastrada), defina as opções disponíveis e publique para suas participantes preencherem.</p>
+
+                <form onsubmit="createOrderForm(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                    <div>
+                        <label class="block text-[11px] text-gray-400 mb-1">1. Selecione a Caixa *</label>
+                        <select id="form-builder-batch" onchange="syncFormBuilderSets()" required class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                            <!-- Populated via JS -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-gray-400 mb-1">2. Selecione o Set (com Foto) *</label>
+                        <select id="form-builder-set" onchange="syncFormBuilderDefaults()" required class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                            <!-- Populated via JS -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-gray-400 mb-1">3. Valor por Opção Selecionada (R$) *</label>
+                        <input type="number" step="0.01" id="form-builder-price" required placeholder="45.00" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block text-[11px] text-gray-400 mb-1">4. Opções de Itens / Membros (separadas por vírgula) *</label>
+                        <input type="text" id="form-builder-options" required value="Card #1, Card #2, Card #3, Set Completo" placeholder="Ex: Card #1, Card #2, Card #3 ou Bang Chan, Lee Know, Hyunjin" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-gray-400 mb-1">5. Prazo / Observação do Formulário</label>
+                        <input type="text" id="form-builder-deadline" placeholder="Ex: Pagamento até 10/09" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                    </div>
+
+                    <div class="sm:col-span-2 lg:col-span-3 flex items-center justify-end pt-2 border-t border-bloom-border/60">
+                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-bloom-purple to-bloom-pink text-white text-xs font-semibold shadow-lg hover:opacity-95 transition flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Publicar Formulário de Pedido</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Active & Closed Forms List -->
+            <div class="space-y-3">
+                <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-list text-bloom-purple"></i>
+                    <span>Formulários Criados</span>
+                </h4>
+                <div id="admin-forms-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB E: EQUIPE & PERMISSÕES (MULTI-ADMIN) -->
+        <div id="admin-panel-team" class="hidden space-y-6">
+            <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5">
+                <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-bloom-purple"></i>
+                    <span>Adicionar Membro da Equipe / Ajudante</span>
+                </h3>
+                <p class="text-xs text-gray-400 mb-4">Cadastre pessoas de confiança para ajudar a conferir comprovantes, criar formulários ou atualizar caixas com PIN individual e permissões personalizadas.</p>
+
+                <form onsubmit="addTeamMember(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-[11px] text-gray-400 mb-1">Nome do Membro *</label>
+                            <input type="text" id="new-member-name" required placeholder="Ex: Mariana Costa" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-gray-400 mb-1">Cargo / Função *</label>
+                            <input type="text" id="new-member-role" required placeholder="Ex: Conferente Financeiro" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-gray-400 mb-1">PIN Individual (4 dígitos) *</label>
+                            <input type="text" id="new-member-pin" required maxlength="6" pattern="[0-9]{4,6}" placeholder="Ex: 2580" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-xs text-white tracking-widest focus:outline-none focus:border-bloom-purple">
+                        </div>
+                    </div>
+
+                    <div class="bg-bloom-card/70 border border-bloom-border rounded-xl p-3.5">
+                        <span class="block text-[11px] font-semibold text-gray-300 mb-2.5">Permissões deste membro no Painel Admin:</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs text-gray-200">
+                            <label class="flex items-center gap-2.5 p-2 rounded-lg bg-bloom-surface border border-bloom-border/70 cursor-pointer hover:border-bloom-purple/50">
+                                <input type="checkbox" id="perm-receipts" checked class="bloom-checkbox">
+                                <span>Conferir e Aprovar Comprovantes</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 p-2 rounded-lg bg-bloom-surface border border-bloom-border/70 cursor-pointer hover:border-bloom-purple/50">
+                                <input type="checkbox" id="perm-forms" checked class="bloom-checkbox">
+                                <span>Criar e Gerenciar Formulários</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 p-2 rounded-lg bg-bloom-surface border border-bloom-border/70 cursor-pointer hover:border-bloom-purple/50">
+                                <input type="checkbox" id="perm-batches" class="bloom-checkbox">
+                                <span>Gerenciar Caixas, Sets e Fotos</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 p-2 rounded-lg bg-bloom-surface border border-bloom-border/70 cursor-pointer hover:border-bloom-purple/50">
+                                <input type="checkbox" id="perm-orders" class="bloom-checkbox">
+                                <span>Editar Pedidos, Fretes e Taxas</span>
+                            </label>
+                            <label class="flex items-center gap-2.5 p-2 rounded-lg bg-bloom-surface border border-bloom-border/70 cursor-pointer hover:border-bloom-purple/50">
+                                <input type="checkbox" id="perm-team" class="bloom-checkbox">
+                                <span>Gerenciar Equipe & Configurações</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-bloom-purple hover:bg-bloom-purpleDark text-white text-xs font-semibold transition flex items-center gap-2">
+                            <i class="fa-solid fa-user-check"></i>
+                            <span>Cadastrar Membro na Equipe</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Team Members List -->
+            <div class="space-y-3">
+                <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-users text-bloom-pink"></i>
+                    <span>Membros Cadastrados & Permissões Ativas</span>
+                </h4>
+                <div id="admin-team-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB D: CONFIGURAÇÕES & BACKUP -->
+        <div id="admin-panel-settings" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Store Settings -->
+                <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5 space-y-4">
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-store text-bloom-purple"></i>
+                        <span>Dados de Pagamento & Contato</span>
+                    </h3>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Chave Pix da Dark Bloom</label>
+                        <input type="text" id="setting-pix-key" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-bloom-purple">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">WhatsApp para Comprovantes (com DDD, só números)</label>
+                        <input type="text" id="setting-whatsapp" placeholder="5511999999999" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-bloom-purple">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">PIN da Administradora Principal (Dona)</label>
+                        <input type="text" id="setting-admin-pin" maxlength="6" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-bloom-purple">
+                    </div>
+                    <button onclick="saveSettings()" class="w-full py-2.5 rounded-xl bg-bloom-purple hover:bg-bloom-purpleDark text-white text-xs font-semibold transition">
+                        Salvar Configurações
+                    </button>
+                </div>
+
+                <!-- Backup & Cloud Info -->
+                <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5 space-y-4">
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-database text-bloom-pink"></i>
+                        <span>Backup & Sincronização</span>
+                    </h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        Atualmente seus dados ficam salvos automaticamente no navegador deste dispositivo. Você pode exportar um backup a qualquer momento ou restaurar dados de exemplo.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="exportDataJSON()" class="flex-1 py-2.5 px-3 rounded-xl bg-bloom-card hover:bg-bloom-border border border-bloom-border text-white text-xs font-semibold transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download text-bloom-purple"></i>
+                            <span>Exportar JSON</span>
+                        </button>
+                        <button onclick="resetDemoData()" class="flex-1 py-2.5 px-3 rounded-xl bg-bloom-card hover:bg-red-950/40 border border-bloom-border text-red-400 text-xs font-semibold transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Resetar Demo</span>
+                        </button>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-bloom-card border border-bloom-border/80 text-[11px] text-gray-400 space-y-1">
+                        <p class="text-white font-semibold"><i class="fa-solid fa-cloud text-sky-400 mr-1"></i> Quer publicar online para as clientes acessarem pelo celular?</p>
+                        <p>Basta hospedar este arquivo gratuitamente no <strong>Vercel</strong> ou <strong>GitHub Pages</strong> e conectar a um projeto gratuito do <strong>Firebase Firestore</strong> para que todas as alterações que você fizer no celular apareçam instantaneamente no link público das participantes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-bloom-border/60 py-4 px-4 text-center text-xs text-gray-500">
+        Dark Bloom • Gestão de CEGs & Compras Internacionais
+    </footer>
+
+    <!-- =====================================================================
+         JAVASCRIPT LOGIC + FIREBASE CLOUD FIRESTORE REAL-TIME SYNC
+    ====================================================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configuração do projeto Firebase Dark Bloom
+        const firebaseConfig = {
+            apiKey: "AIzaSyAQ6svKYoCaQ0jycsG4i3D3U8Lm5X3b9W8",
+            authDomain: "darkbloomcegs-b96f4.firebaseapp.com",
+            projectId: "darkbloomcegs-b96f4",
+            storageBucket: "darkbloomcegs-b96f4.firebasestorage.app",
+            messagingSenderId: "618635696344",
+            appId: "1:618635696344:web:7f30a9b5e85e038f9d5fad",
+            measurementId: "G-SQEV18WPG4"
+        };
+
+        const firebaseApp = initializeApp(firebaseConfig);
+        const firestoreDb = getFirestore(firebaseApp);
+        const portalStateDocRef = doc(firestoreDb, 'darkbloom_portal', 'state');
+
+        window.cloudSyncBridge = {
+            isConnected: false,
+            async pushState(dataObj) {
+                try {
+                    const cleanPayload = JSON.parse(JSON.stringify(dataObj));
+                    await setDoc(portalStateDocRef, {
+                        ...cleanPayload,
+                        _updatedAt: new Date().toISOString()
+                    });
+                    this.updateStatusBadge('synced');
+                } catch (err) {
+                    console.error('Erro ao salvar no Firestore:', err);
+                    this.updateStatusBadge('offline');
+                    if (typeof window.showToast === 'function') {
+                        window.showToast('Aviso: Falha ao sincronizar com a nuvem. Verifique as regras do Firestore ou o tamanho da imagem.', 'error');
+                    }
+                }
+            },
+            updateStatusBadge(status) {
+                const badge = document.getElementById('cloud-sync-badge');
+                if (!badge) return;
+                if (status === 'synced') {
+                    this.isConnected = true;
+                    badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-medium inline-flex items-center gap-1';
+                    badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span>Nuvem Sincronizada</span>`;
+                } else {
+                    this.isConnected = false;
+                    badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-300 border border-red-500/30 font-medium inline-flex items-center gap-1';
+                    badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-red-400"></span><span>Modo Local / Offline</span>`;
+                }
+            },
+            startRealtimeListener() {
+                onSnapshot(portalStateDocRef, async (snapshot) => {
+                    this.updateStatusBadge('synced');
+                    if (snapshot.exists()) {
+                        const cloudData = snapshot.data();
+                        if (typeof window.applyCloudState === 'function') {
+                            window.applyCloudState(cloudData);
+                        }
+                    } else {
+                        // Primeira inicialização: popula o Firestore com os dados iniciais do portal
+                        if (typeof window.getCurrentAppData === 'function') {
+                            await this.pushState(window.getCurrentAppData());
+                        }
+                    }
+                }, (error) => {
+                    console.error('Erro na escuta em tempo real do Firestore:', error);
+                    this.updateStatusBadge('offline');
+                });
+            }
+        };
+
+        // Inicia a escuta assim que o DOM estiver pronto
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => window.cloudSyncBridge.startRealtimeListener());
+        } else {
+            window.cloudSyncBridge.startRealtimeListener();
+        }
+    </script>
+
+    <script>
+        // --- LOGISTIC STAGES DEFINITION (Matching Notion Screenshot) ---
+        const STAGES = [
+            { id: 'abertas', label: 'abertas', color: 'text-purple-300', bg: 'bg-purple-500/20', border: 'border-purple-500/40', dot: 'bg-purple-400', step: 1, desc: 'Ainda aceitando pedidos' },
+            { id: 'em andamento', label: 'em andamento', color: 'text-pink-300', bg: 'bg-pink-500/20', border: 'border-pink-500/40', dot: 'bg-pink-400', step: 2, desc: 'Pedido feito + indo para warehouse' },
+            { id: 'na warehouse', label: 'na warehouse', color: 'text-sky-300', bg: 'bg-sky-500/20', border: 'border-sky-500/40', dot: 'bg-sky-400', step: 3, desc: 'Chegou na warehouse + aguardando envio' },
+            { id: 'a caminho', label: 'a caminho', color: 'text-orange-300', bg: 'bg-orange-500/20', border: 'border-orange-500/40', dot: 'bg-orange-400', step: 4, desc: 'CEGs a caminho para o Brasil' },
+            { id: 'em mãos', label: 'em mãos', color: 'text-amber-300', bg: 'bg-amber-500/20', border: 'border-amber-500/40', dot: 'bg-amber-400', step: 5, desc: 'Chegou até mim + empacotamento' },
+            { id: 'concluídas', label: 'concluídas', color: 'text-emerald-300', bg: 'bg-emerald-500/20', border: 'border-emerald-500/40', dot: 'bg-emerald-400', step: 6, desc: 'Todos os itens foram enviados' }
+        ];
+
+        // SVG Illustration generator for realistic numbered photocard sets (matching user's Notion screenshot)
+        function createNumberedSetSVG(title, accent1, accent2, labels = ['1', '2', '3']) {
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="320" viewBox="0 0 600 320">
+                <defs>
+                    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#1A1625"/>
+                        <stop offset="100%" stop-color="#0E0D12"/>
+                    </linearGradient>
+                    <linearGradient id="cardGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="${accent1}"/>
+                        <stop offset="100%" stop-color="${accent2}"/>
+                    </linearGradient>
+                </defs>
+                <rect width="600" height="320" fill="url(#bg)"/>
+                <text x="300" y="34" fill="#E5E7EB" font-family="sans-serif" font-size="15" font-weight="bold" text-anchor="middle">${title}</text>
+                ${labels.map((lbl, idx) => {
+                    const x = 45 + idx * 175;
+                    return `
+                        <g transform="translate(${x}, 55)">
+                            <rect width="155" height="230" rx="14" fill="url(#cardGrad)" opacity="0.28" stroke="${accent1}" stroke-width="2"/>
+                            <circle cx="77" cy="95" r="34" fill="${accent1}" opacity="0.45"/>
+                            <rect x="32" y="145" width="90" height="10" rx="5" fill="#FFFFFF" opacity="0.35"/>
+                            <rect x="47" y="165" width="60" height="8" rx="4" fill="#FFFFFF" opacity="0.2"/>
+                            <circle cx="24" cy="24" r="16" fill="#0E0D12" stroke="${accent1}" stroke-width="2"/>
+                            <text x="24" y="29" fill="#FFFFFF" font-family="sans-serif" font-size="14" font-weight="bold" text-anchor="middle">${lbl}</text>
+                        </g>
+                    `;
+                }).join('')}
+            </svg>`;
+            return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+        }
+
+        // --- INITIAL MOCK DATA BASED ON USER'S NOTION SCREENSHOTS ---
+        const DEFAULT_DATA = {
+            settings: {
+                pixKey: 'darkbloom.ceg@gmail.com',
+                whatsapp: '5511999999999',
+                adminPin: '1234'
+            },
+            batches: [
+                { id: 'b1', name: 'COREIA 6 - PHOTOCARDS', status: 'na warehouse', deadline: 'Caixa consolidada KR' },
+                { id: 'b2', name: 'Hey, Somebody [PRÉ-VENDA]', status: 'abertas', deadline: 'Pré-venda oficial' },
+                { id: 'b3', name: 'PAPER TALE - SKZ SEASONS 2027', status: 'em andamento', deadline: 'Lote Fechado' },
+                { id: 'b4', name: 'NCT - SEASONS GREETINGS 2027', status: 'a caminho', deadline: 'Caixa enviada KR -> BR' }
+            ],
+            sets: [
+                {
+                    id: 's1',
+                    batchId: 'b1',
+                    name: 'WONHO [CORE] POBs',
+                    deadline: 'PRAZO DE PAGAMENTO ATÉ 10/09',
+                    defaultPrice: 45.00,
+                    photo: createNumberedSetSVG('WONHO [CORE] POBs', '#38BDF8', '#9D7BFF', ['1', '2', '3'])
+                },
+                {
+                    id: 's2',
+                    batchId: 'b1',
+                    name: 'ATEEZ - FROMM STORE FLOWER',
+                    deadline: 'Lote Fechado',
+                    defaultPrice: 52.00,
+                    photo: createNumberedSetSVG('ATEEZ - FROMM FLOWER', '#F472B6', '#FBBF24', ['1', '2', '3'])
+                },
+                {
+                    id: 's3',
+                    batchId: 'b2',
+                    name: 'THE PHASE - POBs',
+                    deadline: 'Pedidos Abertos até 25/11',
+                    defaultPrice: 48.00,
+                    photo: createNumberedSetSVG('THE PHASE - POBs', '#A855F7', '#EC4899', ['1', '2', '3'])
+                },
+                {
+                    id: 's4',
+                    batchId: 'b4',
+                    name: 'NCT 127 - SG POB',
+                    deadline: 'Em trânsito',
+                    defaultPrice: 68.00,
+                    photo: createNumberedSetSVG('NCT 127 - SG POB', '#10B981', '#059669', ['1', '2', '3'])
+                }
+            ],
+            forms: [
+                {
+                    id: 'f1',
+                    batchId: 'b2',
+                    setId: 's3',
+                    price: 48.00,
+                    options: ['Card #1', 'Card #2', 'Card #3', 'Set Completo (1, 2, 3)'],
+                    deadline: 'Pagamento via Pix até 25/11',
+                    isOpen: true
+                },
+                {
+                    id: 'f2',
+                    batchId: 'b1',
+                    setId: 's1',
+                    price: 45.00,
+                    options: ['Card #1', 'Card #2', 'Card #3', 'Set Completo'],
+                    deadline: 'Vagas extras liberadas!',
+                    isOpen: true
+                }
+            ],
+            orders: [
+                { id: 'o1', participant: 'Karyna Alves', contact: '@karyna_alves', batchId: 'b1', setId: 's1', drop: 'WONHO [CORE] POBs', item: 'Card #1', price: 45.00, paidItem: true, shipping: 22.50, paidShipping: false, tax: 0.00, paidTax: false },
+                { id: 'o2', participant: 'Karyna Alves', contact: '@karyna_alves', batchId: 'b1', setId: 's2', drop: 'ATEEZ - FROMM STORE FLOWER', item: 'Card #2', price: 52.00, paidItem: true, shipping: 18.00, paidShipping: false, tax: 0.00, paidTax: false },
+                { id: 'o3', participant: 'Karyna Alves', contact: '@karyna_alves', batchId: 'b4', setId: 's4', drop: 'NCT 127 - SG POB', item: 'Jaehyun Set', price: 68.00, paidItem: true, shipping: 28.00, paidShipping: true, tax: 19.90, paidTax: false },
+                { id: 'o4', participant: 'Jessica Gimenez', contact: '@jessicag', batchId: 'b1', setId: 's1', drop: 'WONHO [CORE] POBs', item: 'Set Completo (1, 2, 3)', price: 130.00, paidItem: true, shipping: 35.00, paidShipping: false, tax: 0.00, paidTax: false },
+                { id: 'o5', participant: 'Gabriela Viana', contact: '@gabiviana', batchId: 'b1', setId: 's1', drop: 'WONHO [CORE] POBs', item: 'Set Completo (1, 2, 3)', price: 130.00, paidItem: true, shipping: 35.00, paidShipping: true, tax: 0.00, paidTax: false },
+                { id: 'o6', participant: 'Ivy', contact: '@ivyhq', batchId: 'b1', setId: 's1', drop: 'WONHO [CORE] POBs', item: 'Set Completo', price: 130.00, paidItem: true, shipping: 0.00, paidShipping: true, tax: 0.00, paidTax: true }
+            ],
+            receipts: [
+                {
+                    id: 'rec_demo_1',
+                    participant: 'Jessica Gimenez',
+                    createdAt: '17/11/2026 às 19:15',
+                    totalAmount: 35.00,
+                    description: 'Pix realizado para quitar o Frete Internacional do Set Completo Wonho [CORE] POBs (Caixa Coreia 6).',
+                    attachmentData: createNumberedSetSVG('COMPROVANTE PIX • R$ 35,00', '#10B981', '#059669', ['PIX', 'OK', 'R$35']),
+                    attachmentType: 'image',
+                    attachmentName: 'comprovante_pix_jessica.jpg',
+                    driveLink: 'https://drive.google.com/drive/folders/exemplo-comprovante-darkbloom',
+                    status: 'pending', // 'pending' | 'approved' | 'rejected'
+                    rejectReason: '',
+                    reviewedBy: '',
+                    reviewedAt: '',
+                    items: [
+                        { orderId: 'o4', field: 'shipping', label: 'Frete Inter • WONHO [CORE] POBs (Set Completo)', amount: 35.00 }
+                    ]
+                }
+            ],
+            team: [
+                {
+                    id: 'adm_owner',
+                    name: 'Ivy',
+                    role: 'Administradora Principal / Dona',
+                    pin: '1234',
+                    isOwner: true,
+                    active: true,
+                    permissions: {
+                        receipts: true,
+                        forms: true,
+                        batches: true,
+                        orders: true,
+                        team: true
+                    }
+                },
+                {
+                    id: 'adm_helper_1',
+                    name: 'Camila (Moderação)',
+                    role: 'Conferente & Formulários',
+                    pin: '4321',
+                    isOwner: false,
+                    active: true,
+                    permissions: {
+                        receipts: true,
+                        forms: true,
+                        batches: false,
+                        orders: false,
+                        team: false
+                    }
+                }
+            ]
+        };
+
+        // --- APP STATE ---
+        let appData = loadData();
+        let currentMode = 'client';
+        let selectedParticipant = '';
+        let clientFilterMode = 'all';
+        let tempUploadedSetPhoto = ''; // Holds base64 compressed image during set creation
+        let tempReceiptFileData = ''; // Holds base64 image or PDF data URL during receipt upload
+        let tempReceiptFileType = ''; // 'image' | 'pdf'
+        let tempReceiptFileName = '';
+        let adminReceiptFilter = 'pending';
+        let activeAdminId = null;
+
+        // --- STORAGE FUNCTIONS ---
+        function loadData() {
+            try {
+                const saved = localStorage.getItem('darkbloom_ceg_v2');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (!parsed.sets) parsed.sets = DEFAULT_DATA.sets;
+                    if (!parsed.forms) parsed.forms = DEFAULT_DATA.forms;
+                    if (!parsed.receipts) parsed.receipts = DEFAULT_DATA.receipts;
+                    if (!parsed.team || parsed.team.length === 0) parsed.team = JSON.parse(JSON.stringify(DEFAULT_DATA.team));
+                    // Mantém sincronia do PIN da Dona com settings.adminPin
+                    const owner = parsed.team.find(m => m.isOwner);
+                    if (owner && parsed.settings && parsed.settings.adminPin) {
+                        owner.pin = parsed.settings.adminPin;
+                    }
+                    return parsed;
+                }
+            } catch (e) {
+                console.error('Erro ao ler dados locais:', e);
+            }
+            return JSON.parse(JSON.stringify(DEFAULT_DATA));
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('darkbloom_ceg_v2', JSON.stringify(appData));
+            } catch (e) {
+                showToast('Aviso: Limite de armazenamento local atingido. Use o link do Google Drive para arquivos pesados.', 'error');
+            }
+            if (window.cloudSyncBridge) {
+                window.cloudSyncBridge.pushState(appData);
+            }
+            refreshAllViews();
+        }
+
+        // Recebe atualizações instantâneas vindas do Firestore em outros dispositivos
+        window.applyCloudState = function(cloudData) {
+            if (!cloudData || typeof cloudData !== 'object') return;
+            appData = {
+                settings: cloudData.settings || JSON.parse(JSON.stringify(DEFAULT_DATA.settings)),
+                batches: Array.isArray(cloudData.batches) ? cloudData.batches : [],
+                sets: Array.isArray(cloudData.sets) ? cloudData.sets : [],
+                forms: Array.isArray(cloudData.forms) ? cloudData.forms : [],
+                orders: Array.isArray(cloudData.orders) ? cloudData.orders : [],
+                receipts: Array.isArray(cloudData.receipts) ? cloudData.receipts : [],
+                team: (Array.isArray(cloudData.team) && cloudData.team.length > 0)
+                    ? cloudData.team
+                    : JSON.parse(JSON.stringify(DEFAULT_DATA.team))
+            };
+            const owner = appData.team.find(m => m.isOwner);
+            if (owner && appData.settings && appData.settings.adminPin) {
+                owner.pin = appData.settings.adminPin;
+            }
+            try {
+                localStorage.setItem('darkbloom_ceg_v2', JSON.stringify(appData));
+            } catch (e) {}
+            refreshAllViews();
+        };
+
+        window.getCurrentAppData = function() {
+            return appData;
+        };
+
+        // --- TOAST FEEDBACK ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            const isError = type === 'error';
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl border shadow-xl text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 ${
+                isError
+                    ? 'bg-red-950/95 border-red-500/40 text-red-200'
+                    : 'bg-bloom-card/95 border-bloom-purple/40 text-white'
+            }`;
+            toast.innerHTML = `
+                <i class="fa-solid ${isError ? 'fa-circle-exclamation text-red-400' : 'fa-circle-check text-emerald-400'}"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(6px)';
+                setTimeout(() => toast.remove(), 250);
+            }, 3200);
+        }
+
+        // --- ADMIN PERMISSIONS & AUTH HELPERS ---
+        function getActiveAdmin() {
+            if (!activeAdminId) return null;
+            return (appData.team || []).find(m => m.id === activeAdminId && m.active) || null;
+        }
+
+        function hasAdminPermission(permKey) {
+            const admin = getActiveAdmin();
+            if (!admin) return false;
+            if (admin.isOwner) return true;
+            return Boolean(admin.permissions && admin.permissions[permKey]);
+        }
+
+        function getFirstAllowedAdminTab(admin) {
+            if (!admin) return 'orders';
+            if (admin.isOwner || admin.permissions.orders) return 'orders';
+            if (admin.permissions.receipts) return 'receipts';
+            if (admin.permissions.batches) return 'batches';
+            if (admin.permissions.forms) return 'forms';
+            if (admin.permissions.team) return 'team';
+            return 'orders';
+        }
+
+        function applyAdminPermissionsUI() {
+            const admin = getActiveAdmin();
+            if (!admin) return;
+
+            document.getElementById('active-admin-name').textContent = admin.name;
+            document.getElementById('active-admin-role').textContent = admin.role;
+
+            const permLabels = [];
+            if (admin.isOwner) {
+                permLabels.push('Acesso Total (Proprietária)');
+            } else {
+                if (admin.permissions.receipts) permLabels.push('Conferir Comprovantes');
+                if (admin.permissions.forms) permLabels.push('Formulários');
+                if (admin.permissions.batches) permLabels.push('Caixas & Sets');
+                if (admin.permissions.orders) permLabels.push('Pedidos & Cobranças');
+                if (admin.permissions.team) permLabels.push('Equipe & Config.');
+            }
+            document.getElementById('active-admin-perms-summary').textContent = permLabels.length
+                ? `Permissões: ${permLabels.join(' • ')}`
+                : 'Acesso somente leitura';
+
+            const tabVisibility = {
+                orders: hasAdminPermission('orders'),
+                receipts: hasAdminPermission('receipts'),
+                batches: hasAdminPermission('batches'),
+                forms: hasAdminPermission('forms'),
+                team: hasAdminPermission('team'),
+                settings: hasAdminPermission('team')
+            };
+
+            Object.keys(tabVisibility).forEach(tabKey => {
+                const tabBtn = document.getElementById(`tab-admin-${tabKey}`);
+                if (tabBtn) {
+                    if (tabVisibility[tabKey]) {
+                        tabBtn.classList.remove('hidden');
+                    } else {
+                        tabBtn.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        function logoutAdmin() {
+            activeAdminId = null;
+            switchMode('client');
+            showToast('Sessão administrativa encerrada.');
+        }
+
+        // --- IMAGE COMPRESSION & LIGHTBOX ---
+        function handleSetPhotoUpload(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            document.getElementById('new-set-file-label').textContent = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxW = 700;
+                    const scale = Math.min(1, maxW / img.width);
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    tempUploadedSetPhoto = canvas.toDataURL('image/jpeg', 0.78);
+                    showToast('Foto carregada e otimizada!');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateExistingSetPhoto(setId, input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxW = 700;
+                    const scale = Math.min(1, maxW / img.width);
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const setObj = appData.sets.find(s => s.id === setId);
+                    if (setObj) {
+                        setObj.photo = canvas.toDataURL('image/jpeg', 0.78);
+                        saveData();
+                        showToast(`Foto de "${setObj.name}" atualizada!`);
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function openImageModal(src, title, subtitle = '') {
+            if (!src) return;
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox-title').textContent = title;
+            document.getElementById('lightbox-subtitle').textContent = subtitle;
+            const modal = document.getElementById('image-lightbox-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('image-lightbox-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // --- UTILITY HELPERS ---
+        function formatBRL(val) {
+            return Number(val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function getStageObj(statusId) {
+            return STAGES.find(s => s.id === statusId) || STAGES[0];
+        }
+
+        function getSetById(setId) {
+            return appData.sets.find(s => s.id === setId) || null;
+        }
+
+        function getUniqueParticipants() {
+            const set = new Set(appData.orders.map(o => o.participant.trim()).filter(Boolean));
+            return Array.from(set).sort((a, b) => a.localeCompare(b));
+        }
+
+        function getOrderDue(order) {
+            let due = 0;
+            if (!order.paidItem) due += Number(order.price || 0);
+            if (!order.paidShipping) due += Number(order.shipping || 0);
+            if (!order.paidTax) due += Number(order.tax || 0);
+            return due;
+        }
+
+        function getOrderPaid(order) {
+            let paid = 0;
+            if (order.paidItem) paid += Number(order.price || 0);
+            if (order.paidShipping) paid += Number(order.shipping || 0);
+            if (order.paidTax) paid += Number(order.tax || 0);
+            return paid;
+        }
+
+        // Verifica se uma cobrança específica (orderId + field) está em algum comprovante 'pending'
+        function isChargeUnderReview(orderId, field) {
+            return (appData.receipts || []).some(r => 
+                r.status === 'pending' && 
+                r.items.some(it => it.orderId === orderId && it.field === field)
+            );
+        }
+
+        function copyPixKey() {
+            const key = appData.settings.pixKey;
+            const tempInput = document.createElement('input');
+            tempInput.value = key;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            tempInput.remove();
+            showToast('Chave Pix copiada para a área de transferência!');
+        }
+
+        function sendWhatsAppReceipt() {
+            const phone = (appData.settings.whatsapp || '').replace(/\D/g, '');
+            const userOrders = appData.orders.filter(o => o.participant.toLowerCase() === selectedParticipant.toLowerCase());
+            const totalDue = userOrders.reduce((acc, o) => acc + getOrderDue(o), 0);
+            const msg = `Olá Dark Bloom! 🌙 Aqui é *${selectedParticipant}*. Acabei de enviar um comprovante no portal (Saldo pendente total: ${formatBRL(totalDue)}).`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function previewAsClient(participantName) {
+            selectedParticipant = participantName;
+            switchMode('client');
+            showToast(`Visualizando espaço de ${participantName}`);
+        }
+
+        // --- RECEIPT SUBMISSION MODAL LOGIC (PARTICIPANTE) ---
+        function getParticipantPendingCharges(participantName) {
+            const userOrders = appData.orders.filter(o => o.participant.toLowerCase() === participantName.toLowerCase());
+            const charges = [];
+
+            userOrders.forEach(o => {
+                const batch = appData.batches.find(b => b.id === o.batchId) || { name: 'Caixa' };
+                const setObj = getSetById(o.setId);
+                const dropName = setObj ? setObj.name : o.drop;
+
+                if (!o.paidItem && Number(o.price) > 0) {
+                    charges.push({
+                        key: `${o.id}::price`,
+                        orderId: o.id,
+                        field: 'price',
+                        typeLabel: 'Valor do Item',
+                        label: `Item • ${dropName} (${o.item}) — [${batch.name}]`,
+                        amount: Number(o.price),
+                        underReview: isChargeUnderReview(o.id, 'price')
+                    });
+                }
+                if (!o.paidShipping && Number(o.shipping) > 0) {
+                    charges.push({
+                        key: `${o.id}::shipping`,
+                        orderId: o.id,
+                        field: 'shipping',
+                        typeLabel: 'Frete Internacional',
+                        label: `Frete Inter • ${dropName} (${o.item}) — [${batch.name}]`,
+                        amount: Number(o.shipping),
+                        underReview: isChargeUnderReview(o.id, 'shipping')
+                    });
+                }
+                if (!o.paidTax && Number(o.tax) > 0) {
+                    charges.push({
+                        key: `${o.id}::tax`,
+                        orderId: o.id,
+                        field: 'tax',
+                        typeLabel: 'Taxa Alfandegária',
+                        label: `Taxa Alf. • ${dropName} (${o.item}) — [${batch.name}]`,
+                        amount: Number(o.tax),
+                        underReview: isChargeUnderReview(o.id, 'tax')
+                    });
+                }
+            });
+
+            return charges;
+        }
+
+        function openReceiptModal(preselectKey = '') {
+            if (!selectedParticipant) {
+                showToast('Selecione uma participante primeiro.', 'error');
+                return;
+            }
+            const charges = getParticipantPendingCharges(selectedParticipant);
+            if (charges.length === 0) {
+                showToast('Você não possui nenhum valor pendente no momento!');
+                return;
+            }
+
+            document.getElementById('receipt-modal-participant').textContent = selectedParticipant;
+            document.getElementById('receipt-description-input').value = '';
+            document.getElementById('receipt-drive-link').value = '';
+            clearReceiptUpload();
+
+            const checklistEl = document.getElementById('receipt-pending-checklist');
+            checklistEl.innerHTML = charges.map((c, idx) => {
+                const isChecked = preselectKey ? (c.key === preselectKey) : (!c.underReview && idx === 0);
+                return `
+                <label class="flex items-center justify-between gap-3 p-3 rounded-xl bg-bloom-surface border ${c.underReview ? 'border-amber-500/30 opacity-80' : 'border-bloom-border hover:border-bloom-purple/60'} cursor-pointer transition">
+                    <div class="flex items-start gap-2.5 min-w-0">
+                        <input type="checkbox" name="receipt_charge_item" value="${c.key}" data-amount="${c.amount}" data-label="${c.label.replace(/"/g, '&quot;')}" ${isChecked ? 'checked' : ''} onchange="recalcReceiptSelectedTotal()" class="bloom-checkbox mt-0.5 shrink-0">
+                        <div class="min-w-0">
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-bloom-purple/15 text-bloom-purple">${c.typeLabel}</span>
+                            ${c.underReview ? `<span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 ml-1">Já enviado (Em análise)</span>` : ''}
+                            <p class="text-xs text-gray-200 font-medium mt-1 leading-snug">${c.label}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs sm:text-sm font-extrabold text-white shrink-0">${formatBRL(c.amount)}</span>
+                </label>
+                `;
+            }).join('');
+
+            recalcReceiptSelectedTotal();
+
+            const modal = document.getElementById('receipt-submit-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeReceiptModal() {
+            const modal = document.getElementById('receipt-submit-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function toggleSelectAllPending() {
+            const boxes = Array.from(document.querySelectorAll('input[name="receipt_charge_item"]'));
+            const allChecked = boxes.every(b => b.checked);
+            boxes.forEach(b => { b.checked = !allChecked; });
+            recalcReceiptSelectedTotal();
+        }
+
+        function recalcReceiptSelectedTotal() {
+            const boxes = Array.from(document.querySelectorAll('input[name="receipt_charge_item"]:checked'));
+            const total = boxes.reduce((sum, b) => sum + parseFloat(b.dataset.amount || 0), 0);
+            document.getElementById('receipt-selected-total').textContent = formatBRL(total);
+        }
+
+        function handleReceiptFileUpload(input) {
+            const feedback = document.getElementById('receipt-upload-feedback');
+            try {
+                const file = input.files && input.files[0];
+                if (!file) return;
+
+                tempReceiptFileName = file.name;
+                document.getElementById('receipt-file-label').textContent = file.name;
+
+                if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+                    if (file.size > 1.8 * 1024 * 1024) {
+                        feedback.textContent = 'PDF muito grande para envio direto (>1.8MB). Por favor, suba no Google Drive e cole o link abaixo!';
+                        feedback.className = 'text-[11px] text-amber-400 mt-1';
+                        feedback.classList.remove('hidden');
+                        tempReceiptFileData = '';
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        tempReceiptFileData = e.target.result;
+                        tempReceiptFileType = 'pdf';
+                        document.getElementById('receipt-preview-box').classList.add('hidden');
+                        feedback.textContent = `PDF "${file.name}" anexado com sucesso!`;
+                        feedback.className = 'text-[11px] text-emerald-400 mt-1';
+                        feedback.classList.remove('hidden');
+                    };
+                    reader.onerror = function() {
+                        throw new Error('Falha ao ler PDF');
+                    };
+                    reader.readAsDataURL(file);
+                    return;
+                }
+
+                // Imagem: comprime para caber com folga no localStorage
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const maxW = 850;
+                        const scale = Math.min(1, maxW / img.width);
+                        canvas.width = img.width * scale;
+                        canvas.height = img.height * scale;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        tempReceiptFileData = canvas.toDataURL('image/jpeg', 0.75);
+                        tempReceiptFileType = 'image';
+
+                        document.getElementById('receipt-preview-img').src = tempReceiptFileData;
+                        document.getElementById('receipt-preview-box').classList.remove('hidden');
+                        feedback.textContent = 'Comprovante anexado com sucesso!';
+                        feedback.className = 'text-[11px] text-emerald-400 mt-1';
+                        feedback.classList.remove('hidden');
+                    };
+                    img.onerror = function() {
+                        feedback.textContent = 'Não foi possível ler essa imagem. Use o campo de link do Google Drive logo abaixo!';
+                        feedback.className = 'text-[11px] text-amber-400 mt-1';
+                        feedback.classList.remove('hidden');
+                    };
+                    img.src = e.target.result;
+                };
+                reader.onerror = function() {
+                    feedback.textContent = 'Erro ao acessar arquivo no aparelho. Cole o link do Google Drive abaixo.';
+                    feedback.className = 'text-[11px] text-amber-400 mt-1';
+                    feedback.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } catch (err) {
+                feedback.textContent = 'Seu navegador bloqueou o anexo direto. Use o campo de Link do Google Drive abaixo!';
+                feedback.className = 'text-[11px] text-amber-400 mt-1';
+                feedback.classList.remove('hidden');
+            }
+        }
+
+        function clearReceiptUpload() {
+            tempReceiptFileData = '';
+            tempReceiptFileType = '';
+            tempReceiptFileName = '';
+            const fileInput = document.getElementById('receipt-file-input');
+            if (fileInput) fileInput.value = '';
+            const label = document.getElementById('receipt-file-label');
+            if (label) label.textContent = 'Anexar imagem (JPG, PNG) ou PDF do comprovante';
+            const prevBox = document.getElementById('receipt-preview-box');
+            if (prevBox) prevBox.classList.add('hidden');
+            const feedback = document.getElementById('receipt-upload-feedback');
+            if (feedback) feedback.classList.add('hidden');
+        }
+
+        function submitPaymentReceipt(e) {
+            e.preventDefault();
+            const checkedBoxes = Array.from(document.querySelectorAll('input[name="receipt_charge_item"]:checked'));
+            if (checkedBoxes.length === 0) {
+                showToast('Marque pelo menos 1 item, frete ou taxa que você está pagando.', 'error');
+                return;
+            }
+
+            const description = document.getElementById('receipt-description-input').value.trim();
+            const driveLink = document.getElementById('receipt-drive-link').value.trim();
+
+            if (!tempReceiptFileData && !driveLink) {
+                showToast('Anexe a foto/PDF do comprovante OU cole o link do Google Drive.', 'error');
+                return;
+            }
+
+            const items = checkedBoxes.map(b => {
+                const [orderId, field] = b.value.split('::');
+                return {
+                    orderId,
+                    field,
+                    label: b.dataset.label,
+                    amount: parseFloat(b.dataset.amount || 0)
+                };
+            });
+
+            const totalAmount = items.reduce((sum, i) => sum + i.amount, 0);
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('pt-BR') + ' às ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            if (!appData.receipts) appData.receipts = [];
+            appData.receipts.unshift({
+                id: 'rec_' + Date.now(),
+                participant: selectedParticipant,
+                createdAt: formattedDate,
+                totalAmount,
+                description,
+                attachmentData: tempReceiptFileData,
+                attachmentType: tempReceiptFileType,
+                attachmentName: tempReceiptFileName,
+                driveLink,
+                status: 'pending',
+                rejectReason: '',
+                items
+            });
+
+            closeReceiptModal();
+            saveData();
+            showToast('Comprovante enviado! Aguardando conferência da Dark Bloom.');
+        }
+
+        function renderClientReceiptsHistory() {
+            const container = document.getElementById('client-receipts-history');
+            if (!container) return;
+
+            const userReceipts = (appData.receipts || []).filter(r => r.participant.toLowerCase() === selectedParticipant.toLowerCase());
+            if (userReceipts.length === 0) {
+                container.classList.add('hidden');
+                container.innerHTML = '';
+                return;
+            }
+
+            container.classList.remove('hidden');
+            container.innerHTML = `
+                <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-gray-300 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-bloom-purple"></i>
+                        <span>Meus Comprovantes Enviados (${userReceipts.length})</span>
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        ${userReceipts.map(r => {
+                            let badge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30"><i class="fa-solid fa-hourglass-half mr-1"></i>Em análise</span>`;
+                            if (r.status === 'approved') {
+                                badge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"><i class="fa-solid fa-check mr-1"></i>Aprovado</span>`;
+                            } else if (r.status === 'rejected') {
+                                badge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400 border border-red-500/30"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Recusado</span>`;
+                            }
+
+                            return `
+                            <div class="bg-bloom-card border ${r.status === 'rejected' ? 'border-red-500/40' : 'border-bloom-border'} rounded-xl p-3 text-xs space-y-1.5">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="font-extrabold text-white">${formatBRL(r.totalAmount)}</span>
+                                    ${badge}
+                                </div>
+                                <p class="text-[11px] text-gray-400">${r.createdAt} • ${r.items.length} item(ns)</p>
+                                <p class="text-[11px] text-gray-300 italic">"${r.description}"</p>
+                                ${r.reviewedBy ? `
+                                    <p class="text-[10px] text-gray-400 pt-1 border-t border-bloom-border/60">
+                                        <i class="fa-solid fa-user-check text-bloom-purple mr-1"></i>Conferido por: <strong class="text-gray-200">${r.reviewedBy}</strong> em ${r.reviewedAt}
+                                    </p>
+                                ` : ''}
+                                ${r.status === 'rejected' && r.rejectReason ? `
+                                    <div class="p-2 rounded-lg bg-red-950/50 border border-red-500/30 text-[11px] text-red-200 flex items-center justify-between gap-2">
+                                        <span><strong>Motivo:</strong> ${r.rejectReason}</span>
+                                        <button onclick="openReceiptModal()" class="px-2 py-1 rounded bg-red-600 text-white font-semibold shrink-0">Reenviar</button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- MODE SWITCHING & ADMIN AUTH ---
+        function switchMode(mode) {
+            if (mode === 'admin' && !getActiveAdmin()) {
+                requestAdminMode();
+                return;
+            }
+            currentMode = mode;
+            const views = {
+                client: document.getElementById('view-client'),
+                forms: document.getElementById('view-forms'),
+                admin: document.getElementById('view-admin')
+            };
+            const btns = {
+                client: document.getElementById('btn-mode-client'),
+                forms: document.getElementById('btn-mode-forms'),
+                admin: document.getElementById('btn-mode-admin')
+            };
+
+            Object.keys(views).forEach(k => {
+                if (k === mode) {
+                    views[k].classList.remove('hidden');
+                    btns[k].className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 bg-bloom-purple text-white shadow whitespace-nowrap';
+                } else {
+                    views[k].classList.add('hidden');
+                    btns[k].className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-gray-400 hover:text-white whitespace-nowrap';
+                }
+            });
+
+            if (mode === 'client') renderClientDashboard();
+            if (mode === 'forms') renderPublicForms();
+            if (mode === 'admin') {
+                applyAdminPermissionsUI();
+                const defaultTab = getFirstAllowedAdminTab(getActiveAdmin());
+                switchAdminTab(defaultTab);
+                renderAdminOrders();
+                renderAdminReceipts();
+                renderAdminBatches();
+                renderAdminForms();
+                renderAdminTeam();
+            }
+        }
+
+        function requestAdminMode() {
+            if (currentMode === 'admin' && getActiveAdmin()) return;
+            const modal = document.getElementById('admin-pin-modal');
+            const select = document.getElementById('admin-login-member-select');
+            const activeMembers = (appData.team || []).filter(m => m.active);
+            select.innerHTML = activeMembers.map(m =>
+                `<option value="${m.id}">${m.name} — ${m.role}</option>`
+            ).join('');
+
+            const input = document.getElementById('admin-pin-input');
+            input.value = '';
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => input.focus(), 100);
+        }
+
+        function closePinModal() {
+            const modal = document.getElementById('admin-pin-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function verifyAdminPin() {
+            const memberId = document.getElementById('admin-login-member-select').value;
+            const input = document.getElementById('admin-pin-input').value.trim();
+            const member = (appData.team || []).find(m => m.id === memberId && m.active);
+            if (!member) {
+                showToast('Membro da equipe inativo ou não encontrado.', 'error');
+                return;
+            }
+            if (input === member.pin) {
+                activeAdminId = member.id;
+                closePinModal();
+                switchMode('admin');
+                showToast(`Bem-vindo(a), ${member.name}!`);
+            } else {
+                showToast(`PIN incorreto para ${member.name}.`, 'error');
+            }
+        }
+
+        function loginAdminDemo() {
+            const memberId = document.getElementById('admin-login-member-select').value;
+            const member = (appData.team || []).find(m => m.id === memberId && m.active) || (appData.team || [])[0];
+            if (member) {
+                activeAdminId = member.id;
+            }
+            closePinModal();
+            switchMode('admin');
+            showToast(`Acesso rápido ativado como ${member ? member.name : 'Admin'}!`);
+        }
+
+        // --- CLIENT PORTAL LOGIC ---
+        function initParticipantSelectors() {
+            const participants = getUniqueParticipants();
+            if (!selectedParticipant || !participants.includes(selectedParticipant)) {
+                selectedParticipant = participants[0] || '';
+            }
+
+            // Dropdown
+            const dropdown = document.getElementById('client-select-dropdown');
+            dropdown.innerHTML = participants.map(p => 
+                `<option value="${p}" ${p === selectedParticipant ? 'selected' : ''}>${p}</option>`
+            ).join('');
+
+            // Quick Pills
+            const pills = document.getElementById('client-quick-pills');
+            pills.innerHTML = `<span class="text-[11px] text-gray-500 mr-1">Acesso rápido:</span>` + 
+                participants.map(p => {
+                    const isSelected = p === selectedParticipant;
+                    return `<button onclick="selectParticipant('${p.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg text-xs font-medium transition ${isSelected ? 'bg-bloom-purple/20 text-bloom-purple border border-bloom-purple/40' : 'bg-bloom-card text-gray-400 hover:text-white border border-bloom-border'}">${p}</button>`;
+                }).join('');
+
+            // Batch Filter Dropdown
+            const batchFilter = document.getElementById('filter-client-batch');
+            const currentBatchVal = batchFilter.value;
+            batchFilter.innerHTML = `<option value="ALL">Todos os Lotes</option>` + 
+                appData.batches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+            if (Array.from(batchFilter.options).some(o => o.value === currentBatchVal)) {
+                batchFilter.value = currentBatchVal;
+            }
+        }
+
+        function selectParticipant(name) {
+            selectedParticipant = name;
+            document.getElementById('client-search-input').value = '';
+            initParticipantSelectors();
+            renderClientDashboard();
+        }
+
+        function handleClientSearch(query) {
+            const q = query.trim().toLowerCase();
+            if (!q) return;
+            const participants = getUniqueParticipants();
+            const match = participants.find(p => p.toLowerCase().includes(q));
+            if (match && match !== selectedParticipant) {
+                selectedParticipant = match;
+                document.getElementById('client-select-dropdown').value = match;
+                initParticipantSelectors();
+                renderClientDashboard();
+            }
+        }
+
+        function setClientFilter(mode) {
+            clientFilterMode = mode;
+            const btnAll = document.getElementById('filter-client-all');
+            const btnPending = document.getElementById('filter-client-pending');
+            if (mode === 'all') {
+                btnAll.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-bloom-purple text-white whitespace-nowrap';
+                btnPending.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-bloom-card text-gray-400 hover:text-white border border-bloom-border whitespace-nowrap';
+            } else {
+                btnPending.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-bloom-pink text-white whitespace-nowrap';
+                btnAll.className = 'px-3 py-1.5 rounded-lg text-xs font-medium bg-bloom-card text-gray-400 hover:text-white border border-bloom-border whitespace-nowrap';
+            }
+            renderClientDashboard();
+        }
+
+        function renderClientDashboard() {
+            document.getElementById('display-pix-key').textContent = appData.settings.pixKey;
+
+            const userOrders = appData.orders.filter(o => o.participant.toLowerCase() === selectedParticipant.toLowerCase());
+            
+            // Totals
+            let totalDue = 0;
+            let totalPaid = 0;
+            let dueItemCount = 0;
+            let dueShipCount = 0;
+            let dueTaxCount = 0;
+
+            userOrders.forEach(o => {
+                totalDue += getOrderDue(o);
+                totalPaid += getOrderPaid(o);
+                if (!o.paidItem && o.price > 0) dueItemCount++;
+                if (!o.paidShipping && o.shipping > 0) dueShipCount++;
+                if (!o.paidTax && o.tax > 0) dueTaxCount++;
+            });
+
+            document.getElementById('stat-total-due').textContent = formatBRL(totalDue);
+            document.getElementById('stat-total-paid').textContent = formatBRL(totalPaid);
+            document.getElementById('stat-total-items').textContent = userOrders.length;
+
+            const uniqueBatches = new Set(userOrders.map(o => o.batchId));
+            document.getElementById('stat-batches-count').textContent = `Distribuídos em ${uniqueBatches.size} ${uniqueBatches.size === 1 ? 'caixa' : 'caixas'}`;
+
+            // Breakdown text
+            const parts = [];
+            if (dueItemCount) parts.push(`${dueItemCount} item(ns)`);
+            if (dueShipCount) parts.push(`${dueShipCount} frete(s)`);
+            if (dueTaxCount) parts.push(`${dueTaxCount} taxa(s)`);
+            document.getElementById('stat-due-breakdown').textContent = parts.length > 0 
+                ? `Referente a: ${parts.join(' + ')}` 
+                : 'Tudo quitado! Nenhuma pendência no momento.';
+
+            // Renderiza histórico de comprovantes enviados pela participante
+            renderClientReceiptsHistory();
+
+            // Filter orders list
+            const batchFilter = document.getElementById('filter-client-batch').value;
+            let filteredOrders = userOrders.filter(o => {
+                if (batchFilter !== 'ALL' && o.batchId !== batchFilter) return false;
+                if (clientFilterMode === 'pending' && getOrderDue(o) <= 0) return false;
+                return true;
+            });
+
+            const container = document.getElementById('client-orders-container');
+            if (filteredOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-8 text-center">
+                        <i class="fa-solid fa-box-open text-3xl text-gray-600 mb-2"></i>
+                        <p class="text-sm font-medium text-gray-300">Nenhum pedido encontrado neste filtro.</p>
+                        <p class="text-xs text-gray-500 mt-1">Tente selecionar "Todos" ou clique em "Fazer Pedido" no topo.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredOrders.map(order => {
+                const batch = appData.batches.find(b => b.id === order.batchId) || { name: 'Caixa Geral', status: 'em andamento', deadline: '' };
+                const setObj = getSetById(order.setId) || appData.sets.find(s => s.name === order.drop && s.batchId === order.batchId);
+                const setPhoto = setObj ? setObj.photo : '';
+                const stage = getStageObj(batch.status);
+                const itemDue = getOrderDue(order);
+                const progressPercent = Math.round((stage.step / STAGES.length) * 100);
+
+                return `
+                <div class="bg-bloom-card border ${itemDue > 0 ? 'border-bloom-border hover:border-bloom-purple/50' : 'border-emerald-500/20'} rounded-2xl p-4 sm:p-5 transition shadow-md">
+                    <!-- Top Row: Batch, Set Photo & Global Logistic Status -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-bloom-border/70">
+                        <div class="flex items-start gap-3.5">
+                            ${setPhoto ? `
+                                <button onclick="openImageModal('${setPhoto.replace(/'/g, "\\'")}', '${(setObj ? setObj.name : order.drop).replace(/'/g, "\\'")}', 'Seu item: ${order.item.replace(/'/g, "\\'")}')" class="group relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border border-bloom-border shrink-0 bg-bloom-surface focus:outline-none">
+                                    <img src="${setPhoto}" alt="${order.drop}" class="w-full h-full object-cover group-hover:scale-105 transition">
+                                    <span class="absolute bottom-1 right-1 bg-black/75 text-white text-[10px] px-1.5 py-0.5 rounded-md">
+                                        <i class="fa-solid fa-magnifying-glass-plus"></i>
+                                    </span>
+                                </button>
+                            ` : `
+                                <div class="w-16 h-16 rounded-xl bg-bloom-surface border border-bloom-border flex items-center justify-center text-gray-600 shrink-0">
+                                    <i class="fa-regular fa-image text-xl"></i>
+                                </div>
+                            `}
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-[11px] font-bold uppercase tracking-wider text-bloom-purple bg-bloom-purple/10 px-2.5 py-0.5 rounded-md border border-bloom-purple/20">
+                                        <i class="fa-solid fa-box mr-1"></i>${batch.name}
+                                    </span>
+                                    ${setObj && setObj.deadline ? `<span class="text-[11px] text-gray-400"><i class="fa-regular fa-clock mr-1"></i>${setObj.deadline}</span>` : ''}
+                                </div>
+                                <h4 class="text-base font-bold text-white mt-1.5">${setObj ? setObj.name : order.drop}</h4>
+                                <p class="text-xs text-gray-300 mt-1 flex items-center gap-1.5">
+                                    <span class="px-2 py-0.5 rounded-md bg-bloom-pink/15 text-bloom-pink font-semibold border border-bloom-pink/30">
+                                        Item: ${order.item}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Logistic Status Pill & Progress -->
+                        <div class="sm:text-right shrink-0">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${stage.bg} ${stage.color} border ${stage.border}">
+                                <span class="w-2 h-2 rounded-full ${stage.dot}"></span>
+                                ${stage.label}
+                            </span>
+                            <p class="text-[11px] text-gray-400 mt-1">${stage.desc}</p>
+                            <div class="w-full sm:w-44 h-1.5 bg-bloom-surface rounded-full overflow-hidden mt-1.5 ml-auto">
+                                <div class="h-full bg-gradient-to-r from-bloom-purple to-bloom-pink rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financial Breakdown Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3.5">
+                        <!-- 1. Valor do Item -->
+                        <div class="bg-bloom-surface/80 rounded-xl p-3 border border-bloom-border/60 flex items-center justify-between gap-2">
+                            <div>
+                                <span class="text-[11px] text-gray-400 block">Valor do Item</span>
+                                <span class="text-sm font-bold text-white">${formatBRL(order.price)}</span>
+                            </div>
+                            ${order.paidItem 
+                                ? `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"><i class="fa-solid fa-check mr-1"></i>Pago</span>`
+                                : (isChargeUnderReview(order.id, 'price')
+                                    ? `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30"><i class="fa-solid fa-hourglass-half mr-1"></i>Em análise</span>`
+                                    : `<button onclick="openReceiptModal('${order.id}::price')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-bloom-pink/15 hover:bg-bloom-pink/25 text-bloom-pink border border-bloom-pink/30 transition" title="Clique para anexar comprovante deste item">Pagar / Anexar</button>`)
+                            }
+                        </div>
+
+                        <!-- 2. Frete Internacional -->
+                        <div class="bg-bloom-surface/80 rounded-xl p-3 border border-bloom-border/60 flex items-center justify-between gap-2">
+                            <div>
+                                <span class="text-[11px] text-gray-400 block">Frete Internacional</span>
+                                <span class="text-sm font-bold ${order.shipping > 0 ? 'text-white' : 'text-gray-500'}">
+                                    ${order.shipping > 0 ? formatBRL(order.shipping) : 'Aguardando'}
+                                </span>
+                            </div>
+                            ${order.shipping <= 0 
+                                ? `<span class="px-2 py-1 rounded-lg text-[10px] font-medium bg-gray-800 text-gray-400">Em breve</span>`
+                                : (order.paidShipping 
+                                    ? `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"><i class="fa-solid fa-check mr-1"></i>Pago</span>`
+                                    : (isChargeUnderReview(order.id, 'shipping')
+                                        ? `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30"><i class="fa-solid fa-hourglass-half mr-1"></i>Em análise</span>`
+                                        : `<button onclick="openReceiptModal('${order.id}::shipping')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-bloom-pink/15 hover:bg-bloom-pink/25 text-bloom-pink border border-bloom-pink/30 transition" title="Clique para anexar comprovante deste frete">Pagar / Anexar</button>`))
+                            }
+                        </div>
+
+                        <!-- 3. Taxa Alfandegária -->
+                        <div class="bg-bloom-surface/80 rounded-xl p-3 border border-bloom-border/60 flex items-center justify-between gap-2">
+                            <div>
+                                <span class="text-[11px] text-gray-400 block">Taxa Alfandegária</span>
+                                <span class="text-sm font-bold ${order.tax > 0 ? 'text-white' : 'text-gray-500'}">
+                                    ${order.tax > 0 ? formatBRL(order.tax) : 'Aguardando'}
+                                </span>
+                            </div>
+                            ${order.tax <= 0 
+                                ? `<span class="px-2 py-1 rounded-lg text-[10px] font-medium bg-gray-800 text-gray-400">Em breve</span>`
+                                : (order.paidTax 
+                                    ? `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"><i class="fa-solid fa-check mr-1"></i>Pago</span>`
+                                    : (isChargeUnderReview(order.id, 'tax')
+                                        ? `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30"><i class="fa-solid fa-hourglass-half mr-1"></i>Em análise</span>`
+                                        : `<button onclick="openReceiptModal('${order.id}::tax')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-bloom-pink/15 hover:bg-bloom-pink/25 text-bloom-pink border border-bloom-pink/30 transition" title="Clique para anexar comprovante desta taxa">Pagar / Anexar</button>`))
+                            }
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+        // --- PUBLIC ORDER FORMS LOGIC (PARTICIPANTES FAZENDO PEDIDOS) ---
+        function renderPublicForms() {
+            const openForms = appData.forms.filter(f => f.isOpen);
+            const badge = document.getElementById('open-forms-badge');
+            if (badge) badge.textContent = openForms.length;
+
+            const grid = document.getElementById('public-forms-grid');
+            if (!grid) return;
+
+            if (openForms.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full bg-bloom-surface border border-bloom-border rounded-2xl p-10 text-center">
+                        <i class="fa-solid fa-moon text-3xl text-bloom-purple mb-3"></i>
+                        <h3 class="text-base font-bold text-white">Nenhuma CEG aberta no momento</h3>
+                        <p class="text-xs text-gray-400 mt-1">Fique de olho nas atualizações da Dark Bloom! Quando um novo formulário for aberto, ele aparecerá aqui.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = openForms.map(form => {
+                const batch = appData.batches.find(b => b.id === form.batchId) || { name: 'Caixa CEG' };
+                const setObj = getSetById(form.setId) || { name: 'Set Especial', photo: '', deadline: '' };
+
+                return `
+                <div class="bg-bloom-card border border-bloom-border rounded-2xl overflow-hidden shadow-xl flex flex-col justify-between">
+                    <div>
+                        <!-- Set Photo Header -->
+                        ${setObj.photo ? `
+                            <div onclick="openImageModal('${setObj.photo.replace(/'/g, "\\'")}', '${setObj.name.replace(/'/g, "\\'")}', 'Clique nos números abaixo para reservar')" class="relative h-52 bg-black cursor-pointer group overflow-hidden">
+                                <img src="${setObj.photo}" alt="${setObj.name}" class="w-full h-full object-contain group-hover:scale-105 transition duration-300">
+                                <span class="absolute bottom-2.5 right-2.5 bg-black/80 text-white text-[11px] px-2.5 py-1 rounded-lg border border-white/10">
+                                    <i class="fa-solid fa-expand mr-1 text-bloom-purple"></i>Ampliar foto
+                                </span>
+                            </div>
+                        ` : ''}
+
+                        <div class="p-5 pb-3">
+                            <div class="flex items-center justify-between gap-2 flex-wrap mb-1.5">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-bloom-purple bg-bloom-purple/15 px-2.5 py-0.5 rounded-md">
+                                    ${batch.name}
+                                </span>
+                                <span class="text-xs font-extrabold text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/20">
+                                    ${formatBRL(form.price)} / item
+                                </span>
+                            </div>
+                            <h3 class="text-lg font-bold text-white">${setObj.name}</h3>
+                            ${form.deadline ? `<p class="text-xs text-bloom-pink mt-1 font-medium"><i class="fa-regular fa-clock mr-1"></i>${form.deadline}</p>` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Interactive Order Form -->
+                    <form onsubmit="submitPublicOrderForm(event, '${form.id}')" class="p-5 pt-2 space-y-3.5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">Seu Nome Completo *</label>
+                                <input type="text" name="participant" required placeholder="Ex: Karyna Alves" class="w-full bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-gray-400 mb-1">@ Twitter/IG ou WhatsApp *</label>
+                                <input type="text" name="contact" required placeholder="Ex: @seuuser ou (11) 9..." class="w-full bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] text-gray-400 mb-1.5">Selecione os itens desejados *</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                ${form.options.map(opt => `
+                                    <label class="flex items-center gap-2 p-2.5 rounded-xl bg-bloom-surface border border-bloom-border hover:border-bloom-purple/60 cursor-pointer transition text-xs text-gray-200">
+                                        <input type="checkbox" name="selected_options" value="${opt}" onchange="updateFormTotalPreview(this.form, ${form.price})" class="bloom-checkbox">
+                                        <span class="truncate font-medium">${opt}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-bloom-border/70 flex items-center justify-between gap-3">
+                            <div>
+                                <span class="text-[11px] text-gray-400 block">Total do Pedido:</span>
+                                <span data-total-display class="text-base font-extrabold text-white">R$ 0,00</span>
+                            </div>
+                            <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-bloom-purple to-bloom-pink hover:opacity-95 text-white text-xs font-bold shadow-lg transition flex items-center gap-2">
+                                <i class="fa-solid fa-check-double"></i>
+                                <span>Confirmar Pedido</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function updateFormTotalPreview(formEl, unitPrice) {
+            const checked = formEl.querySelectorAll('input[name="selected_options"]:checked').length;
+            const totalEl = formEl.querySelector('[data-total-display]');
+            if (totalEl) {
+                totalEl.textContent = formatBRL(checked * unitPrice);
+            }
+        }
+
+        function submitPublicOrderForm(e, formId) {
+            e.preventDefault();
+            const formEl = e.target;
+            const formObj = appData.forms.find(f => f.id === formId);
+            if (!formObj) return;
+
+            const participant = formEl.participant.value.trim();
+            const contact = formEl.contact.value.trim();
+            const selectedNodes = Array.from(formEl.querySelectorAll('input[name="selected_options"]:checked'));
+
+            if (selectedNodes.length === 0) {
+                showToast('Selecione pelo menos 1 item ou membro para enviar o pedido.', 'error');
+                return;
+            }
+
+            const setObj = getSetById(formObj.setId);
+            const dropName = setObj ? setObj.name : 'Pedido CEG';
+
+            selectedNodes.forEach((node, idx) => {
+                appData.orders.unshift({
+                    id: 'o_' + Date.now() + '_' + idx,
+                    participant,
+                    contact,
+                    batchId: formObj.batchId,
+                    setId: formObj.setId,
+                    drop: dropName,
+                    item: node.value,
+                    price: Number(formObj.price || 0),
+                    paidItem: false,
+                    shipping: 0,
+                    paidShipping: false,
+                    tax: 0,
+                    paidTax: false
+                });
+            });
+
+            selectedParticipant = participant;
+            saveData();
+            showToast(`Pedido registrado com sucesso para ${participant}!`);
+            switchMode('client');
+        }
+
+        // --- ADMIN PANEL LOGIC ---
+        function switchAdminTab(tab) {
+            const permMap = {
+                orders: 'orders',
+                receipts: 'receipts',
+                batches: 'batches',
+                forms: 'forms',
+                team: 'team',
+                settings: 'team'
+            };
+            const reqPerm = permMap[tab];
+            if (reqPerm && !hasAdminPermission(reqPerm)) {
+                showToast('Seu perfil não possui permissão para acessar esta aba.', 'error');
+                return;
+            }
+
+            ['orders', 'receipts', 'batches', 'forms', 'team', 'settings'].forEach(t => {
+                const panel = document.getElementById(`admin-panel-${t}`);
+                const btn = document.getElementById(`tab-admin-${t}`);
+                if (!panel || !btn) return;
+                if (t === tab) {
+                    panel.classList.remove('hidden');
+                    btn.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-bloom-purple text-white transition flex items-center gap-2';
+                } else {
+                    panel.classList.add('hidden');
+                    btn.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition flex items-center gap-2';
+                }
+            });
+            if (tab === 'settings') loadSettingsForm();
+            if (tab === 'forms') renderAdminForms();
+            if (tab === 'receipts') renderAdminReceipts();
+            if (tab === 'team') renderAdminTeam();
+        }
+
+        function populateAdminDropdowns() {
+            const batchOptions = appData.batches.map(b => `<option value="${b.id}">${b.name} (${b.status})</option>`).join('');
+            document.getElementById('new-order-batch').innerHTML = batchOptions;
+            document.getElementById('new-set-batch').innerHTML = appData.batches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+            document.getElementById('form-builder-batch').innerHTML = appData.batches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+            document.getElementById('bulk-batch-select').innerHTML = appData.batches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+            
+            const filterBatch = document.getElementById('admin-filter-batch');
+            const prev = filterBatch.value;
+            filterBatch.innerHTML = `<option value="ALL">Todas as Caixas</option>` + appData.batches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+            if (Array.from(filterBatch.options).some(o => o.value === prev)) filterBatch.value = prev;
+
+            const datalist = document.getElementById('participants-datalist');
+            datalist.innerHTML = getUniqueParticipants().map(p => `<option value="${p}">`).join('');
+
+            syncSetDropdownForNewOrder();
+            syncFormBuilderSets();
+        }
+
+        function syncSetDropdownForNewOrder() {
+            const batchId = document.getElementById('new-order-batch').value;
+            const setsInBatch = appData.sets.filter(s => s.batchId === batchId);
+            const setSelect = document.getElementById('new-order-set');
+            if (setsInBatch.length === 0) {
+                setSelect.innerHTML = `<option value="">(Nenhum set cadastrado nesta caixa)</option>`;
+            } else {
+                setSelect.innerHTML = setsInBatch.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+                autoFillPriceFromSet();
+            }
+        }
+
+        function autoFillPriceFromSet() {
+            const setId = document.getElementById('new-order-set').value;
+            const setObj = getSetById(setId);
+            if (setObj && setObj.defaultPrice) {
+                document.getElementById('new-order-price').value = setObj.defaultPrice;
+            }
+        }
+
+        function addNewOrder(e) {
+            e.preventDefault();
+            const setId = document.getElementById('new-order-set').value;
+            const setObj = getSetById(setId);
+            const newOrder = {
+                id: 'o_' + Date.now(),
+                participant: document.getElementById('new-order-participant').value.trim(),
+                batchId: document.getElementById('new-order-batch').value,
+                setId: setId || '',
+                drop: setObj ? setObj.name : 'Item Avulso',
+                item: document.getElementById('new-order-item').value.trim(),
+                price: parseFloat(document.getElementById('new-order-price').value) || 0,
+                paidItem: document.getElementById('new-order-paid-item').checked,
+                shipping: parseFloat(document.getElementById('new-order-shipping').value) || 0,
+                paidShipping: document.getElementById('new-order-paid-shipping').checked,
+                tax: parseFloat(document.getElementById('new-order-tax').value) || 0,
+                paidTax: document.getElementById('new-order-paid-tax').checked
+            };
+
+            appData.orders.unshift(newOrder);
+            saveData();
+            e.target.reset();
+            syncSetDropdownForNewOrder();
+            showToast(`Item adicionado para ${newOrder.participant}!`);
+        }
+
+        function updateOrderField(orderId, field, value) {
+            const order = appData.orders.find(o => o.id === orderId);
+            if (!order) return;
+            order[field] = value;
+            saveData();
+            showToast('Atualizado com sucesso!');
+        }
+
+        function deleteOrder(orderId) {
+            appData.orders = appData.orders.filter(o => o.id !== orderId);
+            saveData();
+            showToast('Registro removido.');
+        }
+
+        function applyBulkFee() {
+            const batchId = document.getElementById('bulk-batch-select').value;
+            const field = document.getElementById('bulk-field-select').value; // 'shipping' or 'tax'
+            const amount = parseFloat(document.getElementById('bulk-amount-input').value);
+
+            if (isNaN(amount) || amount < 0) {
+                showToast('Informe um valor válido em R$.', 'error');
+                return;
+            }
+
+            let count = 0;
+            appData.orders.forEach(o => {
+                if (o.batchId === batchId) {
+                    o[field] = amount;
+                    count++;
+                }
+            });
+
+            document.getElementById('bulk-amount-input').value = '';
+            saveData();
+            showToast(`Valor de ${formatBRL(amount)} aplicado em ${count} itens do lote!`);
+        }
+
+        function renderAdminOrders() {
+            const search = document.getElementById('admin-search-input').value.trim().toLowerCase();
+            const batchFilter = document.getElementById('admin-filter-batch').value;
+            const onlyPending = document.getElementById('admin-filter-pending').checked;
+
+            const filtered = appData.orders.filter(o => {
+                if (batchFilter !== 'ALL' && o.batchId !== batchFilter) return false;
+                if (onlyPending && getOrderDue(o) <= 0) return false;
+                if (search && !o.participant.toLowerCase().includes(search) && !o.drop.toLowerCase().includes(search) && !o.item.toLowerCase().includes(search)) return false;
+                return true;
+            });
+
+            document.getElementById('admin-orders-count').textContent = `${filtered.length} registro(s)`;
+            const tbody = document.getElementById('admin-orders-tbody');
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-gray-500">Nenhum pedido encontrado com os filtros atuais.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(o => {
+                const batch = appData.batches.find(b => b.id === o.batchId) || { name: 'Caixa', status: 'abertas' };
+                const setObj = getSetById(o.setId);
+                const stage = getStageObj(batch.status);
+                const due = getOrderDue(o);
+
+                return `
+                <tr class="hover:bg-bloom-card/40 transition">
+                    <td class="py-3 px-4 font-semibold text-white whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <span>${o.participant}</span>
+                            <button onclick="previewAsClient('${o.participant.replace(/'/g, "\\'")}')" title="Ver tela desta participante" class="text-gray-500 hover:text-bloom-purple">
+                                <i class="fa-solid fa-eye text-[11px]"></i>
+                            </button>
+                        </div>
+                        ${o.contact ? `<div class="text-[10px] text-gray-400 font-normal">${o.contact}</div>` : ''}
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="flex items-center gap-2">
+                            ${setObj && setObj.photo ? `<img src="${setObj.photo}" onclick="openImageModal('${setObj.photo.replace(/'/g, "\\'")}', '${setObj.name.replace(/'/g, "\\'")}')" class="w-9 h-9 rounded-lg object-cover border border-bloom-border cursor-pointer shrink-0">` : ''}
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full ${stage.dot} shrink-0" title="${stage.label}"></span>
+                                    <span class="text-[11px] text-bloom-purple font-medium">${batch.name}</span>
+                                </div>
+                                <div class="text-gray-200 font-medium mt-0.5">${setObj ? setObj.name : o.drop} <span class="text-bloom-pink">(${o.item})</span></div>
+                            </div>
+                        </div>
+                    </td>
+                    <!-- Valor Item + Checkbox -->
+                    <td class="py-3 px-4 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <input type="number" step="0.01" value="${o.price}" onchange="updateOrderField('${o.id}', 'price', parseFloat(this.value)||0)" class="w-20 bg-bloom-card border border-bloom-border rounded-lg px-2 py-1 text-white">
+                            <input type="checkbox" ${o.paidItem ? 'checked' : ''} onchange="updateOrderField('${o.id}', 'paidItem', this.checked)" class="bloom-checkbox" title="Item Pago?">
+                        </div>
+                    </td>
+                    <!-- Frete Inter + Checkbox -->
+                    <td class="py-3 px-4 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <input type="number" step="0.01" value="${o.shipping}" onchange="updateOrderField('${o.id}', 'shipping', parseFloat(this.value)||0)" class="w-20 bg-bloom-card border border-bloom-border rounded-lg px-2 py-1 text-white">
+                            <input type="checkbox" ${o.paidShipping ? 'checked' : ''} onchange="updateOrderField('${o.id}', 'paidShipping', this.checked)" class="bloom-checkbox" title="Frete Pago?">
+                        </div>
+                    </td>
+                    <!-- Taxa Alf. + Checkbox -->
+                    <td class="py-3 px-4 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <input type="number" step="0.01" value="${o.tax}" onchange="updateOrderField('${o.id}', 'tax', parseFloat(this.value)||0)" class="w-20 bg-bloom-card border border-bloom-border rounded-lg px-2 py-1 text-white">
+                            <input type="checkbox" ${o.paidTax ? 'checked' : ''} onchange="updateOrderField('${o.id}', 'paidTax', this.checked)" class="bloom-checkbox" title="Taxa Paga?">
+                        </div>
+                    </td>
+                    <!-- Saldo Devendo -->
+                    <td class="py-3 px-4 text-right font-bold whitespace-nowrap ${due > 0 ? 'text-bloom-pink' : 'text-emerald-400'}">
+                        ${due > 0 ? formatBRL(due) : 'Quitado'}
+                    </td>
+                    <!-- Ações -->
+                    <td class="py-3 px-4 text-center whitespace-nowrap">
+                        <button onclick="deleteOrder('${o.id}')" class="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-950/30 transition" title="Excluir registro">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // --- ADMIN RECEIPTS REVIEW LOGIC ---
+        function setAdminReceiptFilter(filter) {
+            adminReceiptFilter = filter;
+            const btnP = document.getElementById('filter-admin-rec-pending');
+            const btnA = document.getElementById('filter-admin-rec-all');
+            if (filter === 'pending') {
+                btnP.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40';
+                btnA.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold bg-bloom-card text-gray-400 hover:text-white border border-bloom-border';
+            } else {
+                btnA.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold bg-bloom-purple text-white';
+                btnP.className = 'px-3 py-1.5 rounded-xl text-xs font-semibold bg-bloom-card text-gray-400 hover:text-white border border-bloom-border';
+            }
+            renderAdminReceipts();
+        }
+
+        function approveReceipt(receiptId) {
+            if (!hasAdminPermission('receipts')) {
+                showToast('Você não tem permissão para conferir comprovantes.', 'error');
+                return;
+            }
+            const rec = (appData.receipts || []).find(r => r.id === receiptId);
+            if (!rec) return;
+
+            const admin = getActiveAdmin();
+            const now = new Date();
+            const reviewedAt = now.toLocaleDateString('pt-BR') + ' às ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            // Dá baixa automática em cada item/frete/taxa vinculado
+            rec.items.forEach(item => {
+                const order = appData.orders.find(o => o.id === item.orderId);
+                if (!order) return;
+                if (item.field === 'price') order.paidItem = true;
+                if (item.field === 'shipping') order.paidShipping = true;
+                if (item.field === 'tax') order.paidTax = true;
+            });
+
+            rec.status = 'approved';
+            rec.rejectReason = '';
+            rec.reviewedBy = admin ? `${admin.name} (${admin.role})` : 'Admin Dark Bloom';
+            rec.reviewedAt = reviewedAt;
+            saveData();
+            showToast(`Comprovante de ${rec.participant} aprovado por ${admin ? admin.name : 'Admin'}!`);
+        }
+
+        function rejectReceipt(receiptId) {
+            if (!hasAdminPermission('receipts')) {
+                showToast('Você não tem permissão para conferir comprovantes.', 'error');
+                return;
+            }
+            const rec = (appData.receipts || []).find(r => r.id === receiptId);
+            if (!rec) return;
+
+            const admin = getActiveAdmin();
+            const now = new Date();
+            const reviewedAt = now.toLocaleDateString('pt-BR') + ' às ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            const reasonInput = document.getElementById(`reject-reason-${receiptId}`);
+            const reason = reasonInput && reasonInput.value.trim()
+                ? reasonInput.value.trim()
+                : 'Comprovante ilegível ou link do Google Drive privado. Por favor, reenvie.';
+
+            rec.status = 'rejected';
+            rec.rejectReason = reason;
+            rec.reviewedBy = admin ? `${admin.name} (${admin.role})` : 'Admin Dark Bloom';
+            rec.reviewedAt = reviewedAt;
+            saveData();
+            showToast(`Comprovante recusado. Aviso enviado para ${rec.participant}.`);
+        }
+
+        function renderAdminReceipts() {
+            const listEl = document.getElementById('admin-receipts-list');
+            if (!listEl) return;
+
+            const allReceipts = appData.receipts || [];
+            const filtered = adminReceiptFilter === 'pending'
+                ? allReceipts.filter(r => r.status === 'pending')
+                : allReceipts;
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `
+                    <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-8 text-center">
+                        <i class="fa-solid fa-check-double text-3xl text-emerald-500/60 mb-2"></i>
+                        <p class="text-sm font-medium text-gray-300">Nenhum comprovante nesta visualização.</p>
+                        <p class="text-xs text-gray-500 mt-1">Quando uma participante enviar um comprovante no portal, ele aparecerá aqui.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = filtered.map(rec => {
+                let statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40"><i class="fa-solid fa-hourglass-half mr-1"></i>Aguardando Conferência</span>`;
+                if (rec.status === 'approved') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"><i class="fa-solid fa-circle-check mr-1"></i>Aprovado & Baixado</span>`;
+                } else if (rec.status === 'rejected') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/40"><i class="fa-solid fa-circle-xmark mr-1"></i>Recusado</span>`;
+                }
+
+                return `
+                <div class="bg-bloom-surface border ${rec.status === 'pending' ? 'border-amber-500/40' : 'border-bloom-border'} rounded-2xl p-5 shadow-lg space-y-4">
+                    <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                        <!-- Coluna Esquerda: Dados e Itens Pagos -->
+                        <div class="space-y-3 flex-1 min-w-0">
+                            <div class="flex items-center flex-wrap gap-2.5">
+                                <h4 class="text-base font-bold text-white">${rec.participant}</h4>
+                                ${statusBadge}
+                                <span class="text-xs text-gray-400"><i class="fa-regular fa-clock mr-1"></i>${rec.createdAt}</span>
+                            </div>
+
+                            <div class="p-3 rounded-xl bg-bloom-card border border-bloom-border/80 text-xs text-gray-200">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-bloom-purple block mb-1">Descrição escrita pela participante:</span>
+                                <p>"${rec.description}"</p>
+                            </div>
+
+                            <div>
+                                <span class="text-[11px] font-semibold text-gray-400 block mb-1.5">Cobranças incluídas neste pagamento (Total: <strong class="text-emerald-400">${formatBRL(rec.totalAmount)}</strong>):</span>
+                                <div class="space-y-1.5">
+                                    ${rec.items.map(it => `
+                                        <div class="flex items-center justify-between text-xs bg-bloom-card/70 px-3 py-2 rounded-lg border border-bloom-border/60">
+                                            <span class="text-gray-200 truncate pr-2">${it.label}</span>
+                                            <span class="font-bold text-white shrink-0">${formatBRL(it.amount)}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Coluna Direita: Anexo Visual / Link do Google Drive -->
+                        <div class="w-full lg:w-72 shrink-0 bg-bloom-card border border-bloom-border rounded-xl p-3.5 space-y-3">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-gray-400 block">Comprovante Anexado:</span>
+                            
+                            ${rec.attachmentData ? (
+                                rec.attachmentType === 'pdf' ? `
+                                    <a href="${rec.attachmentData}" download="${rec.attachmentName || 'comprovante.pdf'}" class="flex items-center justify-center gap-2 w-full py-3 px-3 rounded-xl bg-bloom-surface hover:bg-bloom-border border border-bloom-border text-xs text-white font-semibold transition">
+                                        <i class="fa-solid fa-file-pdf text-red-400 text-base"></i>
+                                        <span class="truncate">Baixar PDF (${rec.attachmentName || 'comprovante.pdf'})</span>
+                                    </a>
+                                ` : `
+                                    <div onclick="openImageModal('${rec.attachmentData.replace(/'/g, "\\'")}', 'Comprovante • ${rec.participant.replace(/'/g, "\\'")}', 'Valor declarado: ${formatBRL(rec.totalAmount)}')" class="relative h-36 rounded-xl overflow-hidden bg-black border border-bloom-border cursor-pointer group">
+                                        <img src="${rec.attachmentData}" alt="Comprovante" class="w-full h-full object-contain group-hover:scale-105 transition">
+                                        <span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-2 py-1 rounded-md">
+                                            <i class="fa-solid fa-magnifying-glass-plus mr-1 text-bloom-purple"></i>Ampliar
+                                        </span>
+                                    </div>
+                                `
+                            ) : `
+                                <div class="p-3 rounded-xl bg-bloom-surface border border-bloom-border/60 text-[11px] text-gray-400 text-center">
+                                    Nenhum arquivo anexado diretamente (enviado via link).
+                                </div>
+                            `}
+
+                            ${rec.driveLink ? `
+                                <a href="${rec.driveLink}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-300 text-xs font-semibold transition">
+                                    <i class="fa-brands fa-google-drive"></i>
+                                    <span>Abrir no Google Drive</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    ${rec.status === 'pending' ? `
+                        <div class="pt-3.5 border-t border-bloom-border/70 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                            <div class="flex-1 flex items-center gap-2">
+                                <input type="text" id="reject-reason-${rec.id}" placeholder="Motivo caso recuse (ex: Link do Drive privado)..." class="flex-1 bg-bloom-card border border-bloom-border rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-red-400">
+                                <button onclick="rejectReceipt('${rec.id}')" class="px-3.5 py-2 rounded-xl bg-red-950/60 hover:bg-red-900/70 text-red-300 border border-red-500/30 text-xs font-semibold transition whitespace-nowrap">
+                                    Recusar
+                                </button>
+                            </div>
+                            <button onclick="approveReceipt('${rec.id}')" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-950/30 transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-check-double"></i>
+                                <span>Aprovar e Dar Baixa (${formatBRL(rec.totalAmount)})</span>
+                            </button>
+                        </div>
+                    ` : `
+                        <div class="pt-3 border-t border-bloom-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                            ${rec.reviewedBy ? `
+                                <span class="text-gray-300 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-user-check text-bloom-purple"></i>
+                                    Conferido por: <strong class="text-white">${rec.reviewedBy}</strong> em <span class="text-gray-400">${rec.reviewedAt}</span>
+                                </span>
+                            ` : '<span></span>'}
+                            ${rec.status === 'rejected' && rec.rejectReason ? `
+                                <span class="text-red-300"><strong>Motivo da recusa:</strong> ${rec.rejectReason}</span>
+                            ` : ''}
+                        </div>
+                    `}
+                </div>
+                `;
+            }).join('');
+        }
+
+        // --- BATCHES (CAIXAS) & SETS WITH PHOTOS MANAGEMENT ---
+        function addNewBatch(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-batch-name').value.trim();
+            const deadline = document.getElementById('new-batch-deadline').value.trim();
+            const status = document.getElementById('new-batch-status').value;
+
+            appData.batches.unshift({
+                id: 'b_' + Date.now(),
+                name,
+                deadline,
+                status
+            });
+            e.target.reset();
+            saveData();
+            showToast(`Caixa "${name}" criada na Masterlist!`);
+        }
+
+        function addNewSet(e) {
+            e.preventDefault();
+            const batchId = document.getElementById('new-set-batch').value;
+            const name = document.getElementById('new-set-name').value.trim();
+            const deadline = document.getElementById('new-set-deadline').value.trim();
+            const defaultPrice = parseFloat(document.getElementById('new-set-price').value) || 0;
+            const urlPhoto = document.getElementById('new-set-photo-url').value.trim();
+
+            const finalPhoto = tempUploadedSetPhoto || urlPhoto || createNumberedSetSVG(name, '#9D7BFF', '#F472B6', ['1', '2', '3']);
+
+            appData.sets.unshift({
+                id: 's_' + Date.now(),
+                batchId,
+                name,
+                deadline,
+                defaultPrice,
+                photo: finalPhoto
+            });
+
+            tempUploadedSetPhoto = '';
+            document.getElementById('new-set-file-label').textContent = 'Escolher Foto da Galeria';
+            e.target.reset();
+            saveData();
+            showToast(`Set "${name}" adicionado com foto!`);
+        }
+
+        function deleteSet(setId) {
+            appData.sets = appData.sets.filter(s => s.id !== setId);
+            saveData();
+            showToast('Set removido da caixa.');
+        }
+
+        function updateBatchStatus(batchId, newStatus) {
+            const batch = appData.batches.find(b => b.id === batchId);
+            if (!batch) return;
+            batch.status = newStatus;
+            saveData();
+            showToast(`Status da caixa "${batch.name}" atualizado para "${newStatus}"!`);
+        }
+
+        function deleteBatch(batchId) {
+            const hasOrders = appData.orders.some(o => o.batchId === batchId);
+            if (hasOrders) {
+                showToast('Remova ou mova os pedidos desta caixa antes de excluí-la.', 'error');
+                return;
+            }
+            appData.batches = appData.batches.filter(b => b.id !== batchId);
+            appData.sets = appData.sets.filter(s => s.batchId !== batchId);
+            saveData();
+            showToast('Caixa removida da Masterlist.');
+        }
+
+        function renderAdminBatches() {
+            const grid = document.getElementById('admin-batches-grid');
+            grid.innerHTML = appData.batches.map(batch => {
+                const stage = getStageObj(batch.status);
+                const batchOrders = appData.orders.filter(o => o.batchId === batch.id);
+                const batchSets = appData.sets.filter(s => s.batchId === batch.id);
+                const participantsCount = new Set(batchOrders.map(o => o.participant)).size;
+
+                return `
+                <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5 space-y-4">
+                    <!-- Box Header -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3.5 border-b border-bloom-border/70">
+                        <div>
+                            <div class="flex items-center gap-2.5 flex-wrap">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${stage.bg} ${stage.color} border ${stage.border}">
+                                    <span class="w-2 h-2 rounded-full ${stage.dot}"></span>
+                                    ${stage.label}
+                                </span>
+                                <h4 class="text-base font-bold text-white">${batch.name}</h4>
+                                <button onclick="deleteBatch('${batch.id}')" class="text-gray-500 hover:text-red-400 text-xs p-1" title="Excluir caixa vazia">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-4 mt-1.5 text-xs text-gray-400">
+                                <span><i class="fa-solid fa-images text-bloom-pink mr-1"></i>${batchSets.length} sets abertos</span>
+                                <span><i class="fa-solid fa-box text-bloom-purple mr-1"></i>${batchOrders.length} pedidos</span>
+                                <span><i class="fa-solid fa-users text-sky-400 mr-1"></i>${participantsCount} participantes</span>
+                            </div>
+                        </div>
+
+                        <div class="w-full md:w-72">
+                            <label class="block text-[10px] text-gray-400 mb-1">Status Logístico da Caixa:</label>
+                            <select onchange="updateBatchStatus('${batch.id}', this.value)" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple cursor-pointer">
+                                ${STAGES.map(s => `<option value="${s.id}" ${s.id === batch.status ? 'selected' : ''}>● ${s.label} — ${s.desc}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Sets Inside This Box -->
+                    <div>
+                        <p class="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2.5">Sets / Drops dentro desta caixa:</p>
+                        ${batchSets.length === 0 ? `
+                            <p class="text-xs text-gray-500 italic">Nenhum set cadastrado nesta caixa ainda. Use o formulário "2. Adicionar Set Aberto + Foto" acima.</p>
+                        ` : `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                ${batchSets.map(setObj => `
+                                    <div class="bg-bloom-card border border-bloom-border rounded-xl p-3 flex items-center gap-3">
+                                        <div class="relative w-16 h-16 rounded-lg overflow-hidden bg-black border border-bloom-border shrink-0 group">
+                                            <img src="${setObj.photo}" onclick="openImageModal('${setObj.photo.replace(/'/g, "\\'")}', '${setObj.name.replace(/'/g, "\\'")}')" class="w-full h-full object-cover cursor-pointer">
+                                            <label title="Trocar foto deste set" class="absolute inset-0 bg-black/65 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs cursor-pointer transition">
+                                                <i class="fa-solid fa-camera"></i>
+                                                <input type="file" accept="image/*" onchange="updateExistingSetPhoto('${setObj.id}', this)" class="hidden">
+                                            </label>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <h5 class="text-xs font-bold text-white truncate">${setObj.name}</h5>
+                                            <p class="text-[11px] text-bloom-purple font-semibold mt-0.5">${formatBRL(setObj.defaultPrice)}</p>
+                                            <p class="text-[10px] text-gray-400 truncate mt-0.5">${setObj.deadline || 'Sem prazo'}</p>
+                                            <div class="flex items-center gap-2 mt-1.5">
+                                                <label class="text-[10px] text-sky-400 hover:underline cursor-pointer">
+                                                    <i class="fa-solid fa-upload mr-0.5"></i>Trocar foto
+                                                    <input type="file" accept="image/*" onchange="updateExistingSetPhoto('${setObj.id}', this)" class="hidden">
+                                                </label>
+                                                <button onclick="deleteSet('${setObj.id}')" class="text-[10px] text-gray-500 hover:text-red-400 ml-auto">Excluir</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // --- ORDER FORMS BUILDER (ADMIN) ---
+        function syncFormBuilderSets() {
+            const batchId = document.getElementById('form-builder-batch').value;
+            const setsInBatch = appData.sets.filter(s => s.batchId === batchId);
+            const setSelect = document.getElementById('form-builder-set');
+            if (setsInBatch.length === 0) {
+                setSelect.innerHTML = `<option value="">Crie um Set nesta caixa primeiro</option>`;
+            } else {
+                setSelect.innerHTML = setsInBatch.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+                syncFormBuilderDefaults();
+            }
+        }
+
+        function syncFormBuilderDefaults() {
+            const setId = document.getElementById('form-builder-set').value;
+            const setObj = getSetById(setId);
+            if (setObj) {
+                if (setObj.defaultPrice) document.getElementById('form-builder-price').value = setObj.defaultPrice;
+                if (setObj.deadline) document.getElementById('form-builder-deadline').value = setObj.deadline;
+            }
+        }
+
+        function createOrderForm(e) {
+            e.preventDefault();
+            const batchId = document.getElementById('form-builder-batch').value;
+            const setId = document.getElementById('form-builder-set').value;
+            if (!setId) {
+                showToast('Cadastre um Set com foto dentro da caixa selecionada antes de criar o formulário.', 'error');
+                return;
+            }
+            const price = parseFloat(document.getElementById('form-builder-price').value) || 0;
+            const rawOptions = document.getElementById('form-builder-options').value;
+            const options = rawOptions.split(',').map(s => s.trim()).filter(Boolean);
+            const deadline = document.getElementById('form-builder-deadline').value.trim();
+
+            appData.forms.unshift({
+                id: 'f_' + Date.now(),
+                batchId,
+                setId,
+                price,
+                options,
+                deadline,
+                isOpen: true
+            });
+
+            saveData();
+            showToast('Formulário publicado na aba "Fazer Pedido"!');
+        }
+
+        function toggleFormStatus(formId) {
+            const f = appData.forms.find(item => item.id === formId);
+            if (!f) return;
+            f.isOpen = !f.isOpen;
+            saveData();
+            showToast(f.isOpen ? 'Formulário reaberto para pedidos!' : 'Formulário encerrado.');
+        }
+
+        function deleteOrderForm(formId) {
+            appData.forms = appData.forms.filter(f => f.id !== formId);
+            saveData();
+            showToast('Formulário removido.');
+        }
+
+        function renderAdminForms() {
+            const list = document.getElementById('admin-forms-list');
+            if (!list) return;
+
+            if (appData.forms.length === 0) {
+                list.innerHTML = `<p class="text-xs text-gray-500 col-span-full">Nenhum formulário criado ainda.</p>`;
+                return;
+            }
+
+            list.innerHTML = appData.forms.map(form => {
+                const batch = appData.batches.find(b => b.id === form.batchId) || { name: 'Caixa' };
+                const setObj = getSetById(form.setId) || { name: 'Set', photo: '' };
+
+                return `
+                <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-4 flex gap-3.5 items-start">
+                    ${setObj.photo ? `<img src="${setObj.photo}" onclick="openImageModal('${setObj.photo.replace(/'/g, "\\'")}', '${setObj.name.replace(/'/g, "\\'")}')" class="w-20 h-20 rounded-xl object-cover border border-bloom-border shrink-0 cursor-pointer">` : ''}
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${form.isOpen ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-gray-800 text-gray-400'}">
+                                ${form.isOpen ? '● Aberto' : '● Encerrado'}
+                            </span>
+                            <button onclick="deleteOrderForm('${form.id}')" class="text-gray-500 hover:text-red-400 text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                        <h5 class="text-sm font-bold text-white mt-1.5 truncate">${setObj.name}</h5>
+                        <p class="text-[11px] text-bloom-purple">${batch.name} • <strong>${formatBRL(form.price)}</strong></p>
+                        <p class="text-[11px] text-gray-400 mt-1 truncate">Opções: ${form.options.join(', ')}</p>
+                        
+                        <div class="flex items-center gap-2 mt-3">
+                            <button onclick="toggleFormStatus('${form.id}')" class="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-bloom-card hover:bg-bloom-border border border-bloom-border text-white transition">
+                                ${form.isOpen ? 'Encerrar Pedidos' : 'Reabrir Formulário'}
+                            </button>
+                            <button onclick="switchMode('forms')" class="px-3 py-1.5 rounded-lg text-[11px] font-semibold bg-bloom-purple/20 text-bloom-purple border border-bloom-purple/30 hover:bg-bloom-purple/30 transition">
+                                Ver Formulário
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // --- SETTINGS & BACKUP ---
+        function loadSettingsForm() {
+            document.getElementById('setting-pix-key').value = appData.settings.pixKey;
+            document.getElementById('setting-whatsapp').value = appData.settings.whatsapp;
+            document.getElementById('setting-admin-pin').value = appData.settings.adminPin;
+        }
+
+        function saveSettings() {
+            if (!hasAdminPermission('team')) {
+                showToast('Apenas administradores com permissão podem alterar configurações.', 'error');
+                return;
+            }
+            const newPin = document.getElementById('setting-admin-pin').value.trim() || '1234';
+            appData.settings.pixKey = document.getElementById('setting-pix-key').value.trim() || 'darkbloom.ceg@gmail.com';
+            appData.settings.whatsapp = document.getElementById('setting-whatsapp').value.trim() || '5511999999999';
+            appData.settings.adminPin = newPin;
+
+            const owner = (appData.team || []).find(m => m.isOwner);
+            if (owner) owner.pin = newPin;
+
+            saveData();
+            showToast('Configurações salvas!');
+        }
+
+        // --- MULTI-ADMIN & TEAM MANAGEMENT ---
+        function addTeamMember(e) {
+            e.preventDefault();
+            if (!hasAdminPermission('team')) {
+                showToast('Você não tem permissão para gerenciar a equipe.', 'error');
+                return;
+            }
+
+            const name = document.getElementById('new-member-name').value.trim();
+            const role = document.getElementById('new-member-role').value.trim();
+            const pin = document.getElementById('new-member-pin').value.trim();
+
+            if (!name || !role || pin.length < 4) {
+                showToast('Preencha nome, cargo e um PIN de 4 a 6 dígitos.', 'error');
+                return;
+            }
+
+            const permissions = {
+                receipts: document.getElementById('perm-receipts').checked,
+                forms: document.getElementById('perm-forms').checked,
+                batches: document.getElementById('perm-batches').checked,
+                orders: document.getElementById('perm-orders').checked,
+                team: document.getElementById('perm-team').checked
+            };
+
+            appData.team.push({
+                id: 'adm_' + Date.now(),
+                name,
+                role,
+                pin,
+                isOwner: false,
+                active: true,
+                permissions
+            });
+
+            e.target.reset();
+            document.getElementById('perm-receipts').checked = true;
+            document.getElementById('perm-forms').checked = true;
+            saveData();
+            showToast(`${name} adicionado(a) à equipe Dark Bloom!`);
+        }
+
+        function toggleTeamMemberPermission(memberId, permKey) {
+            if (!hasAdminPermission('team')) return;
+            const member = (appData.team || []).find(m => m.id === memberId);
+            if (!member || member.isOwner) return;
+            member.permissions[permKey] = !member.permissions[permKey];
+            saveData();
+            showToast(`Permissão atualizada para ${member.name}.`);
+        }
+
+        function toggleTeamMemberActive(memberId) {
+            if (!hasAdminPermission('team')) return;
+            const member = (appData.team || []).find(m => m.id === memberId);
+            if (!member || member.isOwner) return;
+            member.active = !member.active;
+            saveData();
+            showToast(member.active ? `Acesso de ${member.name} reativado.` : `Acesso de ${member.name} suspenso.`);
+        }
+
+        function deleteTeamMember(memberId) {
+            if (!hasAdminPermission('team')) return;
+            const member = (appData.team || []).find(m => m.id === memberId);
+            if (!member || member.isOwner) {
+                showToast('Não é possível remover a Administradora Principal.', 'error');
+                return;
+            }
+            appData.team = appData.team.filter(m => m.id !== memberId);
+            saveData();
+            showToast(`Membro ${member.name} removido da equipe.`);
+        }
+
+        function renderAdminTeam() {
+            const grid = document.getElementById('admin-team-grid');
+            if (!grid) return;
+
+            const permDefinitions = [
+                { key: 'receipts', label: 'Conferir Comprovantes' },
+                { key: 'forms', label: 'Criar Formulários' },
+                { key: 'batches', label: 'Caixas, Sets e Fotos' },
+                { key: 'orders', label: 'Pedidos, Fretes e Taxas' },
+                { key: 'team', label: 'Gerenciar Equipe & Config.' }
+            ];
+
+            grid.innerHTML = (appData.team || []).map(member => {
+                return `
+                <div class="bg-bloom-surface border ${member.active ? 'border-bloom-border' : 'border-red-500/30 opacity-70'} rounded-2xl p-4 space-y-3">
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h5 class="text-sm font-bold text-white">${member.name}</h5>
+                                ${member.isOwner
+                                    ? `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-bloom-gold/20 text-bloom-gold border border-bloom-gold/30"><i class="fa-solid fa-crown mr-1"></i>Dona</span>`
+                                    : (member.active
+                                        ? `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Ativo</span>`
+                                        : `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">Inativo</span>`)
+                                }
+                            </div>
+                            <p class="text-xs text-bloom-purple font-medium mt-0.5">${member.role}</p>
+                            <p class="text-[11px] text-gray-400 mt-1">PIN de Acesso: <code class="px-1.5 py-0.5 rounded bg-bloom-card text-gray-200 font-mono">${member.pin}</code></p>
+                        </div>
+
+                        ${!member.isOwner ? `
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="toggleTeamMemberActive('${member.id}')" class="px-2.5 py-1 rounded-lg bg-bloom-card hover:bg-bloom-border border border-bloom-border text-[11px] text-gray-300 transition">
+                                    ${member.active ? 'Desativar' : 'Ativar'}
+                                </button>
+                                <button onclick="deleteTeamMember('${member.id}')" class="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-950/30 transition" title="Remover membro">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="pt-2.5 border-t border-bloom-border/70">
+                        <span class="block text-[10px] uppercase tracking-wider text-gray-400 mb-2">Permissões Liberadas:</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            ${permDefinitions.map(p => {
+                                const allowed = member.isOwner || Boolean(member.permissions && member.permissions[p.key]);
+                                return `
+                                <button type="button" ${member.isOwner ? 'disabled' : `onclick="toggleTeamMemberPermission('${member.id}', '${p.key}')"`} class="px-2.5 py-1 rounded-lg text-[11px] font-medium border transition flex items-center gap-1.5 ${
+                                    allowed
+                                        ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                                        : 'bg-bloom-card text-gray-500 border-bloom-border hover:text-gray-300'
+                                } ${member.isOwner ? 'cursor-default' : 'cursor-pointer'}">
+                                    <i class="fa-solid ${allowed ? 'fa-check' : 'fa-xmark'} text-[10px]"></i>
+                                    <span>${p.label}</span>
+                                </button>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function exportDataJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `dark-bloom-ceg-backup-${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('Backup JSON exportado!');
+        }
+
+        function resetDemoData() {
+            appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+            saveData();
+            showToast('Dados restaurados para o modelo inicial.');
+        }
+
+        // --- GLOBAL REFRESH ---
+        function refreshAllViews() {
+            initParticipantSelectors();
+            populateAdminDropdowns();
+            const openForms = appData.forms.filter(f => f.isOpen);
+            const badge = document.getElementById('open-forms-badge');
+            if (badge) badge.textContent = openForms.length;
+
+            const pendingReceiptsCount = (appData.receipts || []).filter(r => r.status === 'pending').length;
+            const recBadge = document.getElementById('admin-pending-receipts-badge');
+            if (recBadge) recBadge.textContent = pendingReceiptsCount;
+
+            if (currentMode === 'client') {
+                renderClientDashboard();
+            } else if (currentMode === 'forms') {
+                renderPublicForms();
+            } else {
+                applyAdminPermissionsUI();
+                renderAdminOrders();
+                renderAdminReceipts();
+                renderAdminBatches();
+                renderAdminForms();
+                renderAdminTeam();
+            }
+        }
+
+        // --- INITIALIZE ON LOAD ---
+        window.onload = function() {
+            refreshAllViews();
+            if (window.cloudSyncBridge) {
+                window.cloudSyncBridge.startRealtimeListener();
+            }
+        };
+    </script>
+</body>
+</html>
