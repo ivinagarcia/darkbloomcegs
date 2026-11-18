@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dark Bloom Cegs</title>
+  <title>Dark Bloom Cegs | Portal da Participante</title>
+  <meta name="description" content="Acompanhe seus itens, prazos e pagamentos nas compras em grupo de K-Pop da Dark Bloom Cegs." />
+  <meta name="theme-color" content="#0b0910" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23be123c'/%3E%3Cpath d='M32 12c-5 7-12 10-12 19 0 7 5 12 12 12s12-5 12-12c0-9-7-12-12-19z' fill='%23fff' opacity='.92'/%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -91,6 +94,29 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade { animation: fadeSlide 0.25s ease-out forwards; }
+  
+    /* ===== Refinamento visual ===== */
+    :root { --panel:#14101b; --line:rgba(255,255,255,.09); --muted:#a8a2b8; --gold:#d4af37; }
+    body { background-image: radial-gradient(ellipse at 50% -10%, rgba(159,18,57,.18), transparent 55%); line-height:1.55; }
+    body .gothic-card { background: var(--panel); border:1px solid var(--line); box-shadow:none; }
+    body .gold-border-glow { border:1px solid rgba(212,175,55,.28); box-shadow:none; }
+    body .rounded-3xl { border-radius:18px; } body .rounded-2xl { border-radius:14px; } body .rounded-xl { border-radius:10px; }
+    body .uppercase { text-transform:none; } body [class*="tracking-"] { letter-spacing:0; }
+    body .text-\[10px\] { font-size:11.5px; } body .text-\[11px\] { font-size:12.5px; }
+    body .btn-crimson { background:#be123c; border:1px solid rgba(251,113,133,.35); box-shadow:none; }
+    body .btn-crimson:hover { background:#e11d48; box-shadow:none; }
+    body .btn-amethyst { background:#6d28d9; border:1px solid rgba(192,132,252,.35); box-shadow:none; }
+    body .btn-amethyst:hover { background:#7c3aed; box-shadow:none; }
+    body .input-gothic { background:#0e0b14; border:1px solid rgba(255,255,255,.16); }
+    body .input-gothic:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,175,55,.18); }
+    :focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+    .site-header { background:rgba(11,9,16,.92); border-bottom:1px solid var(--line); }
+    .nav-tab { padding:.55rem .85rem; border-radius:10px; font-size:.875rem; font-weight:500; color:var(--muted); border:1px solid transparent; transition:color .15s, background .15s; }
+    .nav-tab:hover { color:#fff; background:rgba(255,255,255,.06); }
+    .nav-tab.is-active { color:#fff; background:rgba(225,29,72,.14); box-shadow:inset 0 -2px 0 var(--gold); }
+    .nav-tab.nav-ghost { border-color:var(--line); }
+    .step-dot { flex:none; width:28px; height:28px; border-radius:999px; background:rgba(225,29,72,.16); border:1px solid rgba(251,113,133,.4); color:#fecdd3; font-weight:600; font-size:.8rem; display:flex; align-items:center; justify-content:center; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
 </head>
 <body class="antialiased selection:bg-rose-800 selection:text-white flex flex-col">
@@ -99,75 +125,38 @@
   <div id="toastContainer" class="fixed top-4 right-4 z-[999] flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
 
   <!-- Top Navigation Header -->
-  <header class="sticky top-0 z-40 backdrop-blur-xl bg-obsidian/92 border-b border-amber-500/20">
+  <header class="site-header sticky top-0 z-40 backdrop-blur-xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-      <!-- Brand -->
-      <div class="flex items-center gap-3 cursor-pointer" onclick="switchMainTab('home')">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-900 via-purple-950 to-black border border-amber-400/40 flex items-center justify-center shadow-lg shadow-rose-950/50 shrink-0">
-          <svg class="w-6 h-6 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c-1.8 2.6-4.5 3.8-4.5 7 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c0-3.2-2.7-4.4-4.5-7z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 14.5V21M12 18c-2.5 0-4.5-1.2-5.5-3M12 18c2.5 0 4.5-1.2 5.5-3" />
-          </svg>
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="font-display text-lg sm:text-xl font-bold tracking-wider bg-gradient-to-r from-amber-200 via-rose-200 to-purple-300 bg-clip-text text-transparent">
-              Dark Bloom Cegs
-            </h1>
-            <span id="syncIndicator" class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-500/30">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              Online
-            </span>
-          </div>
-          <p class="text-[11px] text-ash tracking-wide">Compras em Grupo K-Pop • Álbuns, Photocards & Colecionáveis</p>
-        </div>
-      </div>
+      <button type="button" onclick="switchMainTab('home')" class="flex items-center gap-3 text-left" aria-label="Ir para o início">
+        <span class="w-10 h-10 rounded-xl bg-rose-800 flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c-1.8 2.6-4.5 3.8-4.5 7 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c0-3.2-2.7-4.4-4.5-7z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14.5V21M12 18c-2.5 0-4.5-1.2-5.5-3M12 18c2.5 0 4.5-1.2 5.5-3"/></svg>
+        </span>
+        <span>
+          <span class="flex items-center gap-2">
+            <h1 class="font-serif text-2xl font-bold text-white leading-none">Dark Bloom Cegs</h1>
+            <span id="syncIndicator" class="inline-flex items-center gap-1.5 text-[11px] text-emerald-300"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Online</span>
+          </span>
+          <span class="block text-xs text-ash mt-1">Compras em grupo de K-Pop: álbuns, photocards e colecionáveis</span>
+        </span>
+      </button>
 
-      <!-- Main Navigation Bar (Strictly Separated Tabs) -->
-      <nav class="flex flex-wrap items-center gap-1.5 sm:gap-2">
-        <button id="nav-home" onclick="switchMainTab('home')" class="nav-tab px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 bg-rose-950/80 text-amber-200 border border-amber-400/40">
-          <span>🥀</span> Meu Espaço
-        </button>
-        <button id="nav-shipping" onclick="switchMainTab('shipping')" class="nav-tab px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-ash hover:text-white hover:bg-white/5 border border-transparent">
-          <span>📮</span> Envio Nacional
-        </button>
-        <button id="nav-order" onclick="switchMainTab('order')" class="nav-tab px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-ash hover:text-white hover:bg-white/5 border border-transparent">
-          <span>🛍️</span> Fazer Pedido
-        </button>
-        <button id="nav-guide" onclick="switchMainTab('guide')" class="nav-tab px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-ash hover:text-white hover:bg-white/5 border border-transparent">
-          <span>📜</span> Guia & Regras
-        </button>
+      <nav class="flex flex-wrap items-center gap-1" aria-label="Navegação principal">
+        <button id="nav-home" onclick="switchMainTab('home')" class="nav-tab is-active">Meu espaço</button>
+        <button id="nav-shipping" onclick="switchMainTab('shipping')" class="nav-tab">Envio nacional</button>
+        <button id="nav-order" onclick="switchMainTab('order')" class="nav-tab">Fazer pedido</button>
+        <button id="nav-guide" onclick="switchMainTab('guide')" class="nav-tab">Guia e regras</button>
 
-        <!-- Calculadoras CEG Dropdown -->
         <div class="relative" id="calcMenuWrapper">
-          <button type="button" onclick="toggleCalcDropdown()" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-ash hover:text-amber-200 hover:bg-white/5 border border-white/10">
-            <span>🧮</span> Calculadoras CEG <span class="text-[10px]">▼</span>
-          </button>
-          <div id="calcDropdownMenu" class="hidden absolute right-0 mt-2 w-60 rounded-2xl bg-velvet border border-amber-400/35 shadow-2xl z-50 overflow-hidden divide-y divide-white/5">
-            <a href="https://ivinagarcia.github.io/calculadora-db-ceg/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-4 py-3 text-xs text-white hover:bg-rose-950/60 transition">
-              <span>🇯🇵 Mercari Japão</span>
-              <span class="text-amber-300">↗</span>
-            </a>
-            <a href="https://ivinagarcia.github.io/calculadora-db-bunjang/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-4 py-3 text-xs text-white hover:bg-rose-950/60 transition">
-              <span>🇰🇷 Bunjang Korea</span>
-              <span class="text-amber-300">↗</span>
-            </a>
-            <a href="https://ivinagarcia.github.io/calculadora-db-pocamarket/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-4 py-3 text-xs text-white hover:bg-rose-950/60 transition">
-              <span>🃏 Pocamarket Korea</span>
-              <span class="text-amber-300">↗</span>
-            </a>
+          <button type="button" onclick="toggleCalcDropdown()" class="nav-tab nav-ghost" aria-haspopup="true">Calculadoras ▾</button>
+          <div id="calcDropdownMenu" class="hidden absolute right-0 mt-2 w-60 rounded-xl bg-velvet border border-white/10 shadow-2xl z-50 overflow-hidden divide-y divide-white/5">
+            <a href="https://ivinagarcia.github.io/calculadora-db-ceg/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-4 py-3 text-sm text-white hover:bg-white/5"><span>Mercari (Japão)</span><span class="text-ash">↗</span></a>
+            <a href="https://ivinagarcia.github.io/calculadora-db-bunjang/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-4 py-3 text-sm text-white hover:bg-white/5"><span>Bunjang (Coreia)</span><span class="text-ash">↗</span></a>
+            <a href="https://ivinagarcia.github.io/calculadora-db-pocamarket/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-4 py-3 text-sm text-white hover:bg-white/5"><span>Pocamarket (Coreia)</span><span class="text-ash">↗</span></a>
           </div>
         </div>
 
-        <!-- WhatsApp Community Link -->
-        <a id="headerWhatsappLink" href="https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 bg-emerald-950/70 hover:bg-emerald-900/80 text-emerald-200 border border-emerald-500/35">
-          <span>💬</span> Comunidade
-        </a>
-
-        <!-- Admin Button -->
-        <button id="nav-admin" onclick="handleAdminNavClick()" class="nav-tab px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-amber-300 hover:text-amber-200 bg-purple-950/50 hover:bg-purple-900/60 border border-purple-500/35">
-          <span>🔐</span> Admin
-        </button>
+        <a id="headerWhatsappLink" href="https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU" target="_blank" rel="noopener noreferrer" class="nav-tab nav-ghost">Comunidade</a>
+        <button id="nav-admin" onclick="handleAdminNavClick()" class="nav-tab nav-ghost">Admin</button>
       </nav>
     </div>
   </header>
@@ -183,16 +172,13 @@
       <div class="gothic-card rounded-3xl p-5 sm:p-7 gold-border-glow">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
           <div class="space-y-1 max-w-xl">
-            <span class="text-[11px] uppercase tracking-[0.2em] text-amber-400 font-semibold">Portal da Participante • Dark Bloom Cegs</span>
-            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white">Consulte seus Itens, Prazos & Saldos</h2>
-            <p class="text-xs sm:text-sm text-ash">
-              Digite ou selecione seu nome / <strong class="text-amber-200">@</strong> no campo ao lado para carregar suas reservas, valores pendentes e datas de vencimento.
-            </p>
+            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white">Acompanhe seus pedidos e pagamentos</h2>
+            <p class="text-sm sm:text-base text-ash">Busque seu nome ou @ para ver seus itens, o que falta pagar e até quando.</p>
           </div>
 
           <!-- Unified Intelligent Combobox (Single Input) -->
           <div class="relative w-full lg:w-96" id="homeComboboxWrapper">
-            <label class="text-[11px] uppercase tracking-wider text-amber-300 font-semibold block mb-1.5">Digite ou selecione seu nome / @</label>
+            <label for="homeUnifiedInput" class="text-sm font-medium text-white block mb-1.5">Seu nome ou @</label>
             <div class="relative">
               <input
                 type="text"
@@ -200,11 +186,11 @@
                 onfocus="openJoinerCombobox('home')"
                 oninput="filterJoinerCombobox('home', this.value)"
                 onkeydown="handleJoinerComboboxKeydown(event, 'home')"
-                placeholder="Digite ou selecione seu nome / @..."
+                placeholder="Buscar por nome ou @"
                 class="input-gothic w-full pl-9 pr-14 py-3 rounded-2xl text-sm font-medium"
                 autocomplete="off"
               />
-              <span class="absolute left-3 top-3 text-ash text-sm pointer-events-none">🔍</span>
+              <svg class="absolute left-3 top-3.5 w-4 h-4 text-ash pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
               <div class="absolute right-2.5 top-2.5 flex items-center gap-1">
                 <button
                   type="button"
@@ -232,10 +218,10 @@
         <div class="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div class="flex flex-wrap items-center gap-2 sm:gap-3">
             <span class="px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-400/30 text-amber-200 font-semibold">
-              Chave Pix (CNPJ): <span id="displayPixCnpj" class="font-mono">67.039.191/0001-76</span>
+              Pix (CNPJ): <span id="displayPixCnpj" class="font-mono">67.039.191/0001-76</span>
             </span>
             <button type="button" onclick="copyPixKey()" class="px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/40 font-semibold transition">
-              📋 Copiar CNPJ Pix (67039191000176)
+              Copiar chave Pix
             </button>
           </div>
           <div class="text-ash">
@@ -244,44 +230,31 @@
         </div>
       </div>
 
-      <!-- KPI Summary Cards (Starts at R$ 0,00 / 0 until a Joiner is selected) -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div class="gothic-card rounded-2xl p-4">
-          <p class="text-[11px] uppercase tracking-wider text-ash">Total de Itens</p>
-          <p id="kpiTotalItems" class="text-2xl sm:text-3xl font-bold text-white mt-1">0</p>
-          <p id="kpiReadyItems" class="text-xs text-emerald-400 mt-1">0 em mãos (prontos)</p>
-        </div>
-        <div class="gothic-card rounded-2xl p-4">
-          <p class="text-[11px] uppercase tracking-wider text-ash">Total Geral</p>
-          <p id="kpiTotalValue" class="text-2xl sm:text-3xl font-bold text-amber-300 mt-1">R$ 0,00</p>
-          <p class="text-xs text-ash mt-1">Itens + fretes + taxas</p>
-        </div>
-        <!-- Prominent Pending Amount + Smaller Due Dates Display -->
-        <div class="gothic-card rounded-2xl p-4 border-rose-500/35">
-          <p class="text-[11px] uppercase tracking-wider text-rose-300 font-semibold">Total Pendente</p>
-          <p id="kpiPendingValue" class="text-2xl sm:text-3xl font-bold text-rose-400 mt-1">R$ 0,00</p>
-          <p id="kpiPendingCount" class="text-xs text-rose-300/80 mt-1">0 cobranças em aberto</p>
-          <!-- Due Dates in Smaller Clean Text -->
-          <div id="kpiPendingDueDates" class="mt-2 pt-2 border-t border-rose-500/20 text-[11px] text-amber-200/90 leading-snug">
-            Vencimentos: —
+      <!-- Resumo financeiro (aparece após selecionar a participante) -->
+      <div id="kpiGrid" class="hidden">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="gothic-card rounded-2xl p-5 border-rose-500/30">
+            <p class="text-sm font-medium text-rose-200">Total pendente</p>
+            <p id="kpiPendingValue" class="text-3xl font-bold text-rose-300 mt-1">R$ 0,00</p>
+            <p id="kpiPendingCount" class="text-sm text-ash mt-1">0 cobranças em aberto</p>
+            <div id="kpiPendingDueDates" class="mt-3 pt-3 border-t border-white/10 text-sm text-amber-200/90 leading-snug">Vencimentos: —</div>
           </div>
-        </div>
-        <div class="gothic-card rounded-2xl p-4 border-emerald-500/25">
-          <p class="text-[11px] uppercase tracking-wider text-emerald-300">Total Já Pago</p>
-          <p id="kpiPaidValue" class="text-2xl sm:text-3xl font-bold text-emerald-400 mt-1">R$ 0,00</p>
-          <p id="kpiReviewCount" class="text-xs text-amber-300 mt-1">0 comprovantes em análise</p>
+          <div class="gothic-card rounded-2xl p-5 border-emerald-500/25">
+            <p class="text-sm font-medium text-emerald-200">Total já pago</p>
+            <p id="kpiPaidValue" class="text-3xl font-bold text-emerald-300 mt-1">R$ 0,00</p>
+            <p id="kpiReviewCount" class="text-sm text-amber-200 mt-1">0 comprovantes em análise</p>
+          </div>
         </div>
       </div>
 
-      <!-- Empty State Prompt (Shown when no participant is selected yet) -->
-      <div id="homeEmptyPrompt" class="gothic-card rounded-3xl p-8 sm:p-10 text-center space-y-3 border-dashed border-amber-500/30">
-        <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-950/60 border border-rose-500/30 flex items-center justify-center text-2xl">
-          🥀
-        </div>
-        <h3 class="font-serif text-xl sm:text-2xl font-bold text-amber-200">Nenhuma participante selecionada</h3>
-        <p class="text-xs sm:text-sm text-ash max-w-md mx-auto">
-          Utilize o campo <strong class="text-white">“Digite ou selecione seu nome / @”</strong> acima para visualizar seus itens, valores pendentes, datas de vencimento e enviar comprovantes.
-        </p>
+      <!-- Estado inicial: passo a passo -->
+      <div id="homeEmptyPrompt" class="gothic-card rounded-2xl p-6 sm:p-8">
+        <h3 class="font-serif text-2xl font-bold text-white">Como funciona</h3>
+        <ol class="mt-5 grid gap-5 sm:grid-cols-3 text-sm text-ash">
+          <li class="flex gap-3"><span class="step-dot">1</span><span><strong class="block text-white font-medium">Encontre seu nome</strong>Digite seu nome ou @ no campo acima.</span></li>
+          <li class="flex gap-3"><span class="step-dot">2</span><span><strong class="block text-white font-medium">Confira valores e prazos</strong>Veja o que falta pagar e a data de vencimento.</span></li>
+          <li class="flex gap-3"><span class="step-dot">3</span><span><strong class="block text-white font-medium">Envie o comprovante</strong>Depois do Pix, anexe o comprovante marcando os itens pagos.</span></li>
+        </ol>
       </div>
 
       <!-- Selected Participant Workspace (Hidden until a Joiner is chosen) -->
@@ -306,7 +279,7 @@
           </div>
 
           <button type="button" onclick="openProofModal()" class="btn-crimson px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white flex items-center justify-center gap-2 shadow-lg shrink-0">
-            <span>📎</span> Anexar / Enviar Comprovante
+            Enviar comprovante
           </button>
         </div>
 
@@ -345,7 +318,7 @@
                 onfocus="openJoinerCombobox('shipping')"
                 oninput="filterJoinerCombobox('shipping', this.value)"
                 onkeydown="handleJoinerComboboxKeydown(event, 'shipping')"
-                placeholder="Digite ou selecione seu nome / @..."
+                placeholder="Buscar por nome ou @"
                 class="input-gothic w-full pl-9 pr-14 py-2.5 rounded-xl text-sm"
                 autocomplete="off"
               />
@@ -612,10 +585,10 @@
       <div class="gothic-card rounded-3xl p-5 sm:p-6 gold-border-glow flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-[11px] uppercase tracking-[0.2em] text-amber-400 font-semibold">Administração • Dark Bloom Cegs</span>
+            <span class="text-[11px] uppercase tracking-[0.2em] text-amber-400 font-semibold">Administração</span>
             <span id="loggedAdminBadge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-purple-950 text-purple-200 border border-purple-500/35"></span>
           </div>
-          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-0.5">Painel de Gestão Completa</h2>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-0.5">Painel administrativo</h2>
         </div>
         <div class="flex flex-wrap gap-2">
           <button type="button" onclick="openNewOrderModal()" class="btn-crimson px-4 py-2 rounded-xl text-xs font-semibold text-white">+ Novo Item</button>
@@ -870,7 +843,7 @@
       <!-- ADMIN 9: EQUIPE & PERMISSÕES -->
       <div id="admPanel-team" class="hidden space-y-4">
         <div class="gothic-card rounded-3xl p-5 space-y-4 text-xs">
-          <h3 class="font-serif text-xl font-bold text-amber-200">Equipe Multi-Admin & Permissões</h3>
+          <h3 class="font-serif text-xl font-bold text-amber-200">Equipe e permissões</h3>
           <form onsubmit="addAdminMember(event)" class="space-y-3 bg-black/35 p-4 rounded-2xl border border-white/10">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input type="text" id="newAdmName" required placeholder="Nome da Administradora" class="input-gothic px-3 py-2 rounded-xl" />
@@ -920,14 +893,12 @@
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-white/10 bg-obsidian/90 py-5 px-4 sm:px-6 text-xs text-ash">
+  <footer class="border-t border-white/10 py-6 px-4 sm:px-6 text-sm text-ash">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-      <div>
-        <strong class="text-amber-200 font-display">Dark Bloom Cegs</strong> • Compras em Grupo K-Pop
-      </div>
-      <div class="flex flex-wrap items-center gap-4">
-        <a id="footerEmailLink" href="mailto:darkbloomcegs@gmail.com" class="hover:text-rose-300">✉️ darkbloomcegs@gmail.com</a>
-        <a id="footerWhatsappLink" href="https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU" target="_blank" rel="noopener noreferrer" class="text-emerald-300 hover:underline">💬 Comunidade WhatsApp</a>
+      <div><strong class="font-serif text-lg text-white">Dark Bloom Cegs</strong><span class="ml-2">Compras em grupo de K-Pop</span></div>
+      <div class="flex flex-wrap items-center gap-5">
+        <a id="footerEmailLink" href="mailto:darkbloomcegs@gmail.com" class="hover:text-white">darkbloomcegs@gmail.com</a>
+        <a id="footerWhatsappLink" href="https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU" target="_blank" rel="noopener noreferrer" class="hover:text-white">Comunidade no WhatsApp</a>
       </div>
     </div>
   </footer>
@@ -938,17 +909,30 @@
   <!-- ===================================================================== -->
   <!-- MODAL: ADMIN LOGIN (NO DEFAULT PIN HINT OR DEMO BUTTON)               -->
   <!-- ===================================================================== -->
-  <div id="adminLoginModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="gothic-card rounded-3xl max-w-sm w-full p-6 space-y-4 gold-border-glow">
-      <div class="flex items-center justify-between">
-        <h3 class="font-serif text-xl font-bold text-amber-200">Acesso Administrativo</h3>
-        <button type="button" onclick="closeModal('adminLoginModal')" class="text-ash hover:text-white">✕</button>
+  <div id="adminLoginModal" role="dialog" aria-modal="true" aria-labelledby="admLoginTitle" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="gothic-card rounded-2xl max-w-sm w-full p-6 space-y-5">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h3 id="admLoginTitle" class="font-serif text-2xl font-bold text-white">Acesso administrativo</h3>
+          <p class="text-sm text-ash mt-1">Escolha seu perfil e digite seu PIN.</p>
+        </div>
+        <button type="button" aria-label="Fechar" onclick="closeModal('adminLoginModal')" class="text-ash hover:text-white text-lg leading-none">✕</button>
       </div>
-      <p class="text-xs text-ash">Selecione seu perfil da equipe e informe seu PIN individual.</p>
-      <form onsubmit="submitAdminLogin(event)" class="space-y-3">
-        <select id="adminOperatorSelect" class="input-gothic w-full px-3.5 py-2.5 rounded-xl text-xs"></select>
-        <input type="password" id="adminPinInput" required placeholder="Digite seu PIN" class="input-gothic w-full px-4 py-3 rounded-xl text-center tracking-[0.3em] text-base" />
-        <button type="submit" class="btn-crimson w-full py-2.5 rounded-xl text-sm font-semibold text-white">Entrar no Painel</button>
+      <form onsubmit="submitAdminLogin(event)" class="space-y-4">
+        <div>
+          <label for="adminOperatorSelect" class="block text-sm text-white mb-1.5">Perfil</label>
+          <select id="adminOperatorSelect" class="input-gothic w-full px-3.5 py-2.5 rounded-xl text-sm"></select>
+        </div>
+        <div>
+          <label for="adminPinInput" class="block text-sm text-white mb-1.5">PIN</label>
+          <div class="relative">
+            <input type="password" id="adminPinInput" required autocomplete="current-password" class="input-gothic w-full pl-4 pr-20 py-3 rounded-xl text-base" />
+            <button type="button" id="adminPinToggle" onclick="toggleAdminPin()" class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-ash hover:text-white px-2 py-1">Mostrar</button>
+          </div>
+        </div>
+        <p id="adminLoginStatus" role="status" class="hidden text-sm text-amber-200 bg-amber-500/10 border border-amber-400/25 rounded-lg px-3 py-2"></p>
+        <p id="adminLoginError" role="alert" class="hidden text-sm text-rose-200 bg-rose-500/10 border border-rose-400/30 rounded-lg px-3 py-2"></p>
+        <button id="adminLoginBtn" type="submit" class="btn-crimson w-full py-3 rounded-xl text-sm font-semibold text-white disabled:opacity-50">Entrar</button>
       </form>
     </div>
   </div>
@@ -1155,6 +1139,7 @@
     } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const defaultFirebaseConfig = {
+      apiKey: "AIzaSyAQ6svKYoCaQ0jycsG4i3D3U8Lm5X3b9W8",
       authDomain: "darkbloomcegs-b96f4.firebaseapp.com",
       projectId: "darkbloomcegs-b96f4",
       storageBucket: "darkbloomcegs-b96f4.firebasestorage.app",
@@ -1198,6 +1183,7 @@
       selectedJoiner: '',
       selectedOrderIds: new Set(),
       loggedAdmin: null,
+      teamStatus: 'loading',
       guideSubTab: 'rules',
       shippingMode: 1,
       parsedNotionRows: []
@@ -1236,6 +1222,7 @@
         bindListeners();
       } catch (e) {
         console.warn('Offline fallback:', e);
+        window.state.teamStatus = 'error';
         document.getElementById('syncIndicator').innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Local`;
         refreshAllUI();
       }
@@ -1247,15 +1234,15 @@
       const watch = (col, key) => {
         onSnapshot(colRef(col), (snap) => {
           window.state[key] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          if (col === 'teamAdmins' && window.state.teamAdmins.length === 0) {
-            window.fb.set('teamAdmins', 'master', {
-              name: 'Adm Principal',
-              pin: '1234',
+          if (col === 'teamAdmins') window.state.teamStatus = 'ready';
+          if (col === 'teamAdmins' && snap.empty && !snap.metadata.fromCache) {
+            window.hashPin('1234', 'master').then(h => window.fb.set('teamAdmins', 'master', {
+              name: 'Adm Principal', pin: '', salt: 'master', pinHash: h,
               permissions: { orders: true, proofs: true, shipping: true, joiners: true, team: true }
-            });
+            }));
           }
           refreshAllUI();
-        }, (err) => console.error(`Snapshot error (${col}):`, err));
+        }, (err) => { console.error(`Snapshot error (${col}):`, err); if (col === 'teamAdmins') { window.state.teamStatus = 'error'; refreshAllUI(); } });
       };
 
       watch('orders', 'orders');
@@ -1286,6 +1273,7 @@
     }
 
     bootFirebase();
+    setTimeout(() => { if (window.state.teamStatus === 'loading') { window.state.teamStatus = 'error'; window.refreshAllUI && window.refreshAllUI(); } }, 8000);
   </script>
 
   <!-- ===================================================================== -->
@@ -1406,15 +1394,14 @@
     });
 
     function switchMainTab(tab) {
+      if (tab === 'admin' && !window.state.loggedAdmin) { handleAdminNavClick(); return; }
       const tabs = ['home', 'shipping', 'order', 'guide', 'admin'];
       tabs.forEach(t => {
         const sec = document.getElementById(`tab-${t}`);
         if (sec) sec.classList.toggle('hidden', t !== tab);
         const btn = document.getElementById(`nav-${t}`);
         if (btn && t !== 'admin') {
-          btn.className = t === tab
-            ? 'nav-tab px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 bg-rose-950/80 text-amber-200 border border-amber-400/40'
-            : 'nav-tab px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-ash hover:text-white hover:bg-white/5 border border-transparent';
+          btn.className = t === tab ? 'nav-tab is-active' : 'nav-tab';
         }
       });
       if (tab === 'shipping') syncShippingTab();
@@ -1622,14 +1609,7 @@
       const contentEl = document.getElementById('homeJoinerContent');
 
       if (!handle) {
-        document.getElementById('kpiTotalItems').textContent = '0';
-        document.getElementById('kpiReadyItems').textContent = '0 em mãos (prontos)';
-        document.getElementById('kpiTotalValue').textContent = 'R$ 0,00';
-        document.getElementById('kpiPendingValue').textContent = 'R$ 0,00';
-        document.getElementById('kpiPendingCount').textContent = '0 cobranças em aberto';
-        document.getElementById('kpiPendingDueDates').textContent = 'Vencimentos: —';
-        document.getElementById('kpiPaidValue').textContent = 'R$ 0,00';
-        document.getElementById('kpiReviewCount').textContent = '0 comprovantes em análise';
+        document.getElementById('kpiGrid').classList.add('hidden');
         emptyEl.classList.remove('hidden');
         contentEl.classList.add('hidden');
         return;
@@ -1668,9 +1648,7 @@
 
       const inAnalysis = myProofs.filter(p => p.status === 'pending').length;
 
-      document.getElementById('kpiTotalItems').textContent = myOrders.length;
-      document.getElementById('kpiReadyItems').textContent = `${inHandCount} em mãos (prontos)`;
-      document.getElementById('kpiTotalValue').textContent = formatBRL(totalSum);
+      document.getElementById('kpiGrid').classList.remove('hidden');
       document.getElementById('kpiPendingValue').textContent = formatBRL(pendingSum);
       document.getElementById('kpiPendingCount').textContent = `${pendingItemsCount} ${pendingItemsCount === 1 ? 'item com saldo' : 'itens com saldo'}`;
       document.getElementById('kpiPaidValue').textContent = formatBRL(paidSum);
@@ -2307,31 +2285,83 @@
     // -----------------------------------------------------------------------
     // ADMIN AUTH (NO DEFAULT PIN HINT) & ADMIN SUBTABS
     // -----------------------------------------------------------------------
-    function handleAdminNavClick() {
-      if (window.state.loggedAdmin) {
-        switchMainTab('admin');
-        return;
-      }
-      const sel = document.getElementById('adminOperatorSelect');
-      sel.innerHTML = window.state.teamAdmins.map(a => `<option value="${escapeHtml(a.id)}">${escapeHtml(a.name)}</option>`).join('');
-      document.getElementById('adminPinInput').value = '';
-      document.getElementById('adminLoginModal').classList.remove('hidden');
+    async function hashPin(pin, salt) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${salt}:${pin}`));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    function submitAdminLogin(e) {
+    function toggleAdminPin() {
+      const i = document.getElementById('adminPinInput');
+      const show = i.type === 'password';
+      i.type = show ? 'text' : 'password';
+      document.getElementById('adminPinToggle').textContent = show ? 'Ocultar' : 'Mostrar';
+    }
+
+    function adminLoginState() {
+      const sel = document.getElementById('adminOperatorSelect');
+      const st = document.getElementById('adminLoginStatus');
+      const btn = document.getElementById('adminLoginBtn');
+      if (!sel || !st || !btn) return;
+      const s = window.state, prev = sel.value;
+      sel.innerHTML = s.teamAdmins.map(a => `<option value="${escapeHtml(a.id)}">${escapeHtml(a.name)}</option>`).join('');
+      if (prev) sel.value = prev;
+      let msg = '';
+      if (s.teamStatus === 'error') msg = 'Não foi possível conectar ao banco de dados. Recarregue a página. Se continuar, confira o login anônimo e as regras do Firestore no Firebase.';
+      else if (s.teamStatus === 'loading') msg = 'Carregando a equipe…';
+      else if (!s.teamAdmins.length) msg = 'Nenhum perfil de administrador encontrado.';
+      st.textContent = msg;
+      st.classList.toggle('hidden', !msg);
+      btn.disabled = !s.teamAdmins.length;
+    }
+
+    function handleAdminNavClick() {
+      if (window.state.loggedAdmin) { switchMainTab('admin'); return; }
+      document.getElementById('adminPinInput').value = '';
+      document.getElementById('adminLoginError').classList.add('hidden');
+      adminLoginState();
+      document.getElementById('adminLoginModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('adminPinInput').focus(), 50);
+    }
+
+    let _admFails = 0, _admLockUntil = 0;
+    async function submitAdminLogin(e) {
       e.preventDefault();
-      const opId = document.getElementById('adminOperatorSelect').value;
-      const pin = document.getElementById('adminPinInput').value.trim();
-      const adm = window.state.teamAdmins.find(a => a.id === opId);
-      if (!adm || adm.pin !== pin) {
-        showToast('PIN incorreto.', 'error');
+      const errEl = document.getElementById('adminLoginError');
+      const setErr = (m) => { errEl.textContent = m; errEl.classList.toggle('hidden', !m); };
+      const pinEl = document.getElementById('adminPinInput');
+      if (Date.now() < _admLockUntil) { setErr(`Muitas tentativas. Aguarde ${Math.ceil((_admLockUntil - Date.now()) / 1000)}s.`); return; }
+      const pin = pinEl.value.trim();
+      const adm = window.state.teamAdmins.find(a => a.id === document.getElementById('adminOperatorSelect').value);
+      if (!adm) { setErr('Selecione um perfil para entrar.'); return; }
+      let ok = false;
+      try {
+        if (adm.pinHash && adm.salt) ok = (await hashPin(pin, adm.salt)) === adm.pinHash;
+        else if (adm.pin !== undefined && adm.pin !== '') ok = String(adm.pin).trim() === pin;
+      } catch (err) { setErr('Seu navegador não conseguiu validar o PIN. Use https ou um navegador atualizado.'); return; }
+      if (!ok) {
+        if (++_admFails >= 5) { _admFails = 0; _admLockUntil = Date.now() + 30000; setErr('Muitas tentativas. Aguarde 30 segundos.'); }
+        else setErr('PIN incorreto. Confira e tente novamente.');
+        pinEl.select();
         return;
+      }
+      _admFails = 0; setErr('');
+      if (!adm.pinHash && window.state.user) {
+        try { const salt = crypto.randomUUID(); await window.fb.update('teamAdmins', adm.id, { pinHash: await hashPin(pin, salt), salt, pin: '' }); } catch (err) { console.warn(err); }
       }
       window.state.loggedAdmin = adm;
       document.getElementById('loggedAdminBadge').textContent = `Operadora: ${adm.name}`;
       closeModal('adminLoginModal');
       switchMainTab('admin');
       showToast(`Bem-vinda, ${adm.name}!`, 'success');
+    }
+
+    async function changeAdminPin(id) {
+      const pin = (prompt('Novo PIN (mínimo 4 caracteres):') || '').trim();
+      if (!pin) return;
+      if (pin.length < 4) { showToast('O PIN precisa ter ao menos 4 caracteres.', 'error'); return; }
+      const salt = crypto.randomUUID();
+      await window.fb.update('teamAdmins', id, { pinHash: await hashPin(pin, salt), salt, pin: '' });
+      showToast('PIN atualizado!', 'success');
     }
 
     function logoutAdmin() {
@@ -2998,9 +3028,11 @@
 
     async function addAdminMember(e) {
       e.preventDefault();
+      const _salt = crypto.randomUUID();
+      const _hash = await hashPin(document.getElementById('newAdmPin').value.trim(), _salt);
       await window.fb.add('teamAdmins', {
         name: document.getElementById('newAdmName').value.trim(),
-        pin: document.getElementById('newAdmPin').value.trim(),
+        pin: '', salt: _salt, pinHash: _hash,
         permissions: {
           orders: document.getElementById('pOrders').checked,
           proofs: document.getElementById('pProofs').checked,
@@ -3015,9 +3047,12 @@
 
     function renderAdminTeam() {
       document.getElementById('adminTeamList').innerHTML = window.state.teamAdmins.map(a => `
-        <div class="rounded-xl bg-black/40 border border-white/10 p-3 flex items-center justify-between text-xs">
+        <div class="rounded-xl bg-black/30 border border-white/10 p-3 flex items-center justify-between gap-3 text-sm">
           <strong>${escapeHtml(a.name)}</strong>
-          ${window.state.teamAdmins.length > 1 ? `<button onclick="window.fb.del('teamAdmins', '${a.id}')" class="text-rose-400">Remover</button>` : ''}
+          <span class="flex items-center gap-4">
+            <button type="button" onclick="changeAdminPin('${a.id}')" class="text-amber-200 hover:underline">Alterar PIN</button>
+            ${window.state.teamAdmins.length > 1 ? `<button type="button" onclick="window.fb.del('teamAdmins', '${a.id}')" class="text-rose-300 hover:underline">Remover</button>` : ''}
+          </span>
         </div>
       `).join('');
     }
@@ -3028,7 +3063,7 @@
       const mail = s.email || 'darkbloomcegs@gmail.com';
       document.getElementById('displayContactEmail').textContent = mail;
       document.getElementById('displayContactEmail').href = `mailto:${mail}`;
-      document.getElementById('footerEmailLink').textContent = `✉️ ${mail}`;
+      document.getElementById('footerEmailLink').textContent = mail;
       document.getElementById('footerEmailLink').href = `mailto:${mail}`;
       const wa = s.whatsapp || 'https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU';
       document.getElementById('headerWhatsappLink').href = wa;
@@ -3072,6 +3107,7 @@
       renderAdminForms();
       renderAdminTeam();
 
+      adminLoginState();
       const pendProofs = window.state.proofs.filter(p => p.status === 'pending').length;
       const bp = document.getElementById('badgePendingProofs');
       bp.textContent = pendProofs;
