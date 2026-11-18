@@ -3190,25 +3190,34 @@
     const _dec = v => (v ? decodeURIComponent(v) : '');
     let _sm = null;
 
+    // Mesmos rótulos-padrão usados na aba "Pedidos e cobranças"
+    const bxOf = o => (o.box || '').trim() || 'Caixa Geral';
+    const erOf = o => (o.era || '').trim() || 'Era Geral';
+    const stOf = o => (o.set || '').trim() || 'Set Geral';
+
     // Sets cadastrados (setsMeta) + sets que só existem nos pedidos (importados/lançados)
     function getSetsForEra(bn, er) {
       const st = window.state;
+      const inSet = (o, name) => bxOf(o) === bn && erOf(o) === er && stOf(o) === name;
       const meta = st.setsMeta.filter(x => x.box === bn && x.era === er)
-        .map(x => ({ ...x, nItems: st.orders.filter(o => o.box === bn && o.era === er && o.set === x.name).length }));
+        .map(x => ({ ...x, items: st.orders.filter(o => inSet(o, x.name)) }));
       const known = new Set(meta.map(x => x.name));
-      const counts = new Map();
+      const groups = new Map();
       st.orders.forEach(o => {
-        if (o.box === bn && o.era === er && o.set && !known.has(o.set)) counts.set(o.set, (counts.get(o.set) || 0) + 1);
+        if (bxOf(o) === bn && erOf(o) === er && !known.has(stOf(o))) {
+          if (!groups.has(stOf(o))) groups.set(stOf(o), []);
+          groups.get(stOf(o)).push(o);
+        }
       });
-      const virt = Array.from(counts.entries()).map(([name, nItems]) => ({
-        id: 'v:' + _enc(name), virtual: true, box: bn, era: er, name, description: '', imageUrl: '', coverUrl: '', nItems
+      const virt = Array.from(groups.entries()).map(([name, items]) => ({
+        id: 'v:' + _enc(name), virtual: true, box: bn, era: er, name, description: '', imageUrl: '', coverUrl: '', items
       }));
-      return [...meta, ...virt].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+      return [...meta, ...virt].map(x => ({ ...x, nItems: x.items.length })).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
     }
 
     function renderAdminStructure() {
       const st = window.state, box = document.getElementById('adminStructureList');
-      const names = Array.from(new Set([...st.boxesMeta.map(b => b.name), ...st.orders.map(o => o.box)].filter(Boolean)));
+      const names = Array.from(new Set([...st.boxesMeta.map(b => b.name), ...st.orders.map(bxOf)].filter(Boolean)));
       if (!names.length) {
         box.innerHTML = '<div class="gothic-card rounded-2xl p-8 text-center text-sm text-ash">Nenhuma caixa cadastrada ainda. Crie a primeira no formulário acima.</div>';
         return;
@@ -3218,9 +3227,9 @@
         const eras = Array.from(new Set([
           ...st.erasMeta.filter(x => x.box === bn).map(x => x.name),
           ...st.setsMeta.filter(x => x.box === bn).map(x => x.era),
-          ...st.orders.filter(o => o.box === bn).map(o => o.era)
+          ...st.orders.filter(o => bxOf(o) === bn).map(erOf)
         ].filter(Boolean)));
-        const nItems = st.orders.filter(o => o.box === bn).length;
+        const nItems = st.orders.filter(o => bxOf(o) === bn).length;
         return `
           <div class="gothic-card rounded-2xl p-4 sm:p-5 space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-3">
@@ -3260,6 +3269,16 @@
                         </div>
                       </div>
                     </div>
+                    ${x.items.length ? `<details class="border-t border-white/10">
+                      <summary class="px-3 py-2 text-xs text-ash cursor-pointer hover:text-white">Ver ${x.items.length} ${x.items.length === 1 ? 'item' : 'itens'}</summary>
+                      <div class="px-3 pb-3 space-y-1.5 max-h-64 overflow-y-auto">
+                        ${x.items.map(r => `<div class="flex items-center justify-between gap-2 text-xs rounded-lg bg-white/5 px-2.5 py-1.5">
+                          <div class="min-w-0"><strong class="text-amber-200">${escapeHtml(r.joiner || '—')}</strong> <span class="text-ash">${escapeHtml(r.itemCode || '')}${r.cardDesc ? ' · ' + escapeHtml(r.cardDesc) : ''}</span></div>
+                          <div class="flex items-center gap-2 shrink-0"><span class="text-ash">${formatBRL(r.itemPrice || 0)}</span>
+                            <button type="button" class="text-amber-200 hover:underline" onclick="openNewOrderModal(window.state.orders.find(o => o.id === '${r.id}'))">Editar</button></div>
+                        </div>`).join('')}
+                      </div>
+                    </details>` : ''}
                   </div>`).join('')}</div>` : '<p class="text-sm text-ash">Nenhum set nesta era ainda.</p>'}
               </div>`;
             }).join('') : '<p class="text-sm text-ash">Nenhuma era nesta caixa ainda. Use "Adicionar era" para começar.</p>'}
@@ -3290,13 +3309,13 @@
           `<div><label for="sf7" class="block text-sm text-white mb-1.5">Ou envie a capa${x.coverUrl && x.coverUrl.startsWith('data:') ? ' (já existe uma enviada)' : ''}</label><input type="file" id="sf7" accept="image/*" class="input-gothic w-full px-2 py-1.5 rounded-xl text-sm" /><p class="text-xs text-ash mt-1">Arquivos enviados são cortados no centro em 3:1 (ex.: 1500×500).</p></div>` +
           (x.coverUrl ? '<label class="flex items-center gap-2 text-sm text-ash"><input type="checkbox" id="sfRmCover" class="accent-rose-500" /> Remover a capa atual</label>' : '');
       } else if (mode === 'deleteSet') {
-        const k = set ? ords(o => o.box === set.box && o.era === set.era && o.set === set.name).length : 0;
+        const k = set ? ords(o => bxOf(o) === set.box && erOf(o) === set.era && stOf(o) === set.name).length : 0;
         title = 'Excluir set'; help = `Excluir "${set?.name}"? Esta ação não pode ser desfeita.`; btn = 'Excluir set'; danger = true; html = delBox(k, 'desse set');
       } else if (mode === 'deleteEra') {
-        const k = ords(o => o.box === b && o.era === er).length, n = st.setsMeta.filter(x => x.box === b && x.era === er).length;
+        const k = ords(o => bxOf(o) === b && erOf(o) === er).length, n = st.setsMeta.filter(x => x.box === b && x.era === er).length;
         title = 'Excluir era'; help = `Excluir "${er}" e seus ${n} ${n === 1 ? 'set' : 'sets'}? Esta ação não pode ser desfeita.`; btn = 'Excluir era'; danger = true; html = delBox(k, 'dessa era');
       } else if (mode === 'deleteBox') {
-        const k = ords(o => o.box === b).length, ne = st.erasMeta.filter(x => x.box === b).length, n = st.setsMeta.filter(x => x.box === b).length;
+        const k = ords(o => bxOf(o) === b).length, ne = st.erasMeta.filter(x => x.box === b).length, n = st.setsMeta.filter(x => x.box === b).length;
         title = 'Excluir caixa'; help = `Excluir "${b}" com ${ne} ${ne === 1 ? 'era' : 'eras'} e ${n} ${n === 1 ? 'set' : 'sets'}? Esta ação não pode ser desfeita.`; btn = 'Excluir caixa'; danger = true; html = delBox(k, 'dessa caixa');
       }
       document.getElementById('structTitle').textContent = title;
@@ -3325,12 +3344,12 @@
         } else if (mode === 'renameBox') {
           const n = v('sf1');
           if (n !== b) {
-            if (st.boxesMeta.some(x => x.name === n) || st.orders.some(o => o.box === n)) { showToast('Já existe uma caixa com esse nome.', 'error'); sb.disabled = false; return; }
+            if (st.boxesMeta.some(x => x.name === n) || st.orders.some(o => bxOf(o) === n)) { showToast('Já existe uma caixa com esse nome.', 'error'); sb.disabled = false; return; }
             await Promise.all([
               upd('boxesMeta', st.boxesMeta.filter(x => x.name === b), { name: n }),
               upd('erasMeta', st.erasMeta.filter(x => x.box === b), { box: n }),
               upd('setsMeta', st.setsMeta.filter(x => x.box === b), { box: n }),
-              upd('orders', st.orders.filter(o => o.box === b), { box: n })
+              upd('orders', st.orders.filter(o => bxOf(o) === b), { box: n })
             ]);
           }
           showToast('Caixa renomeada!', 'success');
@@ -3341,7 +3360,7 @@
             await Promise.all([
               upd('erasMeta', st.erasMeta.filter(x => x.box === b && x.name === er), { name: n }),
               upd('setsMeta', st.setsMeta.filter(x => x.box === b && x.era === er), { era: n }),
-              upd('orders', st.orders.filter(o => o.box === b && o.era === er), { era: n })
+              upd('orders', st.orders.filter(o => bxOf(o) === b && erOf(o) === er), { era: n })
             ]);
           }
           showToast('Era renomeada!', 'success');
@@ -3361,7 +3380,7 @@
             data.era = v('sf2');
             await window.fb.add('setsMeta', { box: set.box, ...data });
             if (data.name !== set.name || data.era !== set.era) {
-              await upd('orders', st.orders.filter(o => o.box === set.box && o.era === set.era && o.set === set.name), { set: data.name, era: data.era });
+              await upd('orders', st.orders.filter(o => bxOf(o) === set.box && erOf(o) === set.era && stOf(o) === set.name), { set: data.name, era: data.era });
             }
             if (data.era !== set.era && !st.erasMeta.some(x => x.box === set.box && x.name === data.era)) await window.fb.add('erasMeta', { box: set.box, name: data.era });
             showToast('Set salvo!', 'success');
@@ -3369,7 +3388,7 @@
             data.era = v('sf2');
             await window.fb.update('setsMeta', set.id, data);
             if (data.name !== set.name || data.era !== set.era) {
-              await upd('orders', st.orders.filter(o => o.box === set.box && o.era === set.era && o.set === set.name), { set: data.name, era: data.era });
+              await upd('orders', st.orders.filter(o => bxOf(o) === set.box && erOf(o) === set.era && stOf(o) === set.name), { set: data.name, era: data.era });
             }
             if (data.era !== set.era && !st.erasMeta.some(x => x.box === set.box && x.name === data.era)) await window.fb.add('erasMeta', { box: set.box, name: data.era });
             showToast('Set atualizado!', 'success');
@@ -3379,13 +3398,13 @@
           }
         } else if (mode === 'deleteSet') {
           if (!set.virtual) await window.fb.del('setsMeta', set.id);
-          if (delItems) await del('orders', st.orders.filter(o => o.box === set.box && o.era === set.era && o.set === set.name));
+          if (delItems) await del('orders', st.orders.filter(o => bxOf(o) === set.box && erOf(o) === set.era && stOf(o) === set.name));
           showToast('Set excluído.', 'success');
         } else if (mode === 'deleteEra') {
           await Promise.all([
             del('erasMeta', st.erasMeta.filter(x => x.box === b && x.name === er)),
             del('setsMeta', st.setsMeta.filter(x => x.box === b && x.era === er)),
-            delItems ? del('orders', st.orders.filter(o => o.box === b && o.era === er)) : null
+            delItems ? del('orders', st.orders.filter(o => bxOf(o) === b && erOf(o) === er)) : null
           ]);
           showToast('Era excluída.', 'success');
         } else if (mode === 'deleteBox') {
@@ -3393,7 +3412,7 @@
             del('boxesMeta', st.boxesMeta.filter(x => x.name === b)),
             del('erasMeta', st.erasMeta.filter(x => x.box === b)),
             del('setsMeta', st.setsMeta.filter(x => x.box === b)),
-            delItems ? del('orders', st.orders.filter(o => o.box === b)) : null
+            delItems ? del('orders', st.orders.filter(o => bxOf(o) === b)) : null
           ]);
           showToast('Caixa excluída.', 'success');
         }
