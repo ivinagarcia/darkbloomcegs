@@ -408,8 +408,14 @@
             <div class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
                 <button onclick="setClientFilter('all')" id="filter-client-all" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white whitespace-nowrap">Todos</button>
                 <button onclick="setClientFilter('pending')" id="filter-client-pending" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 whitespace-nowrap">Com Pendências</button>
-                <select id="filter-client-batch" onchange="renderClientDashboard()" class="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-rose-500">
+                <select id="filter-client-batch" onchange="syncClientFilterCascades(); renderClientDashboard()" class="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-rose-500 max-w-[170px]">
                     <option value="ALL">Todas as Caixas</option>
+                </select>
+                <select id="filter-client-era" onchange="syncClientFilterSetOnly(); renderClientDashboard()" class="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-rose-500 max-w-[170px]">
+                    <option value="ALL">Todas as Eras</option>
+                </select>
+                <select id="filter-client-set" onchange="renderClientDashboard()" class="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-zinc-300 focus:outline-none focus:border-rose-500 max-w-[170px]">
+                    <option value="ALL">Todos os Sets</option>
                 </select>
             </div>
         </div>
@@ -508,7 +514,7 @@
             </button>
             <button onclick="switchAdminTab('batches')" id="tab-admin-batches" class="px-3.5 py-2 rounded-xl text-xs font-bold text-zinc-400 hover:text-white transition flex items-center gap-2">
                 <i data-lucide="boxes" class="w-3.5 h-3.5"></i>
-                <span>Caixas & Sets (Fotos)</span>
+                <span>Caixas, Eras & Sets</span>
             </button>
             <button onclick="switchAdminTab('forms')" id="tab-admin-forms" class="px-3.5 py-2 rounded-xl text-xs font-bold text-zinc-400 hover:text-white transition flex items-center gap-2">
                 <i data-lucide="file-plus-2" class="w-3.5 h-3.5"></i>
@@ -563,7 +569,11 @@
                     </div>
                     <div>
                         <label class="block text-[11px] text-zinc-400 mb-1">Caixa / Lote *</label>
-                        <select id="new-order-batch" onchange="syncSetDropdownForNewOrder()" required class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500"></select>
+                        <select id="new-order-batch" onchange="syncEraDropdownForNewOrder()" required class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500"></select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-zinc-400 mb-1">Era / Subgrupo</label>
+                        <select id="new-order-era" onchange="syncSetDropdownForNewOrder()" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500"></select>
                     </div>
                     <div>
                         <label class="block text-[11px] text-zinc-400 mb-1">Set Aberto</label>
@@ -573,7 +583,7 @@
                         <label class="block text-[11px] text-zinc-400 mb-1">Item / Nº / Membro *</label>
                         <input type="text" id="new-order-item" required placeholder="Ex: Card #1 ou Set" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-rose-500">
                     </div>
-                    <div class="grid grid-cols-3 gap-2 lg:col-span-2">
+                    <div class="grid grid-cols-3 gap-2">
                         <div>
                             <label class="block text-[11px] text-zinc-400 mb-1">Item (R$)</label>
                             <input type="number" step="0.01" id="new-order-price" value="0" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-2.5 py-2 text-xs text-white">
@@ -588,7 +598,12 @@
                         </div>
                     </div>
                     <div class="sm:col-span-2 lg:col-span-6 flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-zinc-800/80">
-                        <div class="flex flex-wrap items-center gap-4 text-xs text-zinc-300">
+                        <div class="flex flex-wrap items-center gap-3 text-xs text-zinc-300 flex-1">
+                            <input type="text" id="new-order-description" placeholder="Descrição do card / detalhes (ex: Shownu selfie, POB...)" class="bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-white flex-1 min-w-[200px] focus:outline-none focus:border-rose-500">
+                            <div class="flex items-center gap-2">
+                                <label class="text-[11px] text-zinc-400">Prazo:</label>
+                                <input type="text" id="new-order-due-date" placeholder="Ex: 25/11/2026" class="bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1 text-xs text-white w-28 focus:outline-none focus:border-rose-500">
+                            </div>
                             <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="new-order-paid-item" class="bloom-checkbox"> Item Pago</label>
                             <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="new-order-paid-shipping" class="bloom-checkbox"> Frete Pago</label>
                             <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="new-order-paid-tax" class="bloom-checkbox"> Taxa Paga</label>
@@ -600,41 +615,85 @@
                 </form>
             </div>
 
-            <!-- Lançamento Rápido em Lote -->
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 flex flex-col md:flex-row md:items-end justify-between gap-3">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 flex-1">
-                    <div>
-                        <label class="block text-[11px] text-zinc-400 mb-1">Aplicar em Lote na Caixa:</label>
-                        <select id="bulk-batch-select" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white"></select>
+            <!-- Barra de Ações em Lote para Itens Selecionados (Bulk Selection) -->
+            <div id="bulk-selection-bar" class="hidden sticky top-16 z-30 bg-gradient-to-r from-rose-950/95 via-zinc-900/95 to-fuchsia-950/95 backdrop-blur-md border border-rose-500/60 rounded-2xl p-4 shadow-2xl space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-rose-500/25">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 rounded-lg bg-rose-600 text-white text-xs font-extrabold" id="bulk-selected-count">0 selecionados</span>
+                        <span class="text-xs text-rose-200 font-medium">Ações em lote nos cards marcados:</span>
                     </div>
-                    <div>
-                        <label class="block text-[11px] text-zinc-400 mb-1">Tipo de Cobrança:</label>
-                        <select id="bulk-field-select" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
-                            <option value="shipping">Frete Internacional (R$)</option>
-                            <option value="tax">Taxa Alfandegária (R$)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] text-zinc-400 mb-1">Valor por Item (R$):</label>
-                        <input type="number" step="0.01" id="bulk-amount-input" placeholder="Ex: 25.00" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
-                    </div>
+                    <button type="button" onclick="clearSelectedOrders()" class="text-xs text-zinc-300 hover:text-white underline">
+                        Limpar seleção
+                    </button>
                 </div>
-                <button onclick="applyBulkFee()" class="px-4 py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold transition whitespace-nowrap">
-                    Aplicar em Toda a Caixa
-                </button>
-            </div>
 
-            <!-- Filtros e Tabela Editável -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                    <!-- Ação 1: Valores / Prazo / Descrição -->
+                    <div class="flex gap-1.5">
+                        <select id="sel-bulk-field" onchange="updateSelectedBulkInputUI()" class="bg-zinc-950 border border-zinc-700 rounded-xl px-2.5 py-2 text-xs text-white flex-1">
+                            <option value="price">Valor Item (R$)</option>
+                            <option value="shipping">Frete Inter (R$)</option>
+                            <option value="tax">Taxa Alf. (R$)</option>
+                            <option value="dueDate">Prazo Pagto</option>
+                            <option value="description">Descrição Card</option>
+                        </select>
+                        <input type="text" id="sel-bulk-value" placeholder="Ex: 45.00" class="bg-zinc-950 border border-zinc-700 rounded-xl px-2.5 py-2 text-xs text-white w-28">
+                        <button type="button" onclick="applyBulkActionToSelected('value')" class="px-3 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shrink-0">
+                            Aplicar
+                        </button>
+                    </div>
+
+                    <!-- Ação 2: Status de Pagamento -->
+                    <div class="flex gap-1.5">
+                        <select id="sel-bulk-pay-action" class="bg-zinc-950 border border-zinc-700 rounded-xl px-2.5 py-2 text-xs text-white flex-1">
+                            <option value="paidItem:true">Marcar Item PAGO</option>
+                            <option value="paidItem:false">Marcar Item PENDENTE</option>
+                            <option value="paidShipping:true">Marcar Frete PAGO</option>
+                            <option value="paidShipping:false">Marcar Frete PENDENTE</option>
+                            <option value="paidTax:true">Marcar Taxa PAGA</option>
+                            <option value="paidTax:false">Marcar Taxa PENDENTE</option>
+                        </select>
+                        <button type="button" onclick="applyBulkActionToSelected('payment')" class="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shrink-0">
+                            OK
+                        </button>
+                    </div>
+
+                    <!-- Ação 3: Mover de Caixa / Era / Set -->
+                    <div class="flex gap-1.5">
+                        <select id="sel-bulk-target-set" class="bg-zinc-950 border border-zinc-700 rounded-xl px-2.5 py-2 text-xs text-white flex-1"></select>
+                        <button type="button" onclick="applyBulkActionToSelected('move')" class="px-3 py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold shrink-0">
+                            Mover
+                        </button>
+                    </div>
+
+                    <!-- Ação 4: Excluir Selecionados -->
+                    <div class="flex items-center justify-end">
+                        <button type="button" onclick="deleteSelectedOrdersBulk()" class="w-full sm:w-auto px-4 py-2 rounded-xl bg-red-950/90 hover:bg-red-900 border border-red-500/40 text-red-200 text-xs font-bold flex items-center justify-center gap-1.5">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            <span>Excluir Selecionados</span>
+                        </button>
+                    </div>
+            <!-- Filtros e Tabela Editável Agrupada por Caixa / Era / Set -->
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-                <div class="p-4 border-b border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="p-4 border-b border-zinc-800 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                     <div class="flex flex-wrap items-center gap-2">
-                        <input type="text" id="admin-search-input" oninput="renderAdminOrders()" placeholder="Filtrar participante, set ou item..." class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white w-56">
-                        <select id="admin-filter-batch" onchange="renderAdminOrders()" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
+                        <input type="text" id="admin-search-input" oninput="renderAdminOrders()" placeholder="Filtrar participante, era, card..." class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white w-48">
+                        <select id="admin-filter-batch" onchange="syncAdminFilterCascades(); renderAdminOrders()" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white max-w-[175px]">
                             <option value="ALL">Todas as Caixas</option>
+                        </select>
+                        <select id="admin-filter-era" onchange="syncAdminFilterSetOnly(); renderAdminOrders()" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white max-w-[175px]">
+                            <option value="ALL">Todas as Eras</option>
+                        </select>
+                        <select id="admin-filter-set" onchange="renderAdminOrders()" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white max-w-[185px]">
+                            <option value="ALL">Todos os Sets</option>
                         </select>
                         <label class="flex items-center gap-1.5 text-xs text-zinc-300 cursor-pointer ml-1">
                             <input type="checkbox" id="admin-filter-pending" onchange="renderAdminOrders()" class="bloom-checkbox">
                             <span>Somente pendentes</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 text-xs text-fuchsia-300 cursor-pointer ml-1">
+                            <input type="checkbox" id="admin-group-by-set" checked onchange="renderAdminOrders()" class="bloom-checkbox">
+                            <span>Hierarquia (Era/Set)</span>
                         </label>
                     </div>
                     <span id="admin-orders-count" class="text-xs text-zinc-400">0 registro(s)</span>
@@ -643,29 +702,17 @@
                     <table class="w-full text-left border-collapse text-xs">
                         <thead>
                             <tr class="bg-zinc-950/70 text-zinc-400 border-b border-zinc-800">
-                                <th class="py-3 px-4">Participante</th>
-                                <th class="py-3 px-4">Caixa / Set / Item</th>
-                                <th class="py-3 px-4">Item (R$) + Pago</th>
-                                <th class="py-3 px-4">Frete Inter + Pago</th>
-                                <th class="py-3 px-4">Taxa Alf. + Pago</th>
-                                <th class="py-3 px-4 text-right">Saldo Devedor</th>
-                                <th class="py-3 px-4 text-center">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-orders-tbody" class="divide-y divide-zinc-800/70"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- ABA ADMIN 3: CAIXAS & SETS (FOTOS) -->
+                                <th class="py-3 px-3 w-9 text-center">
+                                    <input type="checkbox" id="admin-select-all-checkbox" onchange="toggleSelectAllFilteredOrders(this.checked)" title="Selecionar todos visíveis" class="bloom-checkbox">
+                                </th>
+        <!-- ABA ADMIN 3: CAIXAS, ERAS & SETS (FOTOS) -->
         <div id="admin-panel-batches" class="hidden space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                <!-- Criar Caixa -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <!-- 1. Criar Caixa -->
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-                    <h3 class="text-sm font-bold text-white mb-3">1. Nova Caixa / Lote na Masterlist</h3>
+                    <h3 class="text-sm font-bold text-white mb-3">1. Nova Caixa / Lote</h3>
                     <form onsubmit="addNewBatch(event)" class="space-y-3">
-                        <input type="text" id="new-batch-name" required placeholder="Nome da Caixa (ex: COREIA 7 - PHOTOCARDS)" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white">
+                        <input type="text" id="new-batch-name" required placeholder="Nome da Caixa (ex: COREIA 5 - PHOTOCARDS)" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white">
                         <div class="grid grid-cols-2 gap-2.5">
                             <input type="text" id="new-batch-deadline" placeholder="Observação / Prazo" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white">
                             <select id="new-batch-status" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
@@ -681,25 +728,38 @@
                     </form>
                 </div>
 
-                <!-- Adicionar Set + Foto -->
+                <!-- 2. Criar Era / Subgrupo dentro da Caixa -->
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-                    <h3 class="text-sm font-bold text-white mb-3">2. Adicionar Set Aberto + Foto de Referência</h3>
+                    <h3 class="text-sm font-bold text-white mb-3">2. Nova Era / Subgrupo (Opcional)</h3>
+                    <form onsubmit="addNewEra(event)" class="space-y-3">
+                        <select id="new-era-batch" required class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white"></select>
+                        <input type="text" id="new-era-name" required placeholder="Nome da Era (ex: POBs The X - 85uni)" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white">
+                        <input type="text" id="new-era-description" placeholder="Descrição da Era (opcional)" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white">
+                        <button type="submit" class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition">Adicionar Era na Caixa</button>
+                    </form>
+                </div>
+
+                <!-- 3. Adicionar Set + Foto dentro da Caixa/Era -->
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+                    <h3 class="text-sm font-bold text-white mb-3">3. Novo Set + Foto</h3>
                     <form onsubmit="addNewSet(event)" class="space-y-3">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            <select id="new-set-batch" required class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white"></select>
-                            <input type="text" id="new-set-name" required placeholder="Nome do Set (ex: WONHO POBs)" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <select id="new-set-batch" onchange="syncEraDropdownForNewSet()" required class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white"></select>
+                            <select id="new-set-era" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white"></select>
                         </div>
-                        <div class="grid grid-cols-2 gap-2.5">
-                            <input type="number" step="0.01" id="new-set-price" placeholder="Valor unitário (R$)" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white">
-                            <input type="text" id="new-set-deadline" placeholder="Prazo (ex: até 20/11)" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white">
+                        <input type="text" id="new-set-name" required placeholder="Nome do Set (ex: SET - SOUNDWAVE 1.0)" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white">
+                        <input type="text" id="new-set-description" placeholder="Descrição do Set (ex: 8 membros, offline)" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" step="0.01" id="new-set-price" placeholder="Valor unitário (R$)" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
+                            <input type="text" id="new-set-deadline" placeholder="Prazo (ex: até 20/11)" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <label class="flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-zinc-950 hover:bg-zinc-800 border border-dashed border-rose-500/50 text-xs text-zinc-300 cursor-pointer">
                                 <i data-lucide="image-plus" class="w-4 h-4 text-rose-400"></i>
-                                <span id="new-set-file-label" class="truncate">Subir Foto da Galeria</span>
+                                <span id="new-set-file-label" class="truncate">Subir Foto</span>
                                 <input type="file" accept="image/*" onchange="handleSetPhotoUpload(this)" class="hidden">
                             </label>
-                            <input type="url" id="new-set-photo-url" placeholder="Ou cole URL da imagem..." class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
+                            <input type="url" id="new-set-photo-url" placeholder="Ou URL da imagem..." class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
                         </div>
                         <button type="submit" class="w-full py-2.5 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold transition">Salvar Set com Foto</button>
                     </form>
@@ -713,10 +773,14 @@
         <div id="admin-panel-forms" class="hidden space-y-6">
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
                 <h3 class="text-sm font-bold text-white mb-4">Publicar Novo Formulário de Pedido</h3>
-                <form onsubmit="createOrderForm(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <form onsubmit="createOrderForm(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
                     <div>
                         <label class="block text-[11px] text-zinc-400 mb-1">Caixa *</label>
-                        <select id="form-builder-batch" onchange="syncFormBuilderSets()" required class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white"></select>
+                        <select id="form-builder-batch" onchange="syncFormBuilderEras()" required class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white"></select>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-zinc-400 mb-1">Era / Subgrupo</label>
+                        <select id="form-builder-era" onchange="syncFormBuilderSets()" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white"></select>
                     </div>
                     <div>
                         <label class="block text-[11px] text-zinc-400 mb-1">Set (com foto) *</label>
@@ -730,7 +794,7 @@
                         <label class="block text-[11px] text-zinc-400 mb-1">Prazo de Pagamento</label>
                         <input type="text" id="form-builder-deadline" placeholder="Ex: Pix até 30/11" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
                     </div>
-                    <div class="sm:col-span-2 lg:col-span-3">
+                    <div class="sm:col-span-2 lg:col-span-4">
                         <label class="block text-[11px] text-zinc-400 mb-1">Opções disponíveis (separadas por vírgula) *</label>
                         <input type="text" id="form-builder-options" required placeholder="Card #1, Card #2, Card #3, Set Completo" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
                     </div>
@@ -797,10 +861,14 @@
                 </div>
 
                 <div id="notion-import-preview" class="hidden space-y-5 pt-2">
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
                         <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3.5">
                             <span class="text-[11px] text-zinc-400 block">Caixas</span>
                             <strong id="preview-import-batches" class="text-xl font-extrabold text-white">0</strong>
+                        </div>
+                        <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3.5">
+                            <span class="text-[11px] text-zinc-400 block">Eras</span>
+                            <strong id="preview-import-eras" class="text-xl font-extrabold text-amber-300">0</strong>
                         </div>
                         <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3.5">
                             <span class="text-[11px] text-zinc-400 block">Sets / Drops</span>
@@ -812,16 +880,12 @@
                         </div>
                         <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3.5">
                             <span class="text-[11px] text-zinc-400 block">Fotos Extraídas</span>
-                            <strong id="preview-import-photos" class="text-xl font-extrabold text-amber-300">0</strong>
+                            <strong id="preview-import-photos" class="text-xl font-extrabold text-fuchsia-300">0</strong>
                         </div>
                     </div>
 
-                    <div id="notion-import-details-list" class="space-y-4 max-h-96 overflow-y-auto pr-1"></div>
-
-                    <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-zinc-800">
-                        <button type="button" onclick="cancelNotionImportPreview()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-zinc-800 text-zinc-300 text-xs font-semibold">Cancelar</button>
-                        <button type="button" onclick="confirmNotionImportMerge()" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg transition">
-                            Confirmar e Sincronizar com a Nuvem
+                    <p class="text-[11px] text-zinc-400">Você pode editar os nomes das <strong>Eras</strong> e dos <strong>Sets</strong> abaixo antes de confirmar a sincronização:</p>
+                    <div id="notion-import-details-list" class="space-y-4 max-h-[26rem] overflow-y-auto pr-1"></div>
                         </button>
                     </div>
                 </div>
@@ -932,13 +996,13 @@
             projectId: "darkbloomcegs-b96f4",
             storageBucket: "darkbloomcegs-b96f4.firebasestorage.app",
             messagingSenderId: "618635696344",
-            appId: "1:618635696344:web:7f30a9b5e85e038f9d5fad"
+            appId: "1:618635696344:web:7f30a9b5e85e038f9d5fad",
+            measurementId: "G-SQEV18WPG4"
         };
 
         const firebaseApp = initializeApp(firebaseConfig);
         const firestoreDb = getFirestore(firebaseApp);
-        const stateDocRef = doc(firestoreDb, "darkbloom_ceg_state", "main");
-
+        const stateDocRef = doc(firestoreDb, "darkbloom_cegs", "main_state");
         window.cloudSyncBridge = {
             async pushState(dataObj) {
                 try {
@@ -1022,6 +1086,7 @@
             },
             guide: JSON.parse(JSON.stringify(DEFAULT_GUIDE)),
             batches: [],
+            eras: [],
             sets: [],
             forms: [],
             orders: [],
@@ -1051,8 +1116,8 @@
         let activeAdminId = null;
         let currentGuideSubtab = 'rules';
         let pendingNotionImport = null;
-
-        function loadLocalData() {
+        let selectedOrderIds = new Set();
+        let lastFilteredOrderIds = [];
             try {
                 const raw = localStorage.getItem('darkbloom_ceg_v3');
                 if (raw) {
@@ -1083,9 +1148,10 @@
                     tutorials: { ...DEFAULT_GUIDE.tutorials, ...(raw.guide.tutorials || {}) }
                 } : JSON.parse(JSON.stringify(DEFAULT_GUIDE)),
                 batches: Array.isArray(raw.batches) ? raw.batches : [],
-                sets: Array.isArray(raw.sets) ? raw.sets : [],
+                eras: Array.isArray(raw.eras) ? raw.eras : [],
+                sets: Array.isArray(raw.sets) ? raw.sets.map(s => ({ era: '', ...s })) : [],
                 forms: Array.isArray(raw.forms) ? raw.forms : [],
-                orders: Array.isArray(raw.orders) ? raw.orders : [],
+                orders: Array.isArray(raw.orders) ? raw.orders.map(o => ({ era: '', ...o })) : [],
                 receipts: Array.isArray(raw.receipts) ? raw.receipts : [],
                 team
             };
@@ -1161,6 +1227,27 @@
             return appData.sets.find(s => s.id === setId) || null;
         }
 
+        function getOrderEra(order) {
+            if (order.era && String(order.era).trim()) return String(order.era).trim();
+            const setObj = getSetById(order.setId);
+            if (setObj && setObj.era && String(setObj.era).trim()) return String(setObj.era).trim();
+            return '';
+        }
+
+        function getBatchErasList(batchId) {
+            const names = new Set();
+            (appData.eras || []).filter(e => !batchId || batchId === 'ALL' || e.batchId === batchId).forEach(e => {
+                if (e.name && e.name.trim()) names.add(e.name.trim());
+            });
+            (appData.sets || []).filter(s => !batchId || batchId === 'ALL' || s.batchId === batchId).forEach(s => {
+                if (s.era && s.era.trim()) names.add(s.era.trim());
+            });
+            (appData.orders || []).filter(o => !batchId || batchId === 'ALL' || o.batchId === batchId).forEach(o => {
+                if (o.era && o.era.trim()) names.add(o.era.trim());
+            });
+            return Array.from(names).sort((a, b) => a.localeCompare(b));
+        }
+
         function getUniqueParticipants() {
             const set = new Set(appData.orders.map(o => o.participant.trim()).filter(Boolean));
             return Array.from(set).sort((a, b) => a.localeCompare(b));
@@ -1189,11 +1276,43 @@
             );
         }
 
-        // --- NAVIGATION & DROPDOWN ---
-        function toggleCalculatorsMenu(e) {
-            if (e) e.stopPropagation();
-            const menu = document.getElementById('calc-dropdown-menu');
-            if (menu) menu.classList.toggle('hidden');
+        function getOrderDueDate(order) {
+            if (order.dueDate && String(order.dueDate).trim()) return String(order.dueDate).trim();
+            const setObj = getSetById(order.setId);
+            if (setObj && setObj.deadline && String(setObj.deadline).trim()) return String(setObj.deadline).trim();
+            const batchObj = appData.batches.find(b => b.id === order.batchId);
+            if (batchObj && batchObj.deadline && String(batchObj.deadline).trim()) return String(batchObj.deadline).trim();
+            return '';
+        }
+
+        function evaluateDueDateUrgency(dueStr) {
+            if (!dueStr) return { level: 'none', parsed: null };
+            const match = String(dueStr).match(/(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?/);
+            if (!match) return { level: 'normal', parsed: null };
+            const day = parseInt(match[1], 10);
+            const month = parseInt(match[2], 10) - 1;
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            let year = match[3] ? parseInt(match[3], 10) : now.getFullYear();
+            if (year < 100) year += 2000;
+            const target = new Date(year, month, day);
+            const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
+            if (diffDays <= 0) return { level: 'urgent', parsed: target, diffDays };
+            if (diffDays <= 3) return { level: 'soon', parsed: target, diffDays };
+            return { level: 'normal', parsed: target, diffDays };
+        }
+
+        function renderDueDateBadge(dueStr) {
+            if (!dueStr) return '';
+            const info = evaluateDueDateUrgency(dueStr);
+            if (info.level === 'urgent') {
+                const suffix = info.diffDays < 0 ? ' (Vencido)' : ' (Vence hoje)';
+                return `<span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-500/20 text-red-300 border border-red-500/40"><i data-lucide="alert-circle" class="w-3 h-3"></i>Prazo: ${dueStr}${suffix}</span>`;
+            }
+            if (info.level === 'soon') {
+                return `<span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40"><i data-lucide="clock" class="w-3 h-3"></i>Prazo: ${dueStr}</span>`;
+            }
+            return `<span class="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-zinc-800 text-zinc-300 border border-zinc-700"><i data-lucide="calendar" class="w-3 h-3 text-rose-400"></i>Prazo: ${dueStr}</span>`;
         }
 
         document.addEventListener('click', (e) => {
@@ -1391,6 +1510,48 @@
             if (Array.from(batchFilter.options).some(o => o.value === prevBatch)) {
                 batchFilter.value = prevBatch;
             }
+            syncClientFilterCascades();
+        }
+
+        function syncClientFilterCascades() {
+            const bVal = document.getElementById('filter-client-batch').value;
+            const eraSel = document.getElementById('filter-client-era');
+            if (!eraSel) return;
+            const prevEra = eraSel.value;
+            const userOrders = selectedParticipant
+                ? appData.orders.filter(o => o.participant.toLowerCase() === selectedParticipant.toLowerCase() && (bVal === 'ALL' || o.batchId === bVal))
+                : [];
+            const eraNames = Array.from(new Set(userOrders.map(o => getOrderEra(o)).filter(Boolean))).sort((a, b) => a.localeCompare(b));
+            eraSel.innerHTML = `<option value="ALL">Todas as Eras</option>` +
+                eraNames.map(e => `<option value="${e.replace(/"/g, '&quot;')}">${e}</option>`).join('');
+            if (Array.from(eraSel.options).some(o => o.value === prevEra)) eraSel.value = prevEra;
+            syncClientFilterSetOnly();
+        }
+
+        function syncClientFilterSetOnly() {
+            const bVal = document.getElementById('filter-client-batch').value;
+            const eVal = document.getElementById('filter-client-era').value;
+            const setSel = document.getElementById('filter-client-set');
+            if (!setSel) return;
+            const prevSet = setSel.value;
+            const userOrders = selectedParticipant
+                ? appData.orders.filter(o => {
+                    if (o.participant.toLowerCase() !== selectedParticipant.toLowerCase()) return false;
+                    if (bVal !== 'ALL' && o.batchId !== bVal) return false;
+                    if (eVal !== 'ALL' && getOrderEra(o) !== eVal) return false;
+                    return true;
+                })
+                : [];
+            const setsMap = new Map();
+            userOrders.forEach(o => {
+                const sObj = getSetById(o.setId);
+                const key = sObj ? sObj.id : `drop_${o.drop || 'avulso'}`;
+                const label = sObj ? sObj.name : (o.drop || 'Itens Avulsos');
+                if (!setsMap.has(key)) setsMap.set(key, label);
+            });
+            setSel.innerHTML = `<option value="ALL">Todos os Sets</option>` +
+                Array.from(setsMap.entries()).map(([k, lbl]) => `<option value="${k}">${lbl}</option>`).join('');
+            if (Array.from(setSel.options).some(o => o.value === prevSet)) setSel.value = prevSet;
         }
 
         function selectParticipant(name) {
@@ -1505,54 +1666,207 @@
             renderClientReceiptsHistory();
 
             const batchFilter = document.getElementById('filter-client-batch').value;
+            const eraFilter = document.getElementById('filter-client-era') ? document.getElementById('filter-client-era').value : 'ALL';
+            const setFilter = document.getElementById('filter-client-set') ? document.getElementById('filter-client-set').value : 'ALL';
+
             const filteredOrders = userOrders.filter(o => {
                 if (batchFilter !== 'ALL' && o.batchId !== batchFilter) return false;
+                if (eraFilter !== 'ALL' && getOrderEra(o) !== eraFilter) return false;
+                if (setFilter !== 'ALL') {
+                    const sObj = getSetById(o.setId);
+                    const key = sObj ? sObj.id : `drop_${o.drop || 'avulso'}`;
+                    if (key !== setFilter) return false;
+                }
                 if (clientFilterMode === 'pending' && getOrderDue(o) <= 0) return false;
                 return true;
             });
 
-            const container = document.getElementById('client-orders-container');
-            if (filteredOrders.length === 0) {
-                container.innerHTML = `
-                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 text-center">
-                        <p class="text-sm font-semibold text-zinc-300">Nenhum pedido encontrado neste filtro.</p>
-                    </div>
-                `;
-                return;
-            }
+            // Verificar vencimento mais urgente entre os itens pendentes
+            // Agrupamento Hierárquico de 4 Níveis: Caixa -> Era -> Set -> Itens
+            const groupedBatches = new Map();
+            filteredOrders.forEach(order => {
+                const bKey = order.batchId || 'sem_caixa';
+                if (!groupedBatches.has(bKey)) {
+                    const bObj = appData.batches.find(b => b.id === bKey) || { id: bKey, name: 'Caixa Geral', status: 'em andamento' };
+                    groupedBatches.set(bKey, { batch: bObj, erasMap: new Map() });
+                }
+                const bEntry = groupedBatches.get(bKey);
+                const eraName = getOrderEra(order);
+                const eKey = eraName || '__NO_ERA__';
+                if (!bEntry.erasMap.has(eKey)) {
+                    const eraMeta = (appData.eras || []).find(e => e.batchId === bKey && e.name === eraName);
+                    bEntry.erasMap.set(eKey, {
+                        eraName,
+                        eraDescription: eraMeta ? (eraMeta.description || '') : '',
+                        setsMap: new Map()
+                    });
+                }
+                const eEntry = bEntry.erasMap.get(eKey);
+                const setObj = getSetById(order.setId) || appData.sets.find(s => s.name === order.drop && s.batchId === order.batchId && (s.era || '') === eraName);
+                const sKey = setObj ? setObj.id : `drop_${order.drop || 'avulso'}`;
+                if (!eEntry.setsMap.has(sKey)) {
+                    eEntry.setsMap.set(sKey, {
+                        setObj,
+                        setName: setObj ? setObj.name : (order.drop || 'Itens Avulsos'),
+                        setDescription: setObj && setObj.description ? setObj.description : '',
+                        setPhoto: setObj ? setObj.photo : '',
+                        setDeadline: setObj ? setObj.deadline : '',
+                        orders: []
+                    });
+                }
+                eEntry.setsMap.get(sKey).orders.push(order);
+            });
 
-            container.innerHTML = filteredOrders.map(order => {
-                const batch = appData.batches.find(b => b.id === order.batchId) || { name: 'Caixa Geral', status: 'em andamento' };
-                const setObj = getSetById(order.setId) || appData.sets.find(s => s.name === order.drop && s.batchId === order.batchId);
-                const setPhoto = setObj ? setObj.photo : '';
-                const stage = getStageObj(batch.status);
-                const itemDue = getOrderDue(order);
-                const progress = Math.round((stage.step / STAGES.length) * 100);
+            const renderSetBlockHTML = (batch, sGroup) => {
+                const setDueTotal = sGroup.orders.reduce((sum, o) => sum + getOrderDue(o), 0);
+                const cardsHtml = sGroup.orders.map(order => {
+                    const itemDue = getOrderDue(order);
+                    const dueDateStr = getOrderDueDate(order);
+                    const dueBadgeHtml = itemDue > 0 ? renderDueDateBadge(dueDateStr) : '';
+                    const cardDesc = order.description ? String(order.description).trim() : '';
+
+                    return `
+                    <div class="bg-zinc-900/90 border ${itemDue > 0 ? 'border-zinc-800 hover:border-rose-500/40' : 'border-emerald-500/25'} rounded-xl p-3.5 transition">
+                        <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-zinc-800/80">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="px-2.5 py-0.5 rounded-md bg-fuchsia-500/15 text-fuchsia-300 text-xs font-bold border border-fuchsia-500/30">
+                                    Card / Item: ${order.item}
+                                </span>
+                                ${cardDesc ? `<span class="text-xs text-zinc-200 font-medium">• ${cardDesc}</span>` : ''}
+                                ${dueBadgeHtml}
+                            </div>
+                            <span class="text-xs font-bold ${itemDue > 0 ? 'text-rose-400' : 'text-emerald-400'}">
+                                ${itemDue > 0 ? `Em aberto: ${formatBRL(itemDue)}` : 'Quitado'}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2.5">
+                            <div class="bg-zinc-950/90 rounded-lg p-2.5 border border-zinc-800/80 flex items-center justify-between gap-2">
+                                <div>
+                                    <span class="text-[10px] text-zinc-400 block">Valor do Item</span>
+                                    <span class="text-xs font-bold text-white">${formatBRL(order.price)}</span>
+                                </div>
+                                ${order.paidItem
+                                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Pago</span>`
+                                    : (isChargeUnderReview(order.id, 'price')
+                                        ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">Em análise</span>`
+                                        : `<button onclick="openReceiptModal('${order.id}::price')" class="px-2 py-1 rounded text-[10px] font-semibold bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 transition">Pagar</button>`)
+                                }
+                            </div>
+
+                            <div class="bg-zinc-950/90 rounded-lg p-2.5 border border-zinc-800/80 flex items-center justify-between gap-2">
+                                <div>
+                                    <span class="text-[10px] text-zinc-400 block">Frete Internacional</span>
+                                    <span class="text-xs font-bold ${order.shipping > 0 ? 'text-white' : 'text-zinc-500'}">${order.shipping > 0 ? formatBRL(order.shipping) : 'Aguardando'}</span>
+                                </div>
+                                ${order.shipping <= 0
+                                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-900 text-zinc-500">Em breve</span>`
+                                    : (order.paidShipping
+                                        ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Pago</span>`
+                                        : (isChargeUnderReview(order.id, 'shipping')
+                                            ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">Em análise</span>`
+                                            : `<button onclick="openReceiptModal('${order.id}::shipping')" class="px-2 py-1 rounded text-[10px] font-semibold bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 transition">Pagar</button>`))
+                                }
+                            </div>
+
+                            <div class="bg-zinc-950/90 rounded-lg p-2.5 border border-zinc-800/80 flex items-center justify-between gap-2">
+                                <div>
+                                    <span class="text-[10px] text-zinc-400 block">Taxa Alfandegária</span>
+                                    <span class="text-xs font-bold ${order.tax > 0 ? 'text-white' : 'text-zinc-500'}">${order.tax > 0 ? formatBRL(order.tax) : 'Aguardando'}</span>
+                                </div>
+                                ${order.tax <= 0
+                                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-900 text-zinc-500">Em breve</span>`
+                                    : (order.paidTax
+                                        ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Pago</span>`
+                                        : (isChargeUnderReview(order.id, 'tax')
+                                            ? `<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">Em análise</span>`
+                                            : `<button onclick="openReceiptModal('${order.id}::tax')" class="px-2 py-1 rounded text-[10px] font-semibold bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 transition">Pagar</button>`))
+                                }
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
 
                 return `
-                <div class="bg-zinc-900 border ${itemDue > 0 ? 'border-zinc-800 hover:border-rose-500/40' : 'border-emerald-500/25'} rounded-2xl p-4 sm:p-5 transition shadow-md">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-zinc-800">
-                        <div class="flex items-start gap-3.5">
-                            ${setPhoto ? `
-                                <button onclick="openImageModal('${setPhoto.replace(/'/g, "\\'")}', '${(setObj ? setObj.name : order.drop).replace(/'/g, "\\'")}', 'Item: ${order.item.replace(/'/g, "\\'")}')" class="group relative w-20 h-20 rounded-xl overflow-hidden border border-zinc-800 shrink-0 bg-black">
-                                    <img src="${setPhoto}" alt="${order.drop}" class="w-full h-full object-cover group-hover:scale-105 transition">
+                <div class="bg-zinc-950/80 border border-zinc-800/90 rounded-2xl p-3.5 sm:p-4 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2.5 border-b border-zinc-800/80">
+                        <div class="flex items-center gap-3">
+                            ${sGroup.setPhoto ? `
+                                <button onclick="openImageModal('${sGroup.setPhoto.replace(/'/g, "\\'")}', '${sGroup.setName.replace(/'/g, "\\'")}', '${(sGroup.setDescription || batch.name).replace(/'/g, "\\'")}')" class="group relative w-14 h-14 rounded-xl overflow-hidden border border-zinc-700 shrink-0 bg-black">
+                                    <img src="${sGroup.setPhoto}" alt="${sGroup.setName}" class="w-full h-full object-cover group-hover:scale-105 transition">
                                 </button>
                             ` : `
-                                <div class="w-16 h-16 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-600 shrink-0">
-                                    <i data-lucide="image" class="w-5 h-5"></i>
+                                <div class="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500 shrink-0">
+                                    <i data-lucide="layers" class="w-4 h-4"></i>
                                 </div>
                             `}
                             <div>
-                                <span class="text-[11px] font-bold uppercase tracking-wider text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-md border border-rose-500/20">
-                                    ${batch.name}
-                                </span>
-                                <h4 class="text-base font-bold text-white mt-1.5">${setObj ? setObj.name : order.drop}</h4>
-                                <p class="text-xs text-zinc-300 mt-1">
-                                    <span class="px-2 py-0.5 rounded-md bg-fuchsia-500/15 text-fuchsia-300 font-semibold border border-fuchsia-500/30">
-                                        Item: ${order.item}
-                                    </span>
-                                </p>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/30">Set</span>
+                                    <h5 class="text-sm font-bold text-white">${sGroup.setName}</h5>
+                                </div>
+                                ${sGroup.setDescription ? `<p class="text-[11px] text-zinc-400 mt-0.5">${sGroup.setDescription}</p>` : ''}
+                                <p class="text-[11px] text-zinc-500 mt-0.5">${sGroup.orders.length} ${sGroup.orders.length === 1 ? 'card neste set' : 'cards neste set'}${sGroup.setDeadline ? ` • Prazo do set: <span class="text-zinc-300">${sGroup.setDeadline}</span>` : ''}</p>
                             </div>
+                        </div>
+                        <div class="text-left sm:text-right">
+                            <span class="text-[10px] text-zinc-400 block">Subtotal do Set</span>
+                            <span class="text-xs font-extrabold ${setDueTotal > 0 ? 'text-rose-400' : 'text-emerald-400'}">${setDueTotal > 0 ? formatBRL(setDueTotal) : 'Set Quitado'}</span>
+                        </div>
+                    </div>
+                    <div class="space-y-2.5">${cardsHtml}</div>
+                </div>`;
+            };
+
+            const batchesHtml = Array.from(groupedBatches.values()).map(({ batch, erasMap }) => {
+                const stage = getStageObj(batch.status);
+                const progress = Math.round((stage.step / STAGES.length) * 100);
+                const allSetsInBatch = Array.from(erasMap.values()).flatMap(e => Array.from(e.setsMap.values()));
+                const allBatchOrders = allSetsInBatch.flatMap(s => s.orders);
+                const batchDueTotal = allBatchOrders.reduce((sum, o) => sum + getOrderDue(o), 0);
+                const namedErasCount = Array.from(erasMap.values()).filter(e => e.eraName).length;
+
+                const erasHtml = Array.from(erasMap.values()).map(eGroup => {
+                    const setsInsideEraHtml = Array.from(eGroup.setsMap.values()).map(sGroup => renderSetBlockHTML(batch, sGroup)).join('');
+                    if (!eGroup.eraName) {
+                        return `<div class="space-y-3.5">${setsInsideEraHtml}</div>`;
+                    }
+                    const eraOrders = Array.from(eGroup.setsMap.values()).flatMap(s => s.orders);
+                    const eraDueTotal = eraOrders.reduce((sum, o) => sum + getOrderDue(o), 0);
+                    return `
+                    <div class="bg-zinc-950/40 border border-amber-500/25 rounded-2xl p-3.5 sm:p-4 space-y-3.5">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-amber-500/20">
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">Era / Coleção</span>
+                                    <h4 class="text-sm sm:text-base font-extrabold text-amber-100">${eGroup.eraName}</h4>
+                                </div>
+                                ${eGroup.eraDescription ? `<p class="text-[11px] text-zinc-400 mt-0.5">${eGroup.eraDescription}</p>` : ''}
+                                <p class="text-[11px] text-zinc-500 mt-0.5">${eGroup.setsMap.size} ${eGroup.setsMap.size === 1 ? 'set' : 'sets'} • ${eraOrders.length} ${eraOrders.length === 1 ? 'item' : 'itens'}</p>
+                            </div>
+                            <div class="text-left sm:text-right">
+                                <span class="text-[10px] text-zinc-400 block">Subtotal da Era</span>
+                                <span class="text-xs font-extrabold ${eraDueTotal > 0 ? 'text-amber-300' : 'text-emerald-400'}">${eraDueTotal > 0 ? formatBRL(eraDueTotal) : 'Era Quitada'}</span>
+                            </div>
+                        </div>
+                        <div class="space-y-3 pl-0 sm:pl-2 border-l-0 sm:border-l-2 border-amber-500/20">
+                            ${setsInsideEraHtml}
+                        </div>
+                    </div>`;
+                }).join('');
+
+                return `
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 sm:p-5 shadow-lg space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-zinc-800">
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-md border border-rose-500/20">
+                                    Caixa / Lote
+                                </span>
+                                <span class="text-xs text-zinc-400">${namedErasCount > 0 ? `${namedErasCount} ${namedErasCount === 1 ? 'era' : 'eras'} • ` : ''}${allSetsInBatch.length} ${allSetsInBatch.length === 1 ? 'set' : 'sets'} • ${allBatchOrders.length} ${allBatchOrders.length === 1 ? 'item' : 'itens'}</span>
+                            </div>
+                            <h4 class="text-base sm:text-lg font-extrabold text-white mt-1">${batch.name}</h4>
+                            ${batchDueTotal > 0 ? `<p class="text-xs text-rose-300 mt-0.5">Total em aberto nesta caixa: <strong>${formatBRL(batchDueTotal)}</strong></p>` : `<p class="text-xs text-emerald-400 mt-0.5">Caixa totalmente quitada</p>`}
                         </div>
 
                         <div class="sm:text-right shrink-0">
@@ -1567,53 +1881,11 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3.5">
-                        <div class="bg-zinc-950/90 rounded-xl p-3 border border-zinc-800/80 flex items-center justify-between gap-2">
-                            <div>
-                                <span class="text-[11px] text-zinc-400 block">Valor do Item</span>
-                                <span class="text-sm font-bold text-white">${formatBRL(order.price)}</span>
-                            </div>
-                            ${order.paidItem
-                                ? `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Pago</span>`
-                                : (isChargeUnderReview(order.id, 'price')
-                                    ? `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">Em análise</span>`
-                                    : `<button onclick="openReceiptModal('${order.id}::price')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 transition">Pagar / Anexar</button>`)
-                            }
-                        </div>
-
-                        <div class="bg-zinc-950/90 rounded-xl p-3 border border-zinc-800/80 flex items-center justify-between gap-2">
-                            <div>
-                                <span class="text-[11px] text-zinc-400 block">Frete Internacional</span>
-                                <span class="text-sm font-bold ${order.shipping > 0 ? 'text-white' : 'text-zinc-500'}">${order.shipping > 0 ? formatBRL(order.shipping) : 'Aguardando'}</span>
-                            </div>
-                            ${order.shipping <= 0
-                                ? `<span class="px-2 py-1 rounded-lg text-[10px] font-medium bg-zinc-900 text-zinc-500">Em breve</span>`
-                                : (order.paidShipping
-                                    ? `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Pago</span>`
-                                    : (isChargeUnderReview(order.id, 'shipping')
-                                        ? `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">Em análise</span>`
-                                        : `<button onclick="openReceiptModal('${order.id}::shipping')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 transition">Pagar / Anexar</button>`))
-                            }
-                        </div>
-
-                        <div class="bg-zinc-950/90 rounded-xl p-3 border border-zinc-800/80 flex items-center justify-between gap-2">
-                            <div>
-                                <span class="text-[11px] text-zinc-400 block">Taxa Alfandegária</span>
-                                <span class="text-sm font-bold ${order.tax > 0 ? 'text-white' : 'text-zinc-500'}">${order.tax > 0 ? formatBRL(order.tax) : 'Aguardando'}</span>
-                            </div>
-                            ${order.tax <= 0
-                                ? `<span class="px-2 py-1 rounded-lg text-[10px] font-medium bg-zinc-900 text-zinc-500">Em breve</span>`
-                                : (order.paidTax
-                                    ? `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Pago</span>`
-                                    : (isChargeUnderReview(order.id, 'tax')
-                                        ? `<span class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">Em análise</span>`
-                                        : `<button onclick="openReceiptModal('${order.id}::tax')" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 transition">Pagar / Anexar</button>`))
-                            }
-                        </div>
-                    </div>
-                </div>
-                `;
+                    <div class="space-y-4">${erasHtml}</div>
+                </div>`;
             }).join('');
+
+            container.innerHTML = nextDueBanner + batchesHtml;
             lucide.createIcons();
         }
 
@@ -1659,14 +1931,16 @@
                 const batch = appData.batches.find(b => b.id === o.batchId) || { name: 'Caixa' };
                 const setObj = getSetById(o.setId);
                 const dropName = setObj ? setObj.name : o.drop;
+                const dueStr = getOrderDueDate(o);
+                const dueTag = dueStr ? ` • Prazo: ${dueStr}` : '';
                 if (!o.paidItem && Number(o.price) > 0) {
-                    charges.push({ key: `${o.id}::price`, orderId: o.id, field: 'price', typeLabel: 'Item', label: `Item • ${dropName} (${o.item}) [${batch.name}]`, amount: Number(o.price), underReview: isChargeUnderReview(o.id, 'price') });
+                    charges.push({ key: `${o.id}::price`, orderId: o.id, field: 'price', typeLabel: 'Item', label: `Item • ${dropName} (${o.item}) [${batch.name}]${dueTag}`, amount: Number(o.price), underReview: isChargeUnderReview(o.id, 'price') });
                 }
                 if (!o.paidShipping && Number(o.shipping) > 0) {
-                    charges.push({ key: `${o.id}::shipping`, orderId: o.id, field: 'shipping', typeLabel: 'Frete Inter', label: `Frete Inter • ${dropName} (${o.item}) [${batch.name}]`, amount: Number(o.shipping), underReview: isChargeUnderReview(o.id, 'shipping') });
+                    charges.push({ key: `${o.id}::shipping`, orderId: o.id, field: 'shipping', typeLabel: 'Frete Inter', label: `Frete Inter • ${dropName} (${o.item}) [${batch.name}]${dueTag}`, amount: Number(o.shipping), underReview: isChargeUnderReview(o.id, 'shipping') });
                 }
                 if (!o.paidTax && Number(o.tax) > 0) {
-                    charges.push({ key: `${o.id}::tax`, orderId: o.id, field: 'tax', typeLabel: 'Taxa Alf.', label: `Taxa Alf. • ${dropName} (${o.item}) [${batch.name}]`, amount: Number(o.tax), underReview: isChargeUnderReview(o.id, 'tax') });
+                    charges.push({ key: `${o.id}::tax`, orderId: o.id, field: 'tax', typeLabel: 'Taxa Alf.', label: `Taxa Alf. • ${dropName} (${o.item}) [${batch.name}]${dueTag}`, amount: Number(o.tax), underReview: isChargeUnderReview(o.id, 'tax') });
                 }
             });
             return charges;
@@ -1916,9 +2190,11 @@
                     participant,
                     contact,
                     batchId: formObj.batchId,
+                    era: (setObj && setObj.era) || formObj.era || '',
                     setId: formObj.setId,
                     drop: setObj ? setObj.name : 'Pedido CEG',
                     item: node.value,
+                    dueDate: formObj.deadline || (setObj ? setObj.deadline : '') || '',
                     price: Number(formObj.price || 0),
                     paidItem: false,
                     shipping: 0,
@@ -2049,7 +2325,7 @@
 
         function populateAdminDropdowns() {
             const batchOpts = appData.batches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
-            ['new-order-batch', 'new-set-batch', 'form-builder-batch', 'bulk-batch-select'].forEach(id => {
+            ['new-order-batch', 'new-era-batch', 'new-set-batch', 'form-builder-batch'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.innerHTML = batchOpts;
             });
@@ -2059,36 +2335,122 @@
                 fBatch.innerHTML = `<option value="ALL">Todas as Caixas</option>` + batchOpts;
                 if (Array.from(fBatch.options).some(o => o.value === prev)) fBatch.value = prev;
             }
+            const targetSetSel = document.getElementById('sel-bulk-target-set');
+            if (targetSetSel) {
+                const prevTarget = targetSetSel.value;
+                targetSetSel.innerHTML = appData.batches.map(b => {
+                    const bSets = appData.sets.filter(s => s.batchId === b.id);
+                    const bEras = getBatchErasList(b.id);
+                    const opts = [];
+                    if (!bSets.length && !bEras.length) {
+                        opts.push(`<option value="batch::${b.id}">${b.name} (Sem set)</option>`);
+                    }
+                    bSets.forEach(s => {
+                        const prefix = s.era ? `[${s.era}] ` : '';
+                        opts.push(`<option value="set::${s.id}">${prefix}${s.name}</option>`);
+                    });
+                    return `<optgroup label="${b.name}">${opts.join('')}</optgroup>`;
+                }).join('');
+                if (prevTarget) targetSetSel.value = prevTarget;
+            }
             const dl = document.getElementById('participants-datalist');
             if (dl) dl.innerHTML = getUniqueParticipants().map(p => `<option value="${p}">`).join('');
+            syncAdminFilterCascades();
+            syncEraDropdownForNewOrder();
+            syncEraDropdownForNewSet();
+            syncFormBuilderEras();
+        }
+
+        function syncAdminFilterCascades() {
+            const bFilter = document.getElementById('admin-filter-batch').value;
+            const eFilter = document.getElementById('admin-filter-era');
+            if (eFilter) {
+                const prevEra = eFilter.value;
+                const eras = getBatchErasList(bFilter);
+                eFilter.innerHTML = `<option value="ALL">Todas as Eras</option>` +
+                    eras.map(e => `<option value="${e.replace(/"/g, '&quot;')}">${e}</option>`).join('');
+                if (Array.from(eFilter.options).some(o => o.value === prevEra)) eFilter.value = prevEra;
+            }
+            syncAdminFilterSetOnly();
+        }
+
+        function syncAdminFilterSetOnly() {
+            const bFilter = document.getElementById('admin-filter-batch').value;
+            const eFilter = document.getElementById('admin-filter-era') ? document.getElementById('admin-filter-era').value : 'ALL';
+            const sFilter = document.getElementById('admin-filter-set');
+            if (!sFilter) return;
+            const prev = sFilter.value;
+            const sets = appData.sets.filter(s => {
+                if (bFilter !== 'ALL' && s.batchId !== bFilter) return false;
+                if (eFilter !== 'ALL' && (s.era || '') !== eFilter) return false;
+                return true;
+            });
+            sFilter.innerHTML = `<option value="ALL">Todos os Sets</option>` +
+                sets.map(s => {
+                    const b = appData.batches.find(x => x.id === s.batchId);
+                    const bPrefix = bFilter === 'ALL' && b ? `[${b.name}] ` : '';
+                    const ePrefix = eFilter === 'ALL' && s.era ? `${s.era} > ` : '';
+                    return `<option value="${s.id}">${bPrefix}${ePrefix}${s.name}</option>`;
+                }).join('');
+            if (Array.from(sFilter.options).some(o => o.value === prev)) sFilter.value = prev;
+        }
+
+        function syncEraDropdownForNewOrder() {
+            const bId = document.getElementById('new-order-batch').value;
+            const eras = getBatchErasList(bId);
+            const sel = document.getElementById('new-order-era');
+            if (sel) {
+                sel.innerHTML = `<option value="">(Sem Era / Geral)</option>` +
+                    eras.map(e => `<option value="${e.replace(/"/g, '&quot;')}">${e}</option>`).join('');
+            }
             syncSetDropdownForNewOrder();
-            syncFormBuilderSets();
         }
 
         function syncSetDropdownForNewOrder() {
             const bId = document.getElementById('new-order-batch').value;
-            const sets = appData.sets.filter(s => s.batchId === bId);
+            const eVal = document.getElementById('new-order-era') ? document.getElementById('new-order-era').value : '';
+            const sets = appData.sets.filter(s => s.batchId === bId && (!eVal || (s.era || '') === eVal));
             const sel = document.getElementById('new-order-set');
-            sel.innerHTML = sets.length ? sets.map(s => `<option value="${s.id}">${s.name}</option>`).join('') : `<option value="">(Sem set)</option>`;
+            sel.innerHTML = sets.length
+                ? sets.map(s => `<option value="${s.id}">${!eVal && s.era ? `[${s.era}] ` : ''}${s.name}</option>`).join('')
+                : `<option value="">(Sem set)</option>`;
             autoFillPriceFromSet();
+        }
+
+        function syncEraDropdownForNewSet() {
+            const bId = document.getElementById('new-set-batch').value;
+            const eras = getBatchErasList(bId);
+            const sel = document.getElementById('new-set-era');
+            if (sel) {
+                sel.innerHTML = `<option value="">(Direto na Caixa / Sem Era)</option>` +
+                    eras.map(e => `<option value="${e.replace(/"/g, '&quot;')}">${e}</option>`).join('');
+            }
         }
 
         function autoFillPriceFromSet() {
             const sObj = getSetById(document.getElementById('new-order-set').value);
-            if (sObj && sObj.defaultPrice) document.getElementById('new-order-price').value = sObj.defaultPrice;
+            if (sObj) {
+                if (sObj.defaultPrice) document.getElementById('new-order-price').value = sObj.defaultPrice;
+                if (sObj.deadline) document.getElementById('new-order-due-date').value = sObj.deadline;
+            }
         }
 
         function addNewOrder(e) {
             e.preventDefault();
             const setId = document.getElementById('new-order-set').value;
             const setObj = getSetById(setId);
+            const selectedEra = document.getElementById('new-order-era') ? document.getElementById('new-order-era').value : '';
+            const manualDue = document.getElementById('new-order-due-date').value.trim();
             appData.orders.unshift({
                 id: 'o_' + Date.now(),
                 participant: document.getElementById('new-order-participant').value.trim(),
                 batchId: document.getElementById('new-order-batch').value,
+                era: (setObj && setObj.era) || selectedEra || '',
                 setId: setId || '',
                 drop: setObj ? setObj.name : 'Item Avulso',
                 item: document.getElementById('new-order-item').value.trim(),
+                description: document.getElementById('new-order-description').value.trim(),
+                dueDate: manualDue || (setObj ? setObj.deadline : '') || '',
                 price: parseFloat(document.getElementById('new-order-price').value) || 0,
                 paidItem: document.getElementById('new-order-paid-item').checked,
                 shipping: parseFloat(document.getElementById('new-order-shipping').value) || 0,
@@ -2109,81 +2471,304 @@
         }
 
         function deleteOrder(orderId) {
+            selectedOrderIds.delete(orderId);
             appData.orders = appData.orders.filter(o => o.id !== orderId);
             saveData();
             showToast('Pedido removido.');
         }
 
-        function applyBulkFee() {
-            const bId = document.getElementById('bulk-batch-select').value;
-            const field = document.getElementById('bulk-field-select').value;
-            const amount = parseFloat(document.getElementById('bulk-amount-input').value);
-            if (isNaN(amount) || amount < 0) return;
-            let count = 0;
-            appData.orders.forEach(o => {
-                if (o.batchId === bId) {
-                    o[field] = amount;
-                    count++;
-                }
+        // --- SELEÇÃO E AÇÕES EM LOTE (BULK SELECTION) ---
+        function toggleOrderSelection(orderId, checked) {
+            if (checked) selectedOrderIds.add(orderId);
+            else selectedOrderIds.delete(orderId);
+            updateBulkSelectionBar();
+        }
+
+        function toggleSelectAllFilteredOrders(checked) {
+            lastFilteredOrderIds.forEach(id => {
+                if (checked) selectedOrderIds.add(id);
+                else selectedOrderIds.delete(id);
             });
-            document.getElementById('bulk-amount-input').value = '';
+            renderAdminOrders();
+        }
+
+        function toggleSelectSetGroup(orderIdsArr, checked) {
+            orderIdsArr.forEach(id => {
+                if (checked) selectedOrderIds.add(id);
+                else selectedOrderIds.delete(id);
+            });
+            renderAdminOrders();
+        }
+
+        function clearSelectedOrders() {
+            selectedOrderIds.clear();
+            renderAdminOrders();
+        }
+
+        function updateBulkSelectionBar() {
+            const bar = document.getElementById('bulk-selection-bar');
+            const countEl = document.getElementById('bulk-selected-count');
+            const selectAllBox = document.getElementById('admin-select-all-checkbox');
+            if (!bar || !countEl) return;
+
+            const validIds = Array.from(selectedOrderIds).filter(id => appData.orders.some(o => o.id === id));
+            selectedOrderIds = new Set(validIds);
+
+            if (selectedOrderIds.size > 0) {
+                bar.classList.remove('hidden');
+                countEl.textContent = `${selectedOrderIds.size} ${selectedOrderIds.size === 1 ? 'selecionado' : 'selecionados'}`;
+            } else {
+                bar.classList.add('hidden');
+            }
+
+            if (selectAllBox) {
+                selectAllBox.checked = lastFilteredOrderIds.length > 0 && lastFilteredOrderIds.every(id => selectedOrderIds.has(id));
+            }
+        }
+
+        function updateSelectedBulkInputUI() {
+            const field = document.getElementById('sel-bulk-field').value;
+            const inp = document.getElementById('sel-bulk-value');
+            if (!inp) return;
+            if (field === 'dueDate') inp.placeholder = 'Ex: 30/11/2026';
+            else if (field === 'description') inp.placeholder = 'Descrição do card...';
+            else inp.placeholder = 'Ex: 45.00';
+        }
+
+        function applyBulkActionToSelected(mode) {
+            if (selectedOrderIds.size === 0) return;
+            let updated = 0;
+
+            if (mode === 'value') {
+                const field = document.getElementById('sel-bulk-field').value;
+                const rawVal = document.getElementById('sel-bulk-value').value.trim();
+                if (!rawVal && field !== 'description') {
+                    showToast('Preencha o valor antes de aplicar.', 'error');
+                    return;
+                }
+                appData.orders.forEach(o => {
+                    if (!selectedOrderIds.has(o.id)) return;
+                    if (field === 'dueDate' || field === 'description') {
+                        o[field] = rawVal;
+                    } else {
+                        const num = parseFloat(rawVal.replace(',', '.'));
+                        if (!isNaN(num) && num >= 0) o[field] = num;
+                    }
+                    updated++;
+                });
+                document.getElementById('sel-bulk-value').value = '';
+            } else if (mode === 'payment') {
+                const [field, boolStr] = document.getElementById('sel-bulk-pay-action').value.split(':');
+                const boolVal = boolStr === 'true';
+                appData.orders.forEach(o => {
+                    if (!selectedOrderIds.has(o.id)) return;
+                    o[field] = boolVal;
+                    updated++;
+                });
+            } else if (mode === 'move') {
+                const targetVal = document.getElementById('sel-bulk-target-set').value;
+                if (!targetVal) return;
+                const [kind, targetId] = targetVal.split('::');
+                if (kind === 'set') {
+                    const sObj = getSetById(targetId);
+                    if (!sObj) return;
+                    appData.orders.forEach(o => {
+                        if (!selectedOrderIds.has(o.id)) return;
+                        o.setId = sObj.id;
+                        o.batchId = sObj.batchId;
+                        o.era = sObj.era || '';
+                        o.drop = sObj.name;
+                        updated++;
+                    });
+                } else if (kind === 'batch') {
+                    appData.orders.forEach(o => {
+                        if (!selectedOrderIds.has(o.id)) return;
+                        o.batchId = targetId;
+                        o.era = '';
+                        o.setId = '';
+                        updated++;
+                    });
+                }
+            }
+
             saveData();
-            showToast(`Aplicado em ${count} itens!`);
+            showToast(`Alteração aplicada em ${updated} card(s)!`);
+        }
+
+        function deleteSelectedOrdersBulk() {
+            if (selectedOrderIds.size === 0) return;
+            const total = selectedOrderIds.size;
+            appData.orders = appData.orders.filter(o => !selectedOrderIds.has(o.id));
+            selectedOrderIds.clear();
+            saveData();
+            showToast(`${total} card(s) excluído(s).`);
+        }
+
+        function buildAdminOrderRowHTML(o) {
+            const batch = appData.batches.find(b => b.id === o.batchId) || { name: 'Caixa' };
+            const eraStr = getOrderEra(o);
+            const due = getOrderDue(o);
+            const currentDueDate = o.dueDate || '';
+            const currentDesc = (o.description || '').replace(/"/g, '&quot;');
+            const currentItem = (o.item || '').replace(/"/g, '&quot;');
+            const isChecked = selectedOrderIds.has(o.id);
+
+            return `
+            <tr class="hover:bg-zinc-950/60 ${isChecked ? 'bg-rose-950/20' : ''}">
+                <td class="py-3 px-3 text-center">
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleOrderSelection('${o.id}', this.checked)" class="bloom-checkbox">
+                </td>
+                <td class="py-3 px-3 font-bold text-white whitespace-nowrap">${o.participant}</td>
+                <td class="py-3 px-3 space-y-1.5">
+                    <span class="text-[10px] text-rose-400 block">${batch.name}${eraStr ? ` › <span class="text-amber-300 font-semibold">${eraStr}</span>` : ''} › ${o.drop}</span>
+                    <div class="flex items-center gap-1.5">
+                        <input type="text" value="${currentItem}" placeholder="Nº/Card" onchange="updateOrderField('${o.id}', 'item', this.value.trim())" class="w-24 bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-xs font-semibold text-fuchsia-300 focus:border-rose-500 focus:outline-none">
+                        <input type="text" value="${currentDesc}" placeholder="Editar descrição do card..." onchange="updateOrderField('${o.id}', 'description', this.value.trim())" class="flex-1 min-w-[140px] bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-xs text-zinc-200 placeholder-zinc-600 focus:border-rose-500 focus:outline-none">
+                    </div>
+                </td>
+                <td class="py-3 px-3">
+                    <input type="text" value="${currentDueDate}" placeholder="Ex: 25/11" onchange="updateOrderField('${o.id}', 'dueDate', this.value.trim())" class="w-24 bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-white placeholder-zinc-600 focus:border-rose-500 focus:outline-none">
+                </td>
+                <td class="py-3 px-3">
+                    <div class="flex items-center gap-2">
+                        <input type="number" step="0.01" value="${o.price}" onchange="updateOrderField('${o.id}', 'price', parseFloat(this.value)||0)" class="w-20 bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-white">
+                        <input type="checkbox" ${o.paidItem ? 'checked' : ''} onchange="updateOrderField('${o.id}', 'paidItem', this.checked)" class="bloom-checkbox">
+                    </div>
+                </td>
+                <td class="py-3 px-3">
+                    <div class="flex items-center gap-2">
+                        <input type="number" step="0.01" value="${o.shipping}" onchange="updateOrderField('${o.id}', 'shipping', parseFloat(this.value)||0)" class="w-20 bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-white">
+                        <input type="checkbox" ${o.paidShipping ? 'checked' : ''} onchange="updateOrderField('${o.id}', 'paidShipping', this.checked)" class="bloom-checkbox">
+                    </div>
+                </td>
+                <td class="py-3 px-3">
+                    <div class="flex items-center gap-2">
+                        <input type="number" step="0.01" value="${o.tax}" onchange="updateOrderField('${o.id}', 'tax', parseFloat(this.value)||0)" class="w-20 bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-white">
+                        <input type="checkbox" ${o.paidTax ? 'checked' : ''} onchange="updateOrderField('${o.id}', 'paidTax', this.checked)" class="bloom-checkbox">
+                    </div>
+                </td>
+                <td class="py-3 px-3 text-right font-bold whitespace-nowrap ${due > 0 ? 'text-rose-400' : 'text-emerald-400'}">${due > 0 ? formatBRL(due) : 'Quitado'}</td>
+                <td class="py-3 px-3 text-center">
+                    <button onclick="deleteOrder('${o.id}')" class="text-zinc-500 hover:text-red-400 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                </td>
+            </tr>`;
         }
 
         function renderAdminOrders() {
             const search = (document.getElementById('admin-search-input').value || '').trim().toLowerCase();
             const bFilter = document.getElementById('admin-filter-batch').value;
+            const eFilter = document.getElementById('admin-filter-era') ? document.getElementById('admin-filter-era').value : 'ALL';
+            const sFilter = document.getElementById('admin-filter-set') ? document.getElementById('admin-filter-set').value : 'ALL';
             const onlyPend = document.getElementById('admin-filter-pending').checked;
+            const groupBySet = document.getElementById('admin-group-by-set') ? document.getElementById('admin-group-by-set').checked : true;
 
             const filtered = appData.orders.filter(o => {
                 if (bFilter !== 'ALL' && o.batchId !== bFilter) return false;
+                if (eFilter !== 'ALL' && getOrderEra(o) !== eFilter) return false;
+                if (sFilter !== 'ALL' && o.setId !== sFilter) return false;
                 if (onlyPend && getOrderDue(o) <= 0) return false;
-                if (search && !o.participant.toLowerCase().includes(search) && !o.drop.toLowerCase().includes(search) && !o.item.toLowerCase().includes(search)) return false;
+                if (search) {
+                    const hay = `${o.participant} ${getOrderEra(o)} ${o.drop} ${o.item} ${o.description || ''}`.toLowerCase();
+                    if (!hay.includes(search)) return false;
+                }
                 return true;
             });
 
+            lastFilteredOrderIds = filtered.map(o => o.id);
             document.getElementById('admin-orders-count').textContent = `${filtered.length} registro(s)`;
             const tbody = document.getElementById('admin-orders-tbody');
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-zinc-500">Nenhum pedido encontrado.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-zinc-500">Nenhum pedido encontrado.</td></tr>`;
+                updateBulkSelectionBar();
                 return;
             }
 
-            tbody.innerHTML = filtered.map(o => {
-                const batch = appData.batches.find(b => b.id === o.batchId) || { name: 'Caixa' };
-                const due = getOrderDue(o);
-                return `
-                <tr class="hover:bg-zinc-950/60">
-                    <td class="py-3 px-4 font-bold text-white">${o.participant}</td>
-                    <td class="py-3 px-4">
-                        <span class="text-[11px] text-rose-400 block">${batch.name}</span>
-                        <span class="text-zinc-200">${o.drop} (${o.item})</span>
-                    </td>
-                    <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                            <input type="number" step="0.01" value="${o.price}" onchange="updateOrderField('${o.id}', 'price', parseFloat(this.value)||0)" class="w-20 bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-white">
-                            <input type="checkbox" ${o.paidItem ? 'checked' : ''} onchange="updateOrderField('${o.id}', 'paidItem', this.checked)" class="bloom-checkbox">
-                        </div>
-                    </td>
-                    <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                            <input type="number" step="0.01" value="${o.shipping}" onchange="updateOrderField('${o.id}', 'shipping', parseFloat(this.value)||0)" class="w-20 bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-white">
-                            <input type="checkbox" ${o.paidShipping ? 'checked' : ''} onchange="updateOrderField('${o.id}', 'paidShipping', this.checked)" class="bloom-checkbox">
-                        </div>
-                    </td>
-                    <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                            <input type="number" step="0.01" value="${o.tax}" onchange="updateOrderField('${o.id}', 'tax', parseFloat(this.value)||0)" class="w-20 bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-white">
-                            <input type="checkbox" ${o.paidTax ? 'checked' : ''} onchange="updateOrderField('${o.id}', 'paidTax', this.checked)" class="bloom-checkbox">
-                        </div>
-                    </td>
-                    <td class="py-3 px-4 text-right font-bold ${due > 0 ? 'text-rose-400' : 'text-emerald-400'}">${due > 0 ? formatBRL(due) : 'Quitado'}</td>
-                    <td class="py-3 px-4 text-center">
-                        <button onclick="deleteOrder('${o.id}')" class="text-zinc-500 hover:text-red-400 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </td>
-                </tr>`;
-            }).join('');
+            if (!groupBySet) {
+                tbody.innerHTML = filtered.map(o => buildAdminOrderRowHTML(o)).join('');
+            } else {
+                const eraGroups = new Map();
+                filtered.forEach(o => {
+                    const bObj = appData.batches.find(b => b.id === o.batchId) || { name: 'Caixa Geral' };
+                    const eraStr = getOrderEra(o);
+                    const eKey = `${o.batchId || 'no_b'}::${eraStr || '__NO_ERA__'}`;
+                    if (!eraGroups.has(eKey)) {
+                        eraGroups.set(eKey, {
+                            batchName: bObj.name,
+                            eraName: eraStr,
+                            setsMap: new Map(),
+                            allOrders: []
+                        });
+                    }
+                    const eEntry = eraGroups.get(eKey);
+                    eEntry.allOrders.push(o);
+
+                    const sObj = getSetById(o.setId);
+                    const sKey = sObj ? sObj.id : (o.drop || 'avulso');
+                    if (!eEntry.setsMap.has(sKey)) {
+                        eEntry.setsMap.set(sKey, {
+                            setName: sObj ? sObj.name : (o.drop || 'Itens Avulsos'),
+                            setPhoto: sObj ? sObj.photo : '',
+                            orders: []
+                        });
+                    }
+                    eEntry.setsMap.get(sKey).orders.push(o);
+                });
+
+                tbody.innerHTML = Array.from(eraGroups.values()).map(eg => {
+                    const eraIdsJson = JSON.stringify(eg.allOrders.map(x => x.id)).replace(/"/g, '&quot;');
+                    const allEraSelected = eg.allOrders.every(x => selectedOrderIds.has(x.id));
+                    const eraHeaderHtml = eg.eraName ? `
+                        <tr class="bg-amber-950/30 border-y border-amber-500/30">
+                            <td class="py-2 px-3 text-center">
+                                <input type="checkbox" ${allEraSelected ? 'checked' : ''} onchange="toggleSelectSetGroup(${eraIdsJson}, this.checked)" title="Selecionar toda esta Era" class="bloom-checkbox">
+                            </td>
+                            <td colspan="8" class="py-2 px-3">
+                                <div class="flex items-center justify-between gap-2 flex-wrap">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-rose-500/15 text-rose-400 border border-rose-500/30">${eg.batchName}</span>
+                                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">Era</span>
+                                        <strong class="text-xs text-amber-100">${eg.eraName}</strong>
+                                        <span class="text-[11px] text-zinc-400">(${eg.setsMap.size} sets • ${eg.allOrders.length} cards)</span>
+                                    </div>
+                                    <button type="button" onclick="toggleSelectSetGroup(${eraIdsJson}, ${!allEraSelected})" class="text-[11px] font-semibold text-amber-300 hover:underline">
+                                        ${allEraSelected ? 'Desmarcar toda esta Era' : 'Selecionar toda esta Era'}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    ` : '';
+
+                    const setsHtml = Array.from(eg.setsMap.values()).map(g => {
+                        const idsJson = JSON.stringify(g.orders.map(x => x.id)).replace(/"/g, '&quot;');
+                        const allGroupSelected = g.orders.every(x => selectedOrderIds.has(x.id));
+                        return `
+                        <tr class="bg-zinc-950 border-y border-zinc-800">
+                            <td class="py-2 px-3 text-center">
+                                <input type="checkbox" ${allGroupSelected ? 'checked' : ''} onchange="toggleSelectSetGroup(${idsJson}, this.checked)" title="Selecionar todo este Set" class="bloom-checkbox">
+                            </td>
+                            <td colspan="8" class="py-2 px-3">
+                                <div class="flex items-center justify-between gap-2 flex-wrap">
+                                    <div class="flex items-center gap-2.5">
+                                        ${g.setPhoto ? `<img src="${g.setPhoto}" onclick="openImageModal('${g.setPhoto.replace(/'/g, "\\'")}', '${g.setName.replace(/'/g, "\\'")}')" class="w-7 h-7 rounded-md object-cover border border-zinc-700 cursor-pointer">` : ''}
+                                        ${!eg.eraName ? `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-rose-500/15 text-rose-400 border border-rose-500/30">${eg.batchName}</span>` : `<span class="text-zinc-500 text-xs">↳</span>`}
+                                        <span class="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/30">Set</span>
+                                        <strong class="text-xs text-white">${g.setName}</strong>
+                                        <span class="text-[11px] text-zinc-400">(${g.orders.length} ${g.orders.length === 1 ? 'card' : 'cards'})</span>
+                                    </div>
+                                    <button type="button" onclick="toggleSelectSetGroup(${idsJson}, ${!allGroupSelected})" class="text-[11px] font-semibold text-fuchsia-300 hover:underline">
+                                        ${allGroupSelected ? 'Desmarcar este Set' : 'Selecionar todo este Set'}
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        ${g.orders.map(o => buildAdminOrderRowHTML(o)).join('')}`;
+                    }).join('');
+
+                    return eraHeaderHtml + setsHtml;
+                }).join('');
+            }
+
+            updateBulkSelectionBar();
             lucide.createIcons();
         }
 
@@ -2222,22 +2807,72 @@
             showToast('Caixa criada!');
         }
 
+        function addNewEra(e) {
+            e.preventDefault();
+            const batchId = document.getElementById('new-era-batch').value;
+            const name = document.getElementById('new-era-name').value.trim();
+            const description = document.getElementById('new-era-description').value.trim();
+            if (!batchId || !name) return;
+            appData.eras = appData.eras || [];
+            const exists = appData.eras.find(x => x.batchId === batchId && x.name.toLowerCase() === name.toLowerCase());
+            if (exists) {
+                exists.description = description || exists.description;
+            } else {
+                appData.eras.unshift({ id: 'era_' + Date.now(), batchId, name, description });
+            }
+            e.target.reset();
+            saveData();
+            showToast(`Era "${name}" adicionada!`);
+        }
+
+        function renameEraInBatch(batchId, oldEraName, newEraName) {
+            const cleanNew = String(newEraName || '').trim();
+            if (!cleanNew || cleanNew === oldEraName) return;
+            (appData.eras || []).forEach(e => {
+                if (e.batchId === batchId && e.name === oldEraName) e.name = cleanNew;
+            });
+            (appData.sets || []).forEach(s => {
+                if (s.batchId === batchId && (s.era || '') === oldEraName) s.era = cleanNew;
+            });
+            (appData.orders || []).forEach(o => {
+                if (o.batchId === batchId && (o.era || '') === oldEraName) o.era = cleanNew;
+            });
+            saveData();
+            showToast(`Era renomeada para "${cleanNew}"!`);
+        }
+
         function addNewSet(e) {
             e.preventDefault();
             const urlPhoto = document.getElementById('new-set-photo-url').value.trim();
+            const batchId = document.getElementById('new-set-batch').value;
+            const era = document.getElementById('new-set-era') ? document.getElementById('new-set-era').value : '';
             appData.sets.unshift({
                 id: 's_' + Date.now(),
-                batchId: document.getElementById('new-set-batch').value,
+                batchId,
+                era,
                 name: document.getElementById('new-set-name').value.trim(),
+                description: document.getElementById('new-set-description').value.trim(),
                 defaultPrice: parseFloat(document.getElementById('new-set-price').value) || 0,
                 deadline: document.getElementById('new-set-deadline').value.trim(),
                 photo: tempUploadedSetPhoto || urlPhoto || ''
             });
             tempUploadedSetPhoto = '';
-            document.getElementById('new-set-file-label').textContent = 'Subir Foto da Galeria';
+            document.getElementById('new-set-file-label').textContent = 'Subir Foto';
             e.target.reset();
             saveData();
             showToast('Set adicionado!');
+        }
+
+        function updateSetField(setId, field, value) {
+            const s = getSetById(setId);
+            if (!s) return;
+            s[field] = value;
+            if (field === 'era') {
+                appData.orders.forEach(o => {
+                    if (o.setId === setId) o.era = value;
+                });
+            }
+            saveData();
         }
 
         function updateBatchStatus(batchId, newStatus) {
@@ -2253,36 +2888,98 @@
             if (!grid) return;
             grid.innerHTML = appData.batches.map(b => {
                 const sets = appData.sets.filter(s => s.batchId === b.id);
+                const eraNames = getBatchErasList(b.id);
+                const sections = [...eraNames, ''];
+
+                const renderSetCard = (s) => {
+                    const sOrdersCount = appData.orders.filter(o => o.setId === s.id).length;
+                    const safeDesc = (s.description || '').replace(/"/g, '&quot;');
+                    const eraSelectHtml = eraNames.length ? `
+                        <select onchange="updateSetField('${s.id}', 'era', this.value)" title="Mover Set de Era" class="bg-zinc-900 border border-zinc-800 rounded-lg px-2 py-1 text-[10px] text-amber-300 max-w-[140px]">
+                            <option value="" ${!(s.era) ? 'selected' : ''}>Sem Era</option>
+                            ${eraNames.map(en => `<option value="${en.replace(/"/g, '&quot;')}" ${s.era === en ? 'selected' : ''}>${en}</option>`).join('')}
+                        </select>
+                    ` : '';
+                    return `
+                    <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 flex items-start gap-3">
+                        ${s.photo ? `<img src="${s.photo}" onclick="openImageModal('${s.photo.replace(/'/g, "\\'")}', '${s.name.replace(/'/g, "\\'")}')" class="w-16 h-16 rounded-lg object-cover cursor-pointer shrink-0">` : `<div class="w-16 h-16 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-600 shrink-0"><i data-lucide="image" class="w-4 h-4"></i></div>`}
+                        <div class="min-w-0 flex-1 space-y-1.5">
+                            <div class="flex items-center justify-between gap-2 flex-wrap">
+                                <p class="text-xs font-bold text-white truncate">${s.name}</p>
+                                <div class="flex items-center gap-1.5">
+                                    ${eraSelectHtml}
+                                    <span class="text-[10px] px-2 py-0.5 rounded bg-zinc-900 text-zinc-400 shrink-0">${sOrdersCount} card(s)</span>
+                                </div>
+                            </div>
+                            <input type="text" value="${safeDesc}" placeholder="Descrição deste Set..." onchange="updateSetField('${s.id}', 'description', this.value.trim())" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1 text-[11px] text-zinc-200 placeholder-zinc-600 focus:border-rose-500 focus:outline-none">
+                            <p class="text-[11px] text-rose-400">${formatBRL(s.defaultPrice)}${s.deadline ? ` • Prazo: ${s.deadline}` : ''}</p>
+                        </div>
+                    </div>`;
+                };
+
+                const sectionsHtml = sections.map(eraKey => {
+                    const setsInEra = sets.filter(s => (s.era || '') === eraKey);
+                    if (!eraKey && setsInEra.length === 0) return '';
+                    if (!eraKey) {
+                        return `
+                        <div class="space-y-2.5">
+                            ${eraNames.length ? `<p class="text-[11px] font-semibold text-zinc-400">Sets Gerais (sem Era):</p>` : ''}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${setsInEra.map(renderSetCard).join('')}</div>
+                        </div>`;
+                    }
+                    const safeEra = eraKey.replace(/"/g, '&quot;');
+                    return `
+                    <div class="bg-zinc-950/60 border border-amber-500/25 rounded-2xl p-3.5 space-y-3">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-amber-500/20">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 shrink-0">Era</span>
+                                <input type="text" value="${safeEra}" onchange="renameEraInBatch('${b.id}', '${eraKey.replace(/'/g, "\\'")}', this.value)" class="bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1 text-xs font-bold text-amber-100 flex-1 max-w-md focus:border-amber-400 focus:outline-none">
+                            </div>
+                            <span class="text-[11px] text-zinc-400">${setsInEra.length} ${setsInEra.length === 1 ? 'set' : 'sets'}</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            ${setsInEra.length ? setsInEra.map(renderSetCard).join('') : `<p class="text-xs text-zinc-500 col-span-full">Nenhum set cadastrado nesta Era ainda.</p>`}
+                        </div>
+                    </div>`;
+                }).join('');
+
                 return `
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
-                        <h4 class="text-base font-bold text-white">${b.name}</h4>
+                        <div>
+                            <h4 class="text-base font-bold text-white">${b.name}</h4>
+                            <span class="text-[11px] text-zinc-400">${eraNames.length} ${eraNames.length === 1 ? 'era' : 'eras'} • ${sets.length} ${sets.length === 1 ? 'set' : 'sets'} nesta caixa</span>
+                        </div>
                         <select onchange="updateBatchStatus('${b.id}', this.value)" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-white">
                             ${STAGES.map(s => `<option value="${s.id}" ${s.id === b.status ? 'selected' : ''}>${s.label}</option>`).join('')}
                         </select>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        ${sets.map(s => `
-                            <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 flex items-center gap-3">
-                                ${s.photo ? `<img src="${s.photo}" onclick="openImageModal('${s.photo.replace(/'/g, "\\'")}', '${s.name.replace(/'/g, "\\'")}')" class="w-14 h-14 rounded-lg object-cover cursor-pointer">` : `<div class="w-14 h-14 rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-600"><i data-lucide="image" class="w-4 h-4"></i></div>`}
-                                <div class="min-w-0 flex-1">
-                                    <p class="text-xs font-bold text-white truncate">${s.name}</p>
-                                    <p class="text-[11px] text-rose-400">${formatBRL(s.defaultPrice)}</p>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
+                    <div class="space-y-4">${sectionsHtml}</div>
                 </div>`;
             }).join('');
             lucide.createIcons();
         }
 
         // --- FORMS BUILDER ---
+        function syncFormBuilderEras() {
+            const bId = document.getElementById('form-builder-batch').value;
+            const eras = getBatchErasList(bId);
+            const sel = document.getElementById('form-builder-era');
+            if (sel) {
+                sel.innerHTML = `<option value="">(Todas as Eras)</option>` +
+                    eras.map(e => `<option value="${e.replace(/"/g, '&quot;')}">${e}</option>`).join('');
+            }
+            syncFormBuilderSets();
+        }
+
         function syncFormBuilderSets() {
             const bId = document.getElementById('form-builder-batch').value;
-            const sets = appData.sets.filter(s => s.batchId === bId);
+            const eVal = document.getElementById('form-builder-era') ? document.getElementById('form-builder-era').value : '';
+            const sets = appData.sets.filter(s => s.batchId === bId && (!eVal || (s.era || '') === eVal));
             const sel = document.getElementById('form-builder-set');
-            sel.innerHTML = sets.length ? sets.map(s => `<option value="${s.id}">${s.name}</option>`).join('') : `<option value="">Crie um set primeiro</option>`;
+            sel.innerHTML = sets.length
+                ? sets.map(s => `<option value="${s.id}">${!eVal && s.era ? `[${s.era}] ` : ''}${s.name}</option>`).join('')
+                : `<option value="">Crie um set primeiro</option>`;
             syncFormBuilderDefaults();
         }
 
@@ -2301,10 +2998,12 @@
                 showToast('Selecione um set válido.', 'error');
                 return;
             }
+            const setObj = getSetById(setId);
             const options = document.getElementById('form-builder-options').value.split(',').map(s => s.trim()).filter(Boolean);
             appData.forms.unshift({
                 id: 'f_' + Date.now(),
                 batchId: document.getElementById('form-builder-batch').value,
+                era: (setObj && setObj.era) || '',
                 setId,
                 price: parseFloat(document.getElementById('form-builder-price').value) || 0,
                 deadline: document.getElementById('form-builder-deadline').value.trim(),
@@ -2597,9 +3296,17 @@
                         for (const csvE of validCsvs) {
                             const parts = csvE.name.split('/').filter(p => !['particular e compartilhado', 'private & shared'].includes(p.toLowerCase()));
                             let bName = parts.length >= 2 ? cleanNotionName(parts[0]) : 'CAIXA NOTION';
-                            let sName = parts.length >= 3 ? `${cleanNotionName(parts[1])} • ${cleanNotionName(parts[parts.length - 1])}` : cleanNotionName(parts[parts.length - 1]);
+                            let eName = parts.length >= 3 ? cleanNotionName(parts[1]) : '';
+                            let sName = cleanNotionName(parts[parts.length - 1]);
                             const orders = extractOrdersFromCSVRows(parseCSVText(await csvE.async('string')), defaultPrice, ignoreSobras);
                             if (!orders.length) continue;
+
+                            // Detecta prazo no nome da Era ou do Set do Notion (ex: "vencimento 07 07" ou "pagamento até 15 07")
+                            const deadlineMatch = `${eName} ${sName}`.match(/(?:vencimento|pagamento\s*at[eé]|prazo)\s*(\d{1,2})[\s\/\-](\d{1,2})/i);
+                            const detectedDeadline = deadlineMatch ? `${deadlineMatch[1].padStart(2, '0')}/${deadlineMatch[2].padStart(2, '0')}` : '';
+                            if (detectedDeadline) {
+                                orders.forEach(o => { if (!o.dueDate) o.dueDate = detectedDeadline; });
+                            }
 
                             const rawDir = csvE.name.split('/'); rawDir.pop();
                             const sameDir = rawDir.join('/'); rawDir.pop();
@@ -2607,8 +3314,8 @@
                             const photo = imgCache.get(sameDir) || imgCache.get(parentDir) || '';
 
                             const bObj = getBatch(bName);
-                            const key = sName.toLowerCase();
-                            if (!bObj.sets.has(key)) bObj.sets.set(key, { name: sName, photo, defaultPrice: orders[0].price || defaultPrice, selected: true, orders: [] });
+                            const key = `${eName.toLowerCase()}::${sName.toLowerCase()}`;
+                            if (!bObj.sets.has(key)) bObj.sets.set(key, { era: eName, name: sName, photo, deadline: detectedDeadline, defaultPrice: orders[0].price || defaultPrice, selected: true, orders: [] });
                             bObj.sets.get(key).orders.push(...orders);
                         }
                     } else if (file.name.toLowerCase().endsWith('.csv')) {
@@ -2616,7 +3323,12 @@
                         if (orders.length) {
                             const bObj = getBatch('CSV IMPORTADO');
                             const sName = cleanNotionName(file.name);
-                            bObj.sets.set(sName.toLowerCase(), { name: sName, photo: '', defaultPrice: orders[0].price || defaultPrice, selected: true, orders });
+                            const deadlineMatch = sName.match(/(?:vencimento|pagamento\s*at[eé]|prazo)\s*(\d{1,2})[\s\/\-](\d{1,2})/i);
+                            const detectedDeadline = deadlineMatch ? `${deadlineMatch[1].padStart(2, '0')}/${deadlineMatch[2].padStart(2, '0')}` : '';
+                            if (detectedDeadline) {
+                                orders.forEach(o => { if (!o.dueDate) o.dueDate = detectedDeadline; });
+                            }
+                            bObj.sets.set(`::${sName.toLowerCase()}`, { era: '', name: sName, photo: '', deadline: detectedDeadline, defaultPrice: orders[0].price || defaultPrice, selected: true, orders });
                         }
                     }
                 }
@@ -2634,30 +3346,68 @@
             }
         }
 
+        function renamePendingImportEra(bIdx, oldEra, newEra) {
+            const clean = String(newEra || '').trim();
+            pendingNotionImport[bIdx].sets.forEach(s => {
+                if ((s.era || '') === oldEra) s.era = clean;
+            });
+            renderNotionImportPreview();
+        }
+
         function renderNotionImportPreview() {
             let tSets = 0, tOrders = 0, tPhotos = 0;
+            const eraNamesSet = new Set();
             pendingNotionImport.forEach(b => b.sets.forEach(s => {
-                if (s.selected) { tSets++; tOrders += s.orders.length; if (s.photo) tPhotos++; }
+                if (s.selected) {
+                    tSets++;
+                    tOrders += s.orders.length;
+                    if (s.photo) tPhotos++;
+                    if (s.era && s.era.trim()) eraNamesSet.add(`${b.name}::${s.era.trim()}`);
+                }
             }));
             document.getElementById('preview-import-batches').textContent = pendingNotionImport.length;
+            document.getElementById('preview-import-eras').textContent = eraNamesSet.size;
             document.getElementById('preview-import-sets').textContent = tSets;
             document.getElementById('preview-import-orders').textContent = tOrders;
             document.getElementById('preview-import-photos').textContent = tPhotos;
 
-            document.getElementById('notion-import-details-list').innerHTML = pendingNotionImport.map((b, bIdx) => `
-                <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 space-y-2.5">
+            document.getElementById('notion-import-details-list').innerHTML = pendingNotionImport.map((b, bIdx) => {
+                const erasMap = new Map();
+                b.sets.forEach((s, sIdx) => {
+                    const eKey = s.era || '';
+                    if (!erasMap.has(eKey)) erasMap.set(eKey, []);
+                    erasMap.get(eKey).push({ s, sIdx });
+                });
+
+                const erasBlocksHtml = Array.from(erasMap.entries()).map(([eName, items]) => {
+                    const safeEra = eName.replace(/"/g, '&quot;');
+                    const headerHtml = eName ? `
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">Era</span>
+                            <input type="text" value="${safeEra}" onchange="renamePendingImportEra(${bIdx}, '${eName.replace(/'/g, "\\'")}', this.value)" class="bg-zinc-900 border border-zinc-700 rounded-lg px-2.5 py-1 text-xs font-bold text-amber-100 flex-1 max-w-sm">
+                        </div>
+                    ` : '';
+                    return `
+                    <div class="${eName ? 'bg-zinc-900/50 border border-amber-500/20 rounded-xl p-3' : ''} space-y-2">
+                        ${headerHtml}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            ${items.map(({ s, sIdx }) => `
+                                <div class="flex items-center gap-2 p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs">
+                                    <input type="checkbox" ${s.selected ? 'checked' : ''} onchange="pendingNotionImport[${bIdx}].sets[${sIdx}].selected = this.checked; renderNotionImportPreview();" class="bloom-checkbox shrink-0">
+                                    <input type="text" value="${s.name.replace(/"/g, '&quot;')}" onchange="pendingNotionImport[${bIdx}].sets[${sIdx}].name = this.value.trim()" class="bg-zinc-950 border border-zinc-800 rounded-lg px-2 py-1 text-xs text-white font-medium flex-1 min-w-0">
+                                    <span class="text-emerald-400 font-bold shrink-0">${s.orders.length}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                }).join('');
+
+                return `
+                <div class="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 space-y-3">
                     <div class="font-bold text-xs text-rose-400">Caixa: ${b.name}</div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        ${b.sets.map((s, sIdx) => `
-                            <label class="flex items-center gap-2.5 p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs cursor-pointer">
-                                <input type="checkbox" ${s.selected ? 'checked' : ''} onchange="pendingNotionImport[${bIdx}].sets[${sIdx}].selected = this.checked; renderNotionImportPreview();" class="bloom-checkbox">
-                                <span class="truncate text-white font-medium flex-1">${s.name}</span>
-                                <span class="text-emerald-400 font-bold">${s.orders.length}</span>
-                            </label>
-                        `).join('')}
-                    </div>
-                </div>
-            `).join('');
+                    <div class="space-y-2.5">${erasBlocksHtml}</div>
+                </div>`;
+            }).join('');
             document.getElementById('notion-import-preview').classList.remove('hidden');
         }
 
@@ -2671,6 +3421,7 @@
             if (!pendingNotionImport) return;
             const status = document.getElementById('notion-import-status').value || 'em andamento';
             let count = 0;
+            appData.eras = appData.eras || [];
             pendingNotionImport.forEach((impB, bIdx) => {
                 const validSets = impB.sets.filter(s => s.selected && s.orders.length);
                 if (!validSets.length) return;
@@ -2680,16 +3431,23 @@
                     appData.batches.unshift(batch);
                 }
                 validSets.forEach((impS, sIdx) => {
-                    const setObj = { id: 's_imp_' + Date.now() + '_' + bIdx + '_' + sIdx, batchId: batch.id, name: impS.name, deadline: '', defaultPrice: impS.defaultPrice, photo: impS.photo || '' };
+                    const eraName = (impS.era || '').trim();
+                    if (eraName && !appData.eras.some(e => e.batchId === batch.id && e.name.toLowerCase() === eraName.toLowerCase())) {
+                        appData.eras.unshift({ id: 'era_imp_' + Date.now() + '_' + bIdx + '_' + sIdx, batchId: batch.id, name: eraName, description: '' });
+                    }
+                    const setObj = { id: 's_imp_' + Date.now() + '_' + bIdx + '_' + sIdx, batchId: batch.id, era: eraName, name: impS.name, deadline: impS.deadline || '', defaultPrice: impS.defaultPrice, photo: impS.photo || '' };
                     appData.sets.unshift(setObj);
                     impS.orders.forEach((ord, oIdx) => {
                         appData.orders.unshift({
                             id: 'o_imp_' + Date.now() + '_' + bIdx + '_' + sIdx + '_' + oIdx,
                             participant: ord.participant,
                             batchId: batch.id,
+                            era: eraName,
                             setId: setObj.id,
                             drop: setObj.name,
                             item: ord.item,
+                            description: ord.description || '',
+                            dueDate: ord.dueDate || impS.deadline || '',
                             price: ord.price,
                             paidItem: ord.paidItem,
                             shipping: ord.shipping,
@@ -2703,7 +3461,7 @@
             });
             cancelNotionImportPreview();
             saveData();
-            showToast(`${count} pedidos importados e sincronizados!`);
+            showToast(`${count} pedidos importados com hierarquia Caixa › Era › Set!`);
             switchAdminTab('orders');
         }
 
