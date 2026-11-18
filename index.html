@@ -116,6 +116,10 @@
     .nav-tab.is-active { color:#fff; background:rgba(225,29,72,.14); box-shadow:inset 0 -2px 0 var(--gold); }
     .nav-tab.nav-ghost { border-color:var(--line); }
     .step-dot { flex:none; width:28px; height:28px; border-radius:999px; background:rgba(225,29,72,.16); border:1px solid rgba(251,113,133,.4); color:#fecdd3; font-weight:600; font-size:.8rem; display:flex; align-items:center; justify-content:center; }
+    .sbtn { padding:.35rem .75rem; border-radius:8px; font-size:.8125rem; color:#d9d4e6; border:1px solid var(--line); transition:background .15s,color .15s; }
+    .sbtn:hover { background:rgba(255,255,255,.07); color:#fff; }
+    .sbtn.danger { color:#fda4af; border-color:rgba(251,113,133,.3); }
+    .sbtn.danger:hover { background:rgba(225,29,72,.14); }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
   </style>
 </head>
@@ -641,7 +645,7 @@
             <input type="number" step="0.01" id="bulkItemPrice" placeholder="Valor Item (R$)" class="input-gothic px-2.5 py-1.5 rounded-lg" />
             <input type="number" step="0.01" id="bulkIntlShipping" placeholder="Frete Inter (R$)" class="input-gothic px-2.5 py-1.5 rounded-lg" />
             <input type="number" step="0.01" id="bulkCustomsFee" placeholder="Taxa Alfând. (R$)" class="input-gothic px-2.5 py-1.5 rounded-lg" />
-            <input type="date" id="bulkDueDate" title="Prazo de Pagamento" class="input-gothic px-2.5 py-1.5 rounded-lg" />
+            <label class="flex flex-col gap-0.5 text-[11px] text-ash">Venc. item<input type="date" id="bulkDueItem" class="input-gothic px-2.5 py-1.5 rounded-lg" /></label><label class="flex flex-col gap-0.5 text-[11px] text-ash">Venc. frete<input type="date" id="bulkDueShip" class="input-gothic px-2.5 py-1.5 rounded-lg" /></label><label class="flex flex-col gap-0.5 text-[11px] text-ash">Venc. taxa<input type="date" id="bulkDueTax" class="input-gothic px-2.5 py-1.5 rounded-lg" /></label>
             <input type="text" id="bulkCardDesc" placeholder="Nova Descrição Card" class="input-gothic px-2.5 py-1.5 rounded-lg" />
             <select id="bulkPayAction" class="input-gothic px-2.5 py-1.5 rounded-lg">
               <option value="">-- Status Pagto --</option>
@@ -706,6 +710,8 @@
               <input type="text" id="newSetDesc" placeholder="Descrição do Set" class="input-gothic w-full px-3 py-2 rounded-xl" />
               <input type="url" id="newSetImgUrl" placeholder="URL da Foto de Referência (opcional)" class="input-gothic w-full px-3 py-2 rounded-xl" />
               <input type="file" id="newSetImgFile" accept="image/*" class="input-gothic w-full px-2 py-1.5 rounded-xl text-[11px]" />
+              <label for="newSetCoverFile" class="block text-[11px] text-ash">Capa do set (formato 3:1, opcional)</label>
+              <input type="file" id="newSetCoverFile" accept="image/*" class="input-gothic w-full px-2 py-1.5 rounded-xl text-[11px]" />
               <button type="submit" class="btn-crimson w-full py-2 rounded-xl font-semibold text-white">+ Salvar Set & Foto</button>
             </form>
           </div>
@@ -812,7 +818,7 @@
             <input type="text" id="formEra" required placeholder="Era" class="input-gothic px-3 py-2 rounded-xl" />
             <input type="text" id="formSet" required placeholder="Set" class="input-gothic px-3 py-2 rounded-xl" />
             <input type="number" step="0.01" id="formUnitPrice" required placeholder="Valor Unitário (R$)" class="input-gothic px-3 py-2 rounded-xl" />
-            <input type="date" id="formDueDate" title="Prazo de Pagamento" class="input-gothic px-3 py-2 rounded-xl" />
+            <input type="date" id="formDueDate" title="Vencimento do item" aria-label="Vencimento do item" class="input-gothic px-3 py-2 rounded-xl" />
             <input type="text" id="formOptions" required placeholder="Opções separadas por vírgula (ex: Shownu, Minhyuk, Kihyun)" class="input-gothic sm:col-span-2 px-3 py-2 rounded-xl" />
             <button type="submit" class="btn-crimson px-4 py-2 rounded-xl font-semibold text-white">+ Publicar Formulário</button>
           </form>
@@ -902,6 +908,20 @@
       </div>
     </div>
   </footer>
+
+  <div id="structModal" role="dialog" aria-modal="true" aria-labelledby="structTitle" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <form onsubmit="submitStruct(event)" class="gothic-card rounded-2xl max-w-md w-full p-6 space-y-4 my-auto">
+      <div class="flex items-start justify-between gap-3">
+        <div><h3 id="structTitle" class="font-serif text-2xl font-bold text-white"></h3><p id="structHelp" class="text-sm text-ash mt-1"></p></div>
+        <button type="button" aria-label="Fechar" onclick="closeModal('structModal')" class="text-ash hover:text-white text-lg leading-none">✕</button>
+      </div>
+      <div id="structFields" class="space-y-3"></div>
+      <div class="flex justify-end gap-2">
+        <button type="button" onclick="closeModal('structModal')" class="px-4 py-2.5 rounded-xl text-sm text-ash hover:text-white border border-white/10">Cancelar</button>
+        <button id="structSubmit" type="submit" class="btn-crimson px-5 py-2.5 rounded-xl text-sm font-semibold text-white">Salvar</button>
+      </div>
+    </form>
+  </div>
 
   <datalist id="boxesDatalist"></datalist>
   <datalist id="joinersDatalist"></datalist>
@@ -1024,8 +1044,16 @@
           <input type="text" id="ordSet" required class="input-gothic w-full px-3 py-2 rounded-xl" />
         </div>
         <div>
-          <label class="text-ash block mb-1">Prazo de Pagamento</label>
-          <input type="date" id="ordDueDate" class="input-gothic w-full px-3 py-2 rounded-xl" />
+          <label class="text-ash block mb-1" for="ordDueItem">Vencimento do item</label>
+          <input type="date" id="ordDueItem" class="input-gothic w-full px-3 py-2 rounded-xl" />
+        </div>
+        <div>
+          <label class="text-ash block mb-1" for="ordDueShip">Vencimento do frete</label>
+          <input type="date" id="ordDueShip" class="input-gothic w-full px-3 py-2 rounded-xl" />
+        </div>
+        <div>
+          <label class="text-ash block mb-1" for="ordDueTax">Vencimento da taxa</label>
+          <input type="date" id="ordDueTax" class="input-gothic w-full px-3 py-2 rounded-xl" />
         </div>
         <div>
           <label class="text-ash block mb-1">Valor Item (R$)</label>
@@ -1587,6 +1615,70 @@
       if (!skipRender) renderHomeJoinerView();
     }
 
+    // ---- Vencimentos (item, frete, taxa) ----
+    function getDues(o) {
+      return { item: o.dueItem || o.dueDate || '', ship: o.dueShipping || o.dueDate || '', tax: o.dueCustoms || o.dueDate || '' };
+    }
+    function dueInline(date, paid) {
+      if (paid || !date) return '';
+      const today = new Date().toLocaleDateString('en-CA'), f = formatDateBR(date);
+      if (date < today) return ` · <span class="font-semibold text-rose-300">venceu em ${f}</span>`;
+      if (date === today) return ' · <span class="font-semibold text-amber-300">vence hoje</span>';
+      return ` · vence ${f}`;
+    }
+    async function setOrderDue(id, kind, val) {
+      const o = window.state.orders.find(x => x.id === id); if (!o) return;
+      const d = getDues(o); d[kind] = val;
+      await window.fb.update('orders', id, { dueItem: d.item, dueShipping: d.ship, dueCustoms: d.tax, dueDate: '' });
+    }
+
+    // ---- Recolher / expandir sets ----
+    function _collapsed() { return (window.state.collapsedSets = window.state.collapsedSets || new Set()); }
+    function setKey(p, b, e, s) { return [p, b, e, s].join('||'); }
+    function setToggleBtn(key, label, inner) {
+      const c = _collapsed().has(key);
+      return `<button type="button" data-key="${escapeHtml(key)}" onclick="toggleSetCard(this)" aria-expanded="${!c}" aria-label="Mostrar ou ocultar ${escapeHtml(label)}" class="flex items-center gap-2 text-left min-w-0">
+        <svg class="w-5 h-5 shrink-0 text-amber-200 transition-transform ${c ? '-rotate-90' : ''}" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06z" clip-rule="evenodd"/></svg>
+        <span class="min-w-0">${inner}</span></button>`;
+    }
+    function toggleSetCard(btn) {
+      const k = btn.dataset.key, set = _collapsed(), body = btn.closest('[data-setcard]').querySelector('[data-setbody]');
+      const hide = !set.has(k);
+      hide ? set.add(k) : set.delete(k);
+      body.classList.toggle('hidden', hide);
+      btn.setAttribute('aria-expanded', String(!hide));
+      btn.querySelector('svg').classList.toggle('-rotate-90', hide);
+    }
+
+    // ---- Capa 3:1 (formato header do Twitter) ----
+    function compressBannerToDataUrl(file) {
+      return new Promise(res => {
+        if (!file || !file.type.startsWith('image/')) { res(''); return; }
+        const r = new FileReader();
+        r.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const W = 1200, H = 400, c = document.createElement('canvas'); c.width = W; c.height = H;
+            const sc = Math.max(W / img.width, H / img.height), w = img.width * sc, h = img.height * sc;
+            c.getContext('2d').drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+            res(c.toDataURL('image/jpeg', 0.8));
+          };
+          img.onerror = () => res('');
+          img.src = r.result;
+        };
+        r.onerror = () => res('');
+        r.readAsDataURL(file);
+      });
+    }
+    async function uploadSetCover(inp, id) {
+      const f = inp.files[0]; if (!f) return;
+      const d = await compressBannerToDataUrl(f);
+      if (!d) { showToast('Escolha um arquivo de imagem.', 'error'); return; }
+      try { await window.fb.update('setsMeta', id, { coverUrl: d }); showToast('Capa salva!', 'success'); }
+      catch (e) { showToast('Não foi possível salvar a capa.', 'error'); }
+      inp.value = '';
+    }
+
     function getDueDateBadge(dueDate, hasPending) {
       if (!dueDate) return '';
       const today = new Date().toISOString().slice(0, 10);
@@ -1640,9 +1732,8 @@
 
         if (b.pending > 0.01) {
           pendingItemsCount++;
-          if (o.dueDate) {
-            dueDateMap.set(o.dueDate, (dueDateMap.get(o.dueDate) || 0) + b.pending);
-          }
+          const dd = getDues(o);
+          [[dd.item, b.itemPend], [dd.ship, b.shipPend], [dd.tax, b.taxPend]].forEach(([dt, amt]) => { if (dt && amt > 0.01) dueDateMap.set(dt, (dueDateMap.get(dt) || 0) + amt); });
         }
       });
 
@@ -1737,43 +1828,39 @@
                       ${Object.entries(sets).map(([setName, items]) => {
                         const sMeta = window.state.setsMeta.find(s => s.box === boxName && s.era === eraName && s.name === setName);
                         return `
-                          <div class="rounded-2xl bg-velvet/85 border border-white/10 p-4 space-y-3">
+                          <div data-setcard class="rounded-2xl bg-velvet/85 border border-white/10 p-4 space-y-3">
                             <div class="flex flex-wrap items-center justify-between gap-3">
-                              <div class="flex items-center gap-3">
-                                ${sMeta?.imageUrl ? `
-                                  <img src="${escapeHtml(sMeta.imageUrl)}" onclick="openImageLightbox('${escapeHtml(sMeta.imageUrl)}', '${escapeHtml(setName)}')" class="w-12 h-12 rounded-xl object-cover border border-amber-400/40 cursor-pointer hover:scale-105 transition" alt="${escapeHtml(setName)}" />
-                                ` : ''}
-                                <div>
-                                  <p class="text-xs sm:text-sm font-bold text-rose-300">✦ Set: ${escapeHtml(setName)}</p>
-                                  ${sMeta?.description ? `<p class="text-[11px] text-ash">${escapeHtml(sMeta.description)}</p>` : ''}
-                                </div>
+                              <div class="flex items-center gap-3 min-w-0">
+                                ${sMeta?.imageUrl ? `<img src="${escapeHtml(sMeta.imageUrl)}" onclick="openImageLightbox(this.src, this.alt)" class="w-12 h-12 rounded-xl object-cover border border-white/15 cursor-zoom-in shrink-0" alt="${escapeHtml(setName)}" />` : ''}
+                                ${setToggleBtn(setKey('h', boxName, eraName, setName), setName, `<span class="block text-sm sm:text-base font-semibold text-white">${escapeHtml(setName)}</span>${sMeta?.description ? `<span class="block text-xs text-ash">${escapeHtml(sMeta.description)}</span>` : ''}`)}
                               </div>
-                              <span class="text-[11px] text-ash">${items.length} card(s)</span>
+                              <span class="text-xs text-ash">${items.length} ${items.length === 1 ? 'card' : 'cards'}</span>
                             </div>
-
-                            <div class="divide-y divide-white/5">
+                            <div data-setbody class="${_collapsed().has(setKey('h', boxName, eraName, setName)) ? 'hidden ' : ''}divide-y divide-white/5">
+                              ${sMeta?.coverUrl ? `<div class="pb-3"><img src="${escapeHtml(sMeta.coverUrl)}" onclick="openImageLightbox(this.src, this.alt)" alt="Capa de ${escapeHtml(setName)}" class="w-full aspect-[3/1] object-cover rounded-xl border border-white/10 cursor-zoom-in" /></div>` : ''}
                               ${items.map(it => {
                                 const b = getOrderPendingBreakdown(it);
+                                const d = getDues(it);
                                 return `
                                   <div class="py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                                     <div class="space-y-1">
                                       <div class="flex flex-wrap items-center gap-2">
                                         <span class="font-bold text-white text-sm">${escapeHtml(it.itemCode)}</span>
                                         ${it.cardDesc ? `<span class="text-ash">— ${escapeHtml(it.cardDesc)}</span>` : ''}
-                                        ${getDueDateBadge(it.dueDate, b.pending > 0.01)}
+                                        
                                       </div>
                                       <div class="flex flex-wrap gap-1.5 text-[10px]">
                                         <span class="px-2 py-0.5 rounded-full ${it.itemPaid ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30' : 'bg-rose-950 text-rose-300 border border-rose-500/30'}">
-                                          Item: ${formatBRL(it.itemPrice)} (${it.itemPaid ? 'Pago' : 'Pendente'})
+                                          Item: ${formatBRL(it.itemPrice)} (${it.itemPaid ? 'Pago' : 'Pendente'})${dueInline(d.item, it.itemPaid)}
                                         </span>
                                         ${(parseFloat(it.intlShipping) || 0) > 0 ? `
                                           <span class="px-2 py-0.5 rounded-full ${it.intlShippingPaid ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30' : 'bg-amber-950 text-amber-300 border border-amber-500/30'}">
-                                            Frete Inter: ${formatBRL(it.intlShipping)} (${it.intlShippingPaid ? 'Pago' : 'Pendente'})
+                                            Frete: ${formatBRL(it.intlShipping)} (${it.intlShippingPaid ? 'Pago' : 'Pendente'})${dueInline(d.ship, it.intlShippingPaid)}
                                           </span>
                                         ` : ''}
                                         ${(parseFloat(it.customsFee) || 0) > 0 ? `
                                           <span class="px-2 py-0.5 rounded-full ${it.customsPaid ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30' : 'bg-purple-950 text-purple-200 border border-purple-500/30'}">
-                                            Taxa: ${formatBRL(it.customsFee)} (${it.customsPaid ? 'Pago' : 'Pendente'})
+                                            Taxa: ${formatBRL(it.customsFee)} (${it.customsPaid ? 'Pago' : 'Pendente'})${dueInline(d.tax, it.customsPaid)}
                                           </span>
                                         ` : ''}
                                       </div>
@@ -2261,7 +2348,7 @@
         itemPaid: false,
         intlShippingPaid: true,
         customsPaid: true,
-        dueDate: f.dueDate || ''
+        dueItem: f.dueDate || '', dueDate: ''
       });
       showToast('Pedido registrado com sucesso!', 'success');
     }
@@ -2448,14 +2535,14 @@
                 ${Object.entries(sets).map(([st, rows]) => {
                   const setIds = rows.map(r => r.id);
                   return `
-                    <div class="rounded-xl bg-velvet/90 border border-white/10 p-3 space-y-2">
+                    <div data-setcard class="rounded-xl bg-velvet/90 border border-white/10 p-3 space-y-2">
                       <div class="flex flex-wrap items-center justify-between gap-2 pb-1.5 border-b border-white/5">
-                        <span class="text-xs font-semibold text-rose-300">🏷️ Set: ${escapeHtml(st)}</span>
+                        ${setToggleBtn(setKey('a', bx, er, st), st, `<span class="text-sm font-semibold text-rose-300">${escapeHtml(st)}</span><span class="ml-2 text-xs text-ash">(${rows.length})</span>`)}
                         <button type="button" onclick='selectOrderIdsBatch(${JSON.stringify(setIds)})' class="px-2.5 py-1 rounded-lg bg-rose-950/70 hover:bg-rose-900 text-rose-200 border border-rose-500/35 text-[11px]">
                           ☑️ Selecionar todo este Set (${setIds.length})
                         </button>
                       </div>
-                      <div class="divide-y divide-white/5">
+                      <div data-setbody class="${_collapsed().has(setKey('a', bx, er, st)) ? 'hidden ' : ''}divide-y divide-white/5">
                         ${rows.map(r => {
                           const checked = window.state.selectedOrderIds.has(r.id);
                           return `
@@ -2471,9 +2558,8 @@
                                     <span class="text-[10px] text-ash block">Descrição do Card</span>
                                     <input type="text" value="${escapeHtml(r.cardDesc || '')}" placeholder="Descrição..." onchange="window.fb.update('orders', '${r.id}', { cardDesc: this.value })" class="input-gothic w-full px-2 py-1 rounded text-xs mt-0.5" />
                                   </div>
-                                  <div>
-                                    <span class="text-[10px] text-ash block">Prazo Pagamento</span>
-                                    <input type="date" value="${escapeHtml(r.dueDate || '')}" onchange="window.fb.update('orders', '${r.id}', { dueDate: this.value })" class="input-gothic w-full px-2 py-1 rounded text-xs mt-0.5" />
+                                  <div class="sm:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    ${[['item', 'Vencimento do item'], ['ship', 'Vencimento do frete'], ['tax', 'Vencimento da taxa']].map(([k, l]) => `<label class="block"><span class="text-[11px] text-ash block">${l}</span><input type="date" value="${escapeHtml(getDues(r)[k])}" onchange="setOrderDue('${r.id}', '${k}', this.value)" class="input-gothic w-full px-2 py-1 rounded text-xs mt-0.5" /></label>`).join('')}
                                   </div>
                                 </div>
                               </div>
@@ -2539,14 +2625,16 @@
       const itemPrice = document.getElementById('bulkItemPrice').value;
       const intlShipping = document.getElementById('bulkIntlShipping').value;
       const customsFee = document.getElementById('bulkCustomsFee').value;
-      const dueDate = document.getElementById('bulkDueDate').value;
+      const dueItem = document.getElementById('bulkDueItem').value, dueShip = document.getElementById('bulkDueShip').value, dueTax = document.getElementById('bulkDueTax').value;
       const cardDesc = document.getElementById('bulkCardDesc').value.trim();
       const payAct = document.getElementById('bulkPayAction').value;
 
       if (itemPrice !== '') updates.itemPrice = parseFloat(itemPrice) || 0;
       if (intlShipping !== '') updates.intlShipping = parseFloat(intlShipping) || 0;
       if (customsFee !== '') updates.customsFee = parseFloat(customsFee) || 0;
-      if (dueDate) updates.dueDate = dueDate;
+      if (dueItem) updates.dueItem = dueItem;
+      if (dueShip) updates.dueShipping = dueShip;
+      if (dueTax) updates.dueCustoms = dueTax;
       if (cardDesc) updates.cardDesc = cardDesc;
       if (payAct === 'item_paid') updates.itemPaid = true;
       if (payAct === 'item_unpaid') updates.itemPaid = false;
@@ -2587,7 +2675,10 @@
       document.getElementById('ordBox').value = ord ? (ord.box || '') : '';
       document.getElementById('ordEra').value = ord ? (ord.era || '') : '';
       document.getElementById('ordSet').value = ord ? (ord.set || '') : '';
-      document.getElementById('ordDueDate').value = ord ? (ord.dueDate || '') : '';
+      const _d = ord ? getDues(ord) : { item: '', ship: '', tax: '' };
+      document.getElementById('ordDueItem').value = _d.item;
+      document.getElementById('ordDueShip').value = _d.ship;
+      document.getElementById('ordDueTax').value = _d.tax;
       document.getElementById('ordItemPrice').value = ord ? (ord.itemPrice || 0) : 0;
       document.getElementById('ordIntlShip').value = ord ? (ord.intlShipping || 0) : 0;
       document.getElementById('ordCustoms').value = ord ? (ord.customsFee || 0) : 0;
@@ -2607,7 +2698,10 @@
         box: document.getElementById('ordBox').value.trim(),
         era: document.getElementById('ordEra').value.trim(),
         set: document.getElementById('ordSet').value.trim(),
-        dueDate: document.getElementById('ordDueDate').value,
+        dueItem: document.getElementById('ordDueItem').value,
+        dueShipping: document.getElementById('ordDueShip').value,
+        dueCustoms: document.getElementById('ordDueTax').value,
+        dueDate: '',
         itemPrice: parseFloat(document.getElementById('ordItemPrice').value) || 0,
         intlShipping: parseFloat(document.getElementById('ordIntlShip').value) || 0,
         customsFee: parseFloat(document.getElementById('ordCustoms').value) || 0,
@@ -2649,53 +2743,215 @@
       let imageUrl = document.getElementById('newSetImgUrl').value.trim();
       const file = document.getElementById('newSetImgFile').files[0];
       if (file) imageUrl = await compressImageToDataUrl(file);
+      const cf = document.getElementById('newSetCoverFile').files[0];
+      const coverUrl = cf ? await compressBannerToDataUrl(cf) : '';
       await window.fb.add('setsMeta', {
         box: document.getElementById('newSetBox').value.trim(),
         era: document.getElementById('newSetEra').value.trim(),
         name: document.getElementById('newSetName').value.trim(),
         description: document.getElementById('newSetDesc').value.trim(),
-        imageUrl
+        imageUrl,
+        coverUrl
       });
       document.getElementById('newSetName').value = '';
       document.getElementById('newSetDesc').value = '';
       document.getElementById('newSetImgUrl').value = '';
       document.getElementById('newSetImgFile').value = '';
+      document.getElementById('newSetCoverFile').value = '';
       showToast('Set salvo!', 'success');
     }
 
-    function renderAdminStructure() {
-      const box = document.getElementById('adminStructureList');
-      const allBoxNames = Array.from(new Set([
-        ...window.state.boxesMeta.map(b => b.name),
-        ...window.state.orders.map(o => o.box)
-      ].filter(Boolean)));
+    const _enc = v => encodeURIComponent(v).replace(/'/g, '%27');
+    const _dec = v => (v ? decodeURIComponent(v) : '');
+    let _sm = null;
 
-      box.innerHTML = allBoxNames.map(bName => {
-        const bMeta = window.state.boxesMeta.find(x => x.name === bName);
-        const sets = window.state.setsMeta.filter(s => s.box === bName);
+    function renderAdminStructure() {
+      const st = window.state, box = document.getElementById('adminStructureList');
+      const names = Array.from(new Set([...st.boxesMeta.map(b => b.name), ...st.orders.map(o => o.box)].filter(Boolean)));
+      if (!names.length) {
+        box.innerHTML = '<div class="gothic-card rounded-2xl p-8 text-center text-sm text-ash">Nenhuma caixa cadastrada ainda. Crie a primeira no formulário acima.</div>';
+        return;
+      }
+      box.innerHTML = names.map(bn => {
+        const bMeta = st.boxesMeta.find(x => x.name === bn), bo = _enc(bn);
+        const eras = Array.from(new Set([
+          ...st.erasMeta.filter(x => x.box === bn).map(x => x.name),
+          ...st.setsMeta.filter(x => x.box === bn).map(x => x.era),
+          ...st.orders.filter(o => o.box === bn).map(o => o.era)
+        ].filter(Boolean)));
+        const nItems = st.orders.filter(o => o.box === bn).length;
         return `
-          <div class="gothic-card rounded-2xl p-4 space-y-3 text-xs">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <strong class="text-sm text-amber-200">📦 ${escapeHtml(bName)}</strong>
-              <select onchange="updateBoxStatus('${escapeHtml(bName)}', this.value)" class="input-gothic px-3 py-1.5 rounded-xl">
-                ${LOGISTIC_STAGES.map(st => `<option value="${st}" ${(bMeta?.status || 'em andamento') === st ? 'selected' : ''}>${st}</option>`).join('')}
-              </select>
+          <div class="gothic-card rounded-2xl p-4 sm:p-5 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div><strong class="font-serif text-xl text-white">${escapeHtml(bn)}</strong><span class="ml-2 text-sm text-ash">${nItems} ${nItems === 1 ? 'item' : 'itens'}</span></div>
+              <div class="flex flex-wrap items-center gap-2">
+                <select aria-label="Status da caixa" onchange="updateBoxStatus(_dec('${bo}'), this.value)" class="input-gothic px-3 py-1.5 rounded-xl text-sm">
+                  ${LOGISTIC_STAGES.map(x => `<option value="${x}" ${(bMeta?.status || 'em andamento') === x ? 'selected' : ''}>${x}</option>`).join('')}
+                </select>
+                <button type="button" class="sbtn" onclick="structOpen('newEra','${bo}')">Adicionar era</button>
+                <button type="button" class="sbtn" onclick="structOpen('renameBox','${bo}')">Renomear</button>
+                <button type="button" class="sbtn danger" onclick="structOpen('deleteBox','${bo}')">Excluir caixa</button>
+              </div>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              ${sets.map(s => `
-                <div class="rounded-xl bg-black/40 border border-white/10 p-2.5 flex items-center gap-2.5">
-                  ${s.imageUrl ? `<img src="${escapeHtml(s.imageUrl)}" class="w-10 h-10 rounded-lg object-cover" />` : '<div class="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">🖼️</div>'}
-                  <div class="min-w-0 flex-1">
-                    <p class="font-bold text-white truncate">${escapeHtml(s.name)}</p>
-                    <p class="text-[10px] text-ash truncate">${escapeHtml(s.era)}</p>
+            ${eras.length ? eras.map(er => {
+              const eo = _enc(er), sets = st.setsMeta.filter(x => x.box === bn && x.era === er);
+              return `
+              <div class="rounded-xl border border-white/10 p-3 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <h4 class="font-medium text-white">${escapeHtml(er)}</h4>
+                  <div class="flex flex-wrap gap-2">
+                    <button type="button" class="sbtn" onclick="structOpen('newSet','${bo}','${eo}')">Adicionar set</button>
+                    <button type="button" class="sbtn" onclick="structOpen('renameEra','${bo}','${eo}')">Renomear</button>
+                    <button type="button" class="sbtn danger" onclick="structOpen('deleteEra','${bo}','${eo}')">Excluir</button>
                   </div>
-                  <button onclick="window.fb.del('setsMeta', '${s.id}')" class="text-rose-400">✕</button>
                 </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
+                ${sets.length ? `<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">${sets.map(x => `
+                  <div class="rounded-xl bg-black/30 border border-white/10 overflow-hidden">
+                    ${x.coverUrl ? `<img src="${escapeHtml(x.coverUrl)}" alt="Capa de ${escapeHtml(x.name)}" class="w-full aspect-[3/1] object-cover" />` : `<label class="flex items-center justify-center w-full aspect-[3/1] cursor-pointer text-sm text-ash border-b border-dashed border-white/15 hover:bg-white/5 hover:text-white">Adicionar capa (3:1)<input type="file" accept="image/*" class="sr-only" onchange="uploadSetCover(this, '${x.id}')" /></label>`}
+                    <div class="p-3 flex items-center gap-3">
+                      ${x.imageUrl ? `<img src="${escapeHtml(x.imageUrl)}" alt="" class="w-12 h-12 rounded-lg object-cover shrink-0" />` : '<div class="w-12 h-12 rounded-lg bg-white/5 shrink-0"></div>'}
+                      <div class="min-w-0 flex-1">
+                        <p class="font-medium text-white truncate">${escapeHtml(x.name)}</p>
+                        <div class="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-sm">
+                          <button type="button" class="text-amber-200 hover:underline" onclick="structOpen('editSet','${bo}','${eo}','${x.id}')">Editar</button>
+                          ${x.coverUrl ? `<label class="text-amber-200 hover:underline cursor-pointer">Trocar capa<input type="file" accept="image/*" class="sr-only" onchange="uploadSetCover(this, '${x.id}')" /></label>` : ''}
+                          <button type="button" class="text-rose-300 hover:underline" onclick="structOpen('deleteSet','${bo}','${eo}','${x.id}')">Excluir</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>`).join('')}</div>` : '<p class="text-sm text-ash">Nenhum set nesta era ainda.</p>'}
+              </div>`;
+            }).join('') : '<p class="text-sm text-ash">Nenhuma era nesta caixa ainda. Use "Adicionar era" para começar.</p>'}
+          </div>`;
       }).join('');
+    }
+
+    function structOpen(mode, box, era, setId) {
+      const st = window.state, b = _dec(box), er = _dec(era);
+      const set = setId ? st.setsMeta.find(x => x.id === setId) : null;
+      _sm = { mode, b, er, set };
+      const F = (id, label, val, type, req) => `<div><label for="${id}" class="block text-sm text-white mb-1.5">${label}</label><input id="${id}" type="${type || 'text'}" value="${escapeHtml(val || '')}" ${req ? 'required' : ''} class="input-gothic w-full px-3.5 py-2.5 rounded-xl text-sm" /></div>`;
+      const delBox = (k, what) => k ? `<label class="flex items-start gap-2 text-sm text-ash"><input type="checkbox" id="sfDelItems" class="mt-1 accent-rose-500" /><span>Excluir também os <strong class="text-white">${k} ${k === 1 ? 'item' : 'itens'}</strong> de participantes ${what}. Se não marcar, os itens são mantidos e ${what.includes('caixa') ? 'a caixa continua aparecendo enquanto houver itens nela' : 'a era continua aparecendo enquanto houver itens nela'}.</span></label>` : '';
+      const ords = pred => st.orders.filter(pred);
+      let title = '', help = '', html = '', btn = 'Salvar', danger = false;
+      if (mode === 'newEra') { title = 'Nova era'; help = `Caixa: ${b}`; html = F('sf1', 'Nome da era', '', 'text', true); }
+      else if (mode === 'renameBox') { title = 'Renomear caixa'; help = 'O novo nome vale também para eras, sets e itens dessa caixa.'; html = F('sf1', 'Nome da caixa', b, 'text', true); }
+      else if (mode === 'renameEra') { title = 'Renomear era'; help = `Caixa: ${b}. O novo nome vale também para os sets e itens dessa era.`; html = F('sf1', 'Nome da era', er, 'text', true); }
+      else if (mode === 'newSet' || mode === 'editSet') {
+        const x = set || {};
+        title = set ? 'Editar set' : 'Novo set'; help = set ? `Caixa: ${b}` : `Caixa: ${b} · Era: ${er}`;
+        html = F('sf1', 'Nome do set', x.name, 'text', true) + (set ? F('sf2', 'Era', x.era, 'text', true) : '') + F('sf3', 'Descrição', x.description) +
+          F('sf4', 'Foto de referência (miniatura, URL)', x.imageUrl && !x.imageUrl.startsWith('data:') ? x.imageUrl : '', 'url') +
+          `<div><label for="sf5" class="block text-sm text-white mb-1.5">Ou envie a miniatura${x.imageUrl && x.imageUrl.startsWith('data:') ? ' (já existe uma enviada)' : ''}</label><input type="file" id="sf5" accept="image/*" class="input-gothic w-full px-2 py-1.5 rounded-xl text-sm" /></div>` +
+          F('sf6', 'Capa do set (URL, formato 3:1 como header do Twitter)', x.coverUrl && !x.coverUrl.startsWith('data:') ? x.coverUrl : '', 'url') +
+          `<div><label for="sf7" class="block text-sm text-white mb-1.5">Ou envie a capa${x.coverUrl && x.coverUrl.startsWith('data:') ? ' (já existe uma enviada)' : ''}</label><input type="file" id="sf7" accept="image/*" class="input-gothic w-full px-2 py-1.5 rounded-xl text-sm" /><p class="text-xs text-ash mt-1">Arquivos enviados são cortados no centro em 3:1 (ex.: 1500×500).</p></div>` +
+          (x.coverUrl ? '<label class="flex items-center gap-2 text-sm text-ash"><input type="checkbox" id="sfRmCover" class="accent-rose-500" /> Remover a capa atual</label>' : '');
+      } else if (mode === 'deleteSet') {
+        const k = set ? ords(o => o.box === set.box && o.era === set.era && o.set === set.name).length : 0;
+        title = 'Excluir set'; help = `Excluir "${set?.name}"? Esta ação não pode ser desfeita.`; btn = 'Excluir set'; danger = true; html = delBox(k, 'desse set');
+      } else if (mode === 'deleteEra') {
+        const k = ords(o => o.box === b && o.era === er).length, n = st.setsMeta.filter(x => x.box === b && x.era === er).length;
+        title = 'Excluir era'; help = `Excluir "${er}" e seus ${n} ${n === 1 ? 'set' : 'sets'}? Esta ação não pode ser desfeita.`; btn = 'Excluir era'; danger = true; html = delBox(k, 'dessa era');
+      } else if (mode === 'deleteBox') {
+        const k = ords(o => o.box === b).length, ne = st.erasMeta.filter(x => x.box === b).length, n = st.setsMeta.filter(x => x.box === b).length;
+        title = 'Excluir caixa'; help = `Excluir "${b}" com ${ne} ${ne === 1 ? 'era' : 'eras'} e ${n} ${n === 1 ? 'set' : 'sets'}? Esta ação não pode ser desfeita.`; btn = 'Excluir caixa'; danger = true; html = delBox(k, 'dessa caixa');
+      }
+      document.getElementById('structTitle').textContent = title;
+      document.getElementById('structHelp').textContent = help;
+      document.getElementById('structFields').innerHTML = html;
+      const sb = document.getElementById('structSubmit');
+      sb.textContent = btn; sb.disabled = false;
+      sb.className = (danger ? 'bg-rose-700 hover:bg-rose-600' : 'btn-crimson') + ' px-5 py-2.5 rounded-xl text-sm font-semibold text-white';
+      document.getElementById('structModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('sf1')?.focus(), 50);
+    }
+
+    async function submitStruct(e) {
+      e.preventDefault();
+      const st = window.state, { mode, b, er, set } = _sm;
+      const v = id => (document.getElementById(id)?.value || '').trim();
+      const delItems = !!document.getElementById('sfDelItems')?.checked;
+      const upd = (col, list, data) => Promise.all(list.map(x => window.fb.update(col, x.id, data)));
+      const del = (col, list) => Promise.all(list.map(x => window.fb.del(col, x.id)));
+      const sb = document.getElementById('structSubmit'); sb.disabled = true;
+      try {
+        if (mode === 'newEra') {
+          const n = v('sf1');
+          if (st.erasMeta.some(x => x.box === b && x.name === n)) { showToast('Essa era já existe nesta caixa.', 'error'); sb.disabled = false; return; }
+          await window.fb.add('erasMeta', { box: b, name: n }); showToast('Era adicionada!', 'success');
+        } else if (mode === 'renameBox') {
+          const n = v('sf1');
+          if (n !== b) {
+            if (st.boxesMeta.some(x => x.name === n) || st.orders.some(o => o.box === n)) { showToast('Já existe uma caixa com esse nome.', 'error'); sb.disabled = false; return; }
+            await Promise.all([
+              upd('boxesMeta', st.boxesMeta.filter(x => x.name === b), { name: n }),
+              upd('erasMeta', st.erasMeta.filter(x => x.box === b), { box: n }),
+              upd('setsMeta', st.setsMeta.filter(x => x.box === b), { box: n }),
+              upd('orders', st.orders.filter(o => o.box === b), { box: n })
+            ]);
+          }
+          showToast('Caixa renomeada!', 'success');
+        } else if (mode === 'renameEra') {
+          const n = v('sf1');
+          if (n !== er) {
+            if (st.erasMeta.some(x => x.box === b && x.name === n)) { showToast('Já existe uma era com esse nome nesta caixa.', 'error'); sb.disabled = false; return; }
+            await Promise.all([
+              upd('erasMeta', st.erasMeta.filter(x => x.box === b && x.name === er), { name: n }),
+              upd('setsMeta', st.setsMeta.filter(x => x.box === b && x.era === er), { era: n }),
+              upd('orders', st.orders.filter(o => o.box === b && o.era === er), { era: n })
+            ]);
+          }
+          showToast('Era renomeada!', 'success');
+        } else if (mode === 'newSet' || mode === 'editSet') {
+          const file = document.getElementById('sf5').files[0];
+          const urlVal = v('sf4');
+          let img = set?.imageUrl || '';
+          if (file) img = await compressImageToDataUrl(file);
+          else if (urlVal || !img.startsWith('data:')) img = urlVal;
+          let cov = set?.coverUrl || '';
+          const cf = document.getElementById('sf7').files[0], cu = v('sf6');
+          if (cf) { const d = await compressBannerToDataUrl(cf); if (d) cov = d; }
+          else if (cu || !cov.startsWith('data:')) cov = cu;
+          if (document.getElementById('sfRmCover')?.checked) cov = '';
+          const data = { name: v('sf1'), description: v('sf3'), imageUrl: img, coverUrl: cov };
+          if (set) {
+            data.era = v('sf2');
+            await window.fb.update('setsMeta', set.id, data);
+            if (data.name !== set.name || data.era !== set.era) {
+              await upd('orders', st.orders.filter(o => o.box === set.box && o.era === set.era && o.set === set.name), { set: data.name, era: data.era });
+            }
+            if (data.era !== set.era && !st.erasMeta.some(x => x.box === set.box && x.name === data.era)) await window.fb.add('erasMeta', { box: set.box, name: data.era });
+            showToast('Set atualizado!', 'success');
+          } else {
+            await window.fb.add('setsMeta', { box: b, era: er, ...data });
+            showToast('Set adicionado!', 'success');
+          }
+        } else if (mode === 'deleteSet') {
+          await window.fb.del('setsMeta', set.id);
+          if (delItems) await del('orders', st.orders.filter(o => o.box === set.box && o.era === set.era && o.set === set.name));
+          showToast('Set excluído.', 'success');
+        } else if (mode === 'deleteEra') {
+          await Promise.all([
+            del('erasMeta', st.erasMeta.filter(x => x.box === b && x.name === er)),
+            del('setsMeta', st.setsMeta.filter(x => x.box === b && x.era === er)),
+            delItems ? del('orders', st.orders.filter(o => o.box === b && o.era === er)) : null
+          ]);
+          showToast('Era excluída.', 'success');
+        } else if (mode === 'deleteBox') {
+          await Promise.all([
+            del('boxesMeta', st.boxesMeta.filter(x => x.name === b)),
+            del('erasMeta', st.erasMeta.filter(x => x.box === b)),
+            del('setsMeta', st.setsMeta.filter(x => x.box === b)),
+            delItems ? del('orders', st.orders.filter(o => o.box === b)) : null
+          ]);
+          showToast('Caixa excluída.', 'success');
+        }
+        closeModal('structModal');
+      } catch (err) {
+        console.error(err);
+        showToast('Não foi possível salvar. Tente novamente.', 'error');
+        sb.disabled = false;
+      }
     }
 
     async function updateBoxStatus(boxName, status) {
