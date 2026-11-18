@@ -5,122 +5,364 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dark Bloom Cegs | Portal da Participante</title>
   <meta name="description" content="Acompanhe seus itens, prazos e pagamentos nas compras em grupo de K-Pop da Dark Bloom Cegs." />
-  <meta name="theme-color" content="#0b0910" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23be123c'/%3E%3Cpath d='M32 12c-5 7-12 10-12 19 0 7 5 12 12 12s12-5 12-12c0-9-7-12-12-19z' fill='%23fff' opacity='.92'/%3E%3C/svg%3E" />
+  <meta name="theme-color" content="#0a0712" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ff4f93'/%3E%3Cstop offset='1' stop-color='%23a66bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M32 12c-5 7-12 10-12 19 0 7 5 12 12 12s12-5 12-12c0-9-7-12-12-19z' fill='%23fff' opacity='.92'/%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            obsidian: '#09070c',
-            velvet: '#120e19',
-            cardbg: '#181222',
-            crimson: '#9f1239',
-            rosebloom: '#e11d48',
+            obsidian: '#0a0712',
+            velvet: '#160f25',
+            cardbg: '#1b1430',
+            crimson: '#e11d48',
+            rosebloom: '#ff4f93',
             plum: '#581c87',
-            amethyst: '#9333ea',
-            goldleaf: '#d4af37',
-            ash: '#a19bb0',
+            amethyst: '#b99bff',
+            goldleaf: '#ffe08a',
+            ash: '#b4aac8',
           },
           fontFamily: {
-            display: ['"Cinzel Decorative"', 'serif'],
-            serif: ['"Cormorant Garamond"', 'serif'],
-            sans: ['Inter', 'sans-serif'],
+            display: ['Unbounded', 'system-ui', 'sans-serif'],
+            serif: ['Unbounded', 'system-ui', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
           }
         }
       }
     }
   </script>
   <style>
+    /* =====================================================================
+       VISUAL K-POP (novembro/2026)
+       Cores, fontes e componentes. A lógica do site não depende deste bloco.
+       ===================================================================== */
+    :root {
+      color-scheme: dark;
+      --bg: #0a0712;
+      --panel: #150f22;
+      --panel-2: #1b1430;
+      --line: rgba(255,255,255,.08);
+      --line-2: rgba(255,255,255,.15);
+      --text: #f7f3ff;
+      --muted: #b4aac8;
+      --faint: #8a809f;
+      --pink: #ff4f93;
+      --pink-soft: #ff9cc4;
+      --lilac: #b99bff;
+      --cyan: #86e6ff;
+      --mint: #74f0c4;
+      --butter: #ffe08a;
+      --late: #ff3b5c;
+      --holo: linear-gradient(115deg, #ffb3d6 0%, #d4b5ff 22%, #9eeaff 45%, #fff1a8 65%, #ffb3d6 85%, #d4b5ff 100%);
+      --grad: linear-gradient(135deg, #ff4f93 0%, #c45cff 100%);
+      --display: 'Unbounded', system-ui, sans-serif;
+      --body: 'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+    .hidden { display: none !important; }
     body {
-      background-color: #09070c;
-      color: #f4f1f8;
-      font-family: 'Inter', sans-serif;
-      background-image:
-        radial-gradient(circle at 12% 10%, rgba(159, 18, 57, 0.16), transparent 36%),
-        radial-gradient(circle at 88% 18%, rgba(88, 28, 135, 0.2), transparent 40%),
-        radial-gradient(circle at 50% 92%, rgba(212, 175, 55, 0.08), transparent 42%);
+      color: var(--text);
+      font-family: var(--body);
+      line-height: 1.55;
       min-height: 100vh;
+      background:
+        radial-gradient(900px 520px at 8% -8%, rgba(255,79,147,.20), transparent 60%),
+        radial-gradient(820px 520px at 100% 0%, rgba(140,90,255,.22), transparent 60%),
+        radial-gradient(700px 420px at 50% 105%, rgba(134,230,255,.10), transparent 60%),
+        var(--bg);
+      background-attachment: fixed;
     }
-    ::-webkit-scrollbar { width: 7px; height: 7px; }
-    ::-webkit-scrollbar-track { background: #0d0a12; }
-    ::-webkit-scrollbar-thumb { background: #3b1d4a; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #9f1239; }
-    .gothic-card {
-      background: linear-gradient(165deg, rgba(26, 20, 36, 0.94) 0%, rgba(15, 11, 22, 0.97) 100%);
-      border: 1px solid rgba(212, 175, 55, 0.18);
-      box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.75);
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: radial-gradient(rgba(255,255,255,.75) 1px, transparent 1.4px), radial-gradient(rgba(255,190,225,.7) 1px, transparent 1.4px);
+      background-size: 140px 140px, 210px 210px;
+      background-position: 0 0, 70px 95px;
+      opacity: .14;
+      -webkit-mask-image: linear-gradient(to bottom, #000, transparent 75%);
+              mask-image: linear-gradient(to bottom, #000, transparent 75%);
     }
-    .gold-border-glow {
-      border: 1px solid rgba(212, 175, 55, 0.35);
-      box-shadow: 0 0 22px rgba(212, 175, 55, 0.08);
-    }
-    .btn-crimson {
-      background: linear-gradient(135deg, #be123c 0%, #881337 100%);
-      border: 1px solid rgba(251, 113, 133, 0.3);
-      transition: all 0.2s ease;
-    }
-    .btn-crimson:hover {
-      background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
-      box-shadow: 0 0 18px rgba(225, 29, 72, 0.4);
-    }
-    .btn-amethyst {
-      background: linear-gradient(135deg, #7e22ce 0%, #4c1d95 100%);
-      border: 1px solid rgba(192, 132, 252, 0.3);
-      transition: all 0.2s ease;
-    }
-    .btn-amethyst:hover {
-      background: linear-gradient(135deg, #9333ea 0%, #581c87 100%);
-      box-shadow: 0 0 18px rgba(147, 51, 234, 0.38);
-    }
-    .input-gothic {
-      background-color: rgba(11, 8, 16, 0.9);
-      border: 1px solid rgba(161, 155, 176, 0.22);
-      color: #f8fafc;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .input-gothic:focus {
-      outline: none;
-      border-color: #d4af37;
-      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.16);
-    }
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade { animation: fadeSlide 0.25s ease-out forwards; }
-  
-    /* ===== Refinamento visual ===== */
-    :root { --panel:#14101b; --line:rgba(255,255,255,.09); --muted:#a8a2b8; --gold:#d4af37; }
-    body { background-image: radial-gradient(ellipse at 50% -10%, rgba(159,18,57,.18), transparent 55%); line-height:1.55; }
-    body .gothic-card { background: var(--panel); border:1px solid var(--line); box-shadow:none; }
-    body .gold-border-glow { border:1px solid rgba(212,175,55,.28); box-shadow:none; }
-    body .rounded-3xl { border-radius:18px; } body .rounded-2xl { border-radius:14px; } body .rounded-xl { border-radius:10px; }
-    body .uppercase { text-transform:none; } body [class*="tracking-"] { letter-spacing:0; }
-    body .text-\[10px\] { font-size:11.5px; } body .text-\[11px\] { font-size:12.5px; }
-    body .btn-crimson { background:#be123c; border:1px solid rgba(251,113,133,.35); box-shadow:none; }
-    body .btn-crimson:hover { background:#e11d48; box-shadow:none; }
-    body .btn-amethyst { background:#6d28d9; border:1px solid rgba(192,132,252,.35); box-shadow:none; }
-    body .btn-amethyst:hover { background:#7c3aed; box-shadow:none; }
-    body .input-gothic { background:#0e0b14; border:1px solid rgba(255,255,255,.16); }
-    body .input-gothic:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,175,55,.18); }
-    :focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
-    .site-header { background:rgba(11,9,16,.92); border-bottom:1px solid var(--line); }
-    .nav-tab { padding:.55rem .85rem; border-radius:10px; font-size:.875rem; font-weight:500; color:var(--muted); border:1px solid transparent; transition:color .15s, background .15s; }
-    .nav-tab:hover { color:#fff; background:rgba(255,255,255,.06); }
-    .nav-tab.is-active { color:#fff; background:rgba(225,29,72,.14); box-shadow:inset 0 -2px 0 var(--gold); }
-    .nav-tab.nav-ghost { border-color:var(--line); }
-    .step-dot { flex:none; width:28px; height:28px; border-radius:999px; background:rgba(225,29,72,.16); border:1px solid rgba(251,113,133,.4); color:#fecdd3; font-weight:600; font-size:.8rem; display:flex; align-items:center; justify-content:center; }
-    .sbtn { padding:.35rem .75rem; border-radius:8px; font-size:.8125rem; color:#d9d4e6; border:1px solid var(--line); transition:background .15s,color .15s; }
-    .sbtn:hover { background:rgba(255,255,255,.07); color:#fff; }
-    .sbtn.danger { color:#fda4af; border-color:rgba(251,113,133,.3); }
-    .sbtn.danger:hover { background:rgba(225,29,72,.14); }
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
+    main, footer { position: relative; z-index: 1; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0d0916; }
+    ::-webkit-scrollbar-thumb { background: #3a2452; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--pink); }
+    :focus-visible { outline: 2px solid var(--pink-soft); outline-offset: 2px; }
+
+    /* Ajustes gerais (mantidos do refinamento anterior) */
+    body .rounded-3xl { border-radius: 24px; } body .rounded-2xl { border-radius: 18px; } body .rounded-xl { border-radius: 12px; }
+    body .uppercase { text-transform: none; } body [class*="tracking-"] { letter-spacing: 0; }
+    body .text-\[10px\] { font-size: 11.5px; } body .text-\[11px\] { font-size: 12.5px; }
+
+    /* Cartões, botões e campos usados em todo o site */
+    .gothic-card { background: linear-gradient(180deg, rgba(30,21,48,.82), rgba(19,13,31,.92)); border: 1px solid var(--line); box-shadow: none; }
+    .gold-border-glow { position: relative; }
+    .gold-border-glow::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: var(--holo); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: .6; pointer-events: none; }
+    .btn-crimson { background: var(--grad); border: 0; border-radius: 999px !important; box-shadow: 0 8px 24px -10px rgba(255,79,147,.8); transition: filter .2s, box-shadow .2s, transform .15s; }
+    .btn-crimson:hover { filter: brightness(1.08); box-shadow: 0 12px 30px -8px rgba(255,79,147,.95); }
+    .btn-crimson:active { transform: translateY(1px); }
+    .btn-amethyst { background: linear-gradient(135deg, #8b5cf6 0%, #b99bff 100%); border: 0; border-radius: 999px !important; transition: filter .2s; }
+    .btn-amethyst:hover { filter: brightness(1.08); }
+    .input-gothic { background-color: rgba(8,5,14,.72); border: 1px solid var(--line-2); color: var(--text); transition: border-color .2s, box-shadow .2s; }
+    .input-gothic:focus { outline: none; border-color: rgba(255,79,147,.6); box-shadow: 0 0 0 3px rgba(255,79,147,.15); }
+    select.input-gothic option { background: #160f25; color: #fff; }
+    @keyframes fadeSlide { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade { animation: fadeSlide 0.3s ease-out forwards; }
+    .step-dot { flex: none; width: 28px; height: 28px; border-radius: 999px; background: rgba(255,79,147,.16); border: 1px solid rgba(255,79,147,.4); color: #ffd1e3; font-weight: 700; font-size: .8rem; display: flex; align-items: center; justify-content: center; }
+    .sbtn { padding: .35rem .75rem; border-radius: 999px; font-size: .8125rem; color: #e4dcf3; border: 1px solid var(--line-2); transition: background .15s, color .15s; }
+    .sbtn:hover { background: rgba(255,255,255,.07); color: #fff; }
+    .sbtn.danger { color: #ffb3c4; border-color: rgba(255,79,147,.35); }
+    .sbtn.danger:hover { background: rgba(255,79,147,.14); }
+
+    /* Cabeçalho, menu e faixa corrida */
+    .site-header { background: rgba(10,7,18,.82); -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%); border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 12px; text-align: left; min-width: 0; }
+    .brand-logo { width: 46px; height: 46px; border-radius: 15px; padding: 2px; background: var(--holo); background-size: 200% 200%; animation: holo 8s linear infinite alternate; flex: none; box-shadow: 0 6px 22px -8px rgba(255,79,147,.8); }
+    .brand-logo > span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 13px; background: #1a0f24; }
+    .brand-logo svg { width: 22px; height: 22px; color: var(--pink-soft); }
+    .brand-name { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; }
+    .brand-title { font-family: var(--display); font-weight: 700; font-size: 19px; letter-spacing: -.01em; line-height: 1.1; color: #fff; }
+    .brand-name em { font-style: normal; font-family: var(--display); font-size: 9.5px; font-weight: 700; letter-spacing: .16em; padding: 3px 7px; border-radius: 999px; background: var(--holo); color: #1a0f24; }
+    .brand-sub { display: block; font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+    .live { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--mint); padding: 2px 8px; border-radius: 999px; background: rgba(116,240,196,.08); border: 1px solid rgba(116,240,196,.22); }
+    .live > span { width: 6px; height: 6px; border-radius: 50%; }
+    .live > span.bg-emerald-400 { animation: ping 2s ease-out infinite; }
+    .nav { display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.04); border: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+    .nav::-webkit-scrollbar { display: none; }
+    @media (max-width: 1023px) { .nav { order: 3; width: 100%; } }
+    .nav-tab { flex: none; white-space: nowrap; border: 0; background: none; padding: 9px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: none; transition: color .15s, background .15s, box-shadow .2s; }
+    .nav-tab:hover { color: #fff; background: rgba(255,255,255,.07); }
+    .nav-tab.is-active { color: #fff; background: var(--grad); box-shadow: 0 6px 20px -6px rgba(255,79,147,.75); }
+    .nav-sep { flex: none; width: 1px; height: 20px; background: var(--line-2); margin: 0 4px; }
+    .ticker { overflow: hidden; border-top: 1px solid var(--line); background: linear-gradient(90deg, rgba(255,79,147,.10), rgba(185,155,255,.10), rgba(134,230,255,.08)); }
+    .ticker-track { display: flex; width: max-content; animation: marquee 45s linear infinite; }
+    .ticker-track span { font-family: var(--display); font-size: 10.5px; font-weight: 600; letter-spacing: .22em; color: var(--muted); padding: 7px 14px; white-space: nowrap; }
+    .ticker-track b { color: var(--pink); font-weight: 400; padding: 7px 0; font-size: 11px; }
+
+    /* Títulos e selos */
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600; color: var(--pink-soft); padding: 4px 12px 4px 5px; border-radius: 999px; background: rgba(255,79,147,.10); border: 1px solid rgba(255,79,147,.25); }
+    .eyebrow .dot { display: grid; place-items: center; width: 20px; height: 20px; font-size: 10px; border-radius: 999px; background: var(--pink); color: #fff; }
+    .holo-text { background: var(--holo); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: holo 6s linear infinite; }
+    .tag { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 4px 9px; border-radius: 8px; white-space: nowrap; }
+    .tag-butter { background: rgba(255,224,138,.12); color: var(--butter); border: 1px solid rgba(255,224,138,.3); }
+    .tag-lilac { background: rgba(185,155,255,.14); color: var(--lilac); border: 1px solid rgba(185,155,255,.3); }
+    .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; padding: 4px 11px; border-radius: 999px; border: 1px solid; white-space: nowrap; }
+    .pill.ok { color: var(--mint); background: rgba(116,240,196,.08); border-color: rgba(116,240,196,.3); }
+    .pill.wait { color: var(--butter); background: rgba(255,224,138,.08); border-color: rgba(255,224,138,.3); }
+    .pill.no { color: var(--pink-soft); background: rgba(255,79,147,.08); border-color: rgba(255,79,147,.3); }
+    .btn-pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 999px; font-weight: 700; font-size: 13px; padding: 9px 16px; white-space: nowrap; transition: background .2s, filter .2s; }
+    .btn-ghost { color: var(--text); background: rgba(255,255,255,.06); border: 1px solid var(--line-2); }
+    .btn-ghost:hover { background: rgba(255,255,255,.11); }
+    .btn-butter { color: #2a1a05; background: var(--butter); border: 0; }
+    .btn-butter:hover { filter: brightness(1.05); }
+
+    /* Topo do Meu espaço */
+    .hero { display: grid; gap: 22px; padding: 22px; }
+    @media (min-width: 640px) { .hero { padding: 28px; } }
+    @media (min-width: 900px) { .hero { grid-template-columns: 1.1fr .9fr; align-items: center; padding: 44px; } }
+    .hero-title { font-family: var(--display); font-weight: 700; font-size: clamp(28px, 5vw, 46px); line-height: 1.08; letter-spacing: -.025em; margin: 16px 0 12px; color: #fff; }
+    .lead { color: var(--muted); font-size: 15.5px; margin: 0; max-width: 60ch; }
+    .search-lbl { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin: 22px 0 8px; }
+    .search { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 16px; border-radius: 999px; background: rgba(8,5,14,.78); border: 1px solid var(--line-2); max-width: 540px; transition: border-color .2s, box-shadow .2s; }
+    .search:focus-within { border-color: rgba(255,79,147,.6); box-shadow: 0 0 0 4px rgba(255,79,147,.14), 0 12px 40px -14px rgba(255,79,147,.7); }
+    .search > svg { width: 18px; height: 18px; color: var(--muted); flex: none; }
+    .search input { flex: 1; min-width: 0; background: none; border: 0; outline: none; color: var(--text); font: inherit; font-size: 15px; padding: 10px 0; }
+    .search input::placeholder { color: var(--faint); }
+    .search-x { width: 28px; height: 28px; border-radius: 999px; color: var(--muted); flex: none; }
+    .search-x:hover { color: #fff; background: rgba(255,255,255,.08); }
+    .search-go { flex: none; color: #fff; font-weight: 700; font-size: 13px; padding: 9px 16px; }
+    .combo-dd { max-width: 540px; }
+    .ticket { margin-top: 18px; border-radius: 16px; background: rgba(255,224,138,.05); border: 1px solid rgba(255,224,138,.22); max-width: 540px; }
+    .ticket-main { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 14px; padding: 12px 16px; }
+    .ticket-label { display: block; font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--butter); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 15px; color: #fff; }
+    .ticket-stub { display: flex; flex-wrap: wrap; gap: 4px 8px; padding: 10px 16px; border-top: 1.5px dashed rgba(255,224,138,.32); font-size: 13px; color: var(--muted); }
+    .ticket-stub a { color: var(--pink-soft); font-weight: 600; overflow-wrap: anywhere; }
+    .ticket-stub a:hover { text-decoration: underline; }
+    .hero-art { position: relative; height: 210px; order: -1; }
+    .hero-art::before { content: ""; position: absolute; inset: 10% 15%; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,79,147,.45), rgba(166,107,255,.25) 55%, transparent); filter: blur(24px); }
+    @media (min-width: 900px) { .hero-art { order: 0; height: 360px; } }
+    .pc { position: absolute; left: 50%; top: 50%; width: 104px; aspect-ratio: 55 / 85; border-radius: 13px; padding: 5px; background: var(--holo); background-size: 250% 250%; animation: holo 9s ease-in-out infinite alternate; box-shadow: 0 24px 50px -18px rgba(0,0,0,.85); transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+    @media (min-width: 900px) { .pc { width: min(170px, 42%); border-radius: 18px; padding: 7px; } }
+    .pc::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.55) 48%, transparent 60%); background-size: 260% 100%; animation: shine 5s ease-in-out infinite; mix-blend-mode: overlay; pointer-events: none; }
+    .pc-1 { transform: translate(-50%,-50%) translateX(-54%) rotate(-12deg); z-index: 1; }
+    .pc-2 { transform: translate(-50%,-50%) translateY(-5%); z-index: 3; }
+    .pc-3 { transform: translate(-50%,-50%) translateX(54%) rotate(12deg); z-index: 2; }
+    .hero-art:hover .pc-1 { transform: translate(-50%,-50%) translateX(-62%) rotate(-16deg); }
+    .hero-art:hover .pc-2 { transform: translate(-50%,-50%) translateY(-9%) scale(1.04); }
+    .hero-art:hover .pc-3 { transform: translate(-50%,-50%) translateX(62%) rotate(16deg); }
+    .pc-inner { position: relative; height: 100%; border-radius: 9px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: 8px; color: #fff; }
+    @media (min-width: 900px) { .pc-inner { border-radius: 12px; padding: 12px; } }
+    .pc-1 .pc-inner { background: radial-gradient(circle at 30% 22%, #ff9cc4 0, transparent 46%), radial-gradient(circle at 80% 85%, #7a2cff 0, transparent 58%), #2a0f2e; }
+    .pc-2 .pc-inner { background: radial-gradient(circle at 72% 18%, #ffd1e6 0, transparent 42%), radial-gradient(circle at 20% 88%, #ff4f93 0, transparent 58%), #3a0d26; }
+    .pc-3 .pc-inner { background: radial-gradient(circle at 38% 26%, #9eeaff 0, transparent 46%), radial-gradient(circle at 78% 88%, #b99bff 0, transparent 58%), #141a3a; }
+    .pc-bloom { position: absolute; left: 14%; top: 22%; width: 72%; color: rgba(255,255,255,.88); filter: drop-shadow(0 8px 18px rgba(0,0,0,.35)); }
+    .pc-top { position: relative; display: flex; justify-content: space-between; font-family: var(--display); font-size: 7px; font-weight: 600; letter-spacing: .14em; opacity: .9; }
+    .pc-bottom { position: relative; font-family: var(--display); font-weight: 700; font-size: 9px; letter-spacing: .06em; line-height: 1.2; }
+    .pc-bottom small { display: block; font-family: var(--body); font-size: 8px; font-weight: 600; opacity: .85; margin-top: 2px; letter-spacing: .04em; }
+    @media (min-width: 900px) { .pc-top { font-size: 8.5px; } .pc-bottom { font-size: 12px; } .pc-bottom small { font-size: 10px; } }
+    .sparkle { position: absolute; color: var(--butter); font-size: 16px; animation: twinkle 2.6s ease-in-out infinite; z-index: 4; text-shadow: 0 0 12px currentColor; }
+    .sparkle.s1 { top: 8%; left: 14%; }
+    .sparkle.s2 { top: 14%; right: 10%; color: var(--cyan); font-size: 12px; animation-delay: .8s; }
+    .sparkle.s3 { bottom: 10%; left: 22%; color: var(--pink-soft); font-size: 11px; animation-delay: 1.5s; }
+    .sparkle.s4 { bottom: 6%; right: 18%; font-size: 14px; animation-delay: 2s; }
+
+    /* Como funciona */
+    .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+    @media (min-width: 720px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+    .step { position: relative; padding: 20px 18px; border-radius: 18px; background: rgba(255,255,255,.03); border: 1px solid var(--line); overflow: hidden; }
+    .step::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--holo); }
+    .step-num { display: block; font-family: var(--display); font-weight: 800; font-size: 40px; line-height: 1; color: transparent; -webkit-text-stroke: 1.2px var(--pink-soft); }
+    .step strong { display: block; margin-top: 14px; font-size: 15.5px; color: #fff; }
+    .step p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+
+    /* Área da participante */
+    .hello { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 16px; }
+    .avatar { width: 52px; height: 52px; border-radius: 50%; padding: 2px; background: var(--holo); background-size: 200% 200%; animation: holo 8s linear infinite alternate; flex: none; }
+    .avatar > span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: #241634; font-family: var(--display); font-weight: 700; font-size: 15px; color: var(--pink-soft); }
+    .hello-text { flex: 1 1 200px; min-width: 0; }
+    .hello-text strong { font-family: var(--display); font-size: 18px; font-weight: 700; overflow-wrap: anywhere; }
+    .hello-text p { margin: 2px 0 0; color: var(--muted); font-size: 14px; }
+    .kpis { display: grid; gap: 14px; }
+    @media (min-width: 640px) { .kpis { grid-template-columns: 1fr 1fr; } }
+    .kpi { position: relative; padding: 20px 22px; border-radius: 22px; overflow: hidden; border: 1px solid var(--line); }
+    .kpi-due { background: linear-gradient(135deg, rgba(255,79,147,.20), rgba(255,79,147,.03) 62%), var(--panel); border-color: rgba(255,79,147,.35); }
+    .kpi-paid { background: linear-gradient(135deg, rgba(116,240,196,.15), rgba(116,240,196,.03) 62%), var(--panel); border-color: rgba(116,240,196,.3); }
+    .kpi-label { display: block; font-size: 13.5px; font-weight: 700; }
+    .kpi-due .kpi-label { color: var(--pink-soft); }
+    .kpi-paid .kpi-label { color: var(--mint); }
+    .kpi-value { display: block; font-family: var(--display); font-weight: 700; font-size: clamp(26px, 4vw, 34px); letter-spacing: -.02em; margin-top: 6px; color: #fff; }
+    .kpi-meta { display: block; color: var(--muted); font-size: 14px; margin-top: 2px; }
+    .kpi-fine { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13.5px; font-weight: 700; color: #ffc2cf; padding: 3px 11px; border-radius: 999px; background: rgba(255,59,92,.16); border: 1px solid rgba(255,59,92,.5); }
+    .kpi-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--butter); }
+    .date-pill { padding: 2px 10px; border-radius: 999px; background: rgba(255,224,138,.12); border: 1px solid rgba(255,224,138,.28); font-weight: 700; }
+    .date-pill.late { background: rgba(255,59,92,.16); border-color: rgba(255,59,92,.55); color: #ffc2cf; }
+    .kpi-icon { position: absolute; right: 18px; top: 18px; width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; }
+    .kpi-icon svg { width: 20px; height: 20px; }
+    .kpi-due .kpi-icon { background: rgba(255,79,147,.15); color: var(--pink-soft); }
+    .kpi-paid .kpi-icon { background: rgba(116,240,196,.12); color: var(--mint); }
+    .fine-note { display: flex; align-items: flex-start; gap: 10px; margin-top: 12px; padding: 10px 12px; border-radius: 14px; background: rgba(255,79,147,.10); border: 1px solid rgba(255,79,147,.35); font-size: 13.5px; line-height: 1.45; color: #ffd6e5; }
+    .fine-note svg { width: 18px; height: 18px; flex: none; margin-top: 1px; color: var(--pink); }
+    .fine-note strong { color: #fff; }
+    .toolbar .input-gothic { border-radius: 999px !important; padding: 9px 14px; font-size: 13.5px; }
+
+    /* Caixa → Era → Set → Itens */
+    .box-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+    .box-title { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .box-title h3 { font-family: var(--display); font-weight: 700; font-size: 19px; color: #fff; }
+    .status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: #e9ddff; padding: 6px 12px; border-radius: 999px; background: rgba(185,155,255,.12); border: 1px solid rgba(185,155,255,.35); }
+    .status i { width: 8px; height: 8px; border-radius: 50%; background: var(--lilac); box-shadow: 0 0 10px var(--lilac); }
+    .track { list-style: none; margin: 22px 0 4px; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); }
+    .track li { position: relative; text-align: center; font-size: 11.5px; color: var(--faint); padding: 26px 2px 0; line-height: 1.25; }
+    .track li::before { content: ""; position: absolute; top: 8px; left: -50%; width: 100%; height: 2px; background: rgba(255,255,255,.1); }
+    .track li:first-child::before { display: none; }
+    .track li i { position: absolute; top: 1px; left: 50%; transform: translateX(-50%); width: 16px; height: 16px; border-radius: 50%; background: var(--panel-2); border: 2px solid rgba(255,255,255,.18); z-index: 1; }
+    .track li.done, .track li.current { color: var(--text); }
+    .track li.done::before, .track li.current::before { background: linear-gradient(90deg, var(--pink), var(--lilac)); }
+    .track li.done i { background: var(--grad); border-color: transparent; }
+    .track li.done i::after { content: ""; position: absolute; left: 4px; top: 1.5px; width: 4px; height: 7px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+    .track li.current { font-weight: 700; color: #fff; }
+    .track li.current i { background: #fff; border-color: var(--pink); animation: lightstick 1.8s ease-in-out infinite; }
+    .era { margin-top: 20px; padding: 16px; border-radius: 18px; background: rgba(185,155,255,.05); border: 1px solid rgba(185,155,255,.18); }
+    .era-head { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+    .era-head h4 { margin: 0; font-size: 16px; font-weight: 700; color: #e6dcff; }
+    .set { border-radius: 16px; background: rgba(10,7,18,.62); border: 1px solid var(--line); padding: 14px; }
+    .set + .set { margin-top: 12px; }
+    @media (max-width: 640px) { .era { padding: 12px; margin-left: -6px; margin-right: -6px; } .set { padding: 12px; } .track li { font-size: 10.5px; } }
+    .set-head { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; padding-bottom: 10px; }
+    .set-thumb { width: 50px; height: 50px; border-radius: 13px; flex: none; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.18); overflow: hidden; background: radial-gradient(circle at 30% 25%, #ff9cc4, transparent 60%), radial-gradient(circle at 80% 85%, #7a2cff, transparent 65%), #2a0f2e; }
+    .set-thumb img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
+    .set-thumb svg { width: 26px; height: 26px; color: rgba(255,255,255,.9); }
+    .set-name { display: block; font-size: 15px; font-weight: 700; color: #fff; }
+    .set-sub { display: block; font-size: 13px; color: var(--muted); }
+    .count { margin-left: auto; font-size: 12.5px; color: var(--muted); padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,.05); white-space: nowrap; }
+    .item { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
+    @media (min-width: 640px) { .item { grid-template-columns: auto 1fr auto; } }
+    .mini-pc { grid-row: span 2; align-self: start; width: 34px; aspect-ratio: 55 / 85; border-radius: 7px; padding: 2px; background: var(--holo); background-size: 220% 220%; animation: holo 7s ease-in-out infinite alternate; }
+    @media (min-width: 640px) { .mini-pc { grid-row: auto; align-self: center; } }
+    .mini-pc > span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 5px; background: #1d1230; font-family: var(--display); font-size: 8.5px; font-weight: 700; color: var(--pink-soft); }
+    .item-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+    .item-title strong { font-family: var(--display); font-size: 14px; font-weight: 700; color: #fff; }
+    .item-title span { color: var(--muted); font-size: 13.5px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+    .chip { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 1px solid; }
+    .chip.ok { color: var(--mint); background: rgba(116,240,196,.08); border-color: rgba(116,240,196,.28); }
+    .chip.due { color: var(--pink-soft); background: rgba(255,79,147,.08); border-color: rgba(255,79,147,.32); }
+    .chip.ship { color: var(--butter); background: rgba(255,224,138,.07); border-color: rgba(255,224,138,.3); }
+    .chip.tax { color: var(--lilac); background: rgba(185,155,255,.08); border-color: rgba(185,155,255,.32); }
+    .chip.late { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; color: #ffc2cf; background: rgba(255,59,92,.14); border-color: rgba(255,59,92,.55); }
+    .chip.late b { font-weight: 800; color: #fff; background: #e11d48; padding: 1px 8px; border-radius: 999px; }
+    .item-bal span { display: block; font-size: 11.5px; color: var(--faint); }
+    .item-bal strong { font-family: var(--display); font-size: 15px; font-weight: 700; }
+    .item-bal small { display: block; font-size: 11.5px; font-weight: 600; color: #ff9fb4; margin-top: 1px; }
+    @media (min-width: 640px) { .item-bal { text-align: right; } }
+    .is-due { color: var(--pink); }
+    .is-paid { color: var(--mint); }
+    .proof { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.03); border: 1px solid var(--line); font-size: 14px; }
+    .proof strong { font-family: var(--display); font-size: 14px; font-weight: 700; color: #fff; }
+    .proof .desc { color: var(--muted); }
+    .proof .reason { display: block; font-size: 12.5px; color: var(--pink-soft); margin-top: 2px; }
+
+    /* Envio nacional: opções */
+    .option { display: flex; align-items: flex-start; gap: 14px; text-align: left; padding: 16px; border-radius: 18px; background: rgba(255,255,255,.03); border: 1.5px solid var(--line-2); transition: border-color .2s, box-shadow .2s, background .2s; }
+    .option:hover { border-color: rgba(255,79,147,.45); }
+    .option.is-active { border-color: transparent; background: linear-gradient(var(--panel-2), var(--panel-2)) padding-box, linear-gradient(135deg, var(--pink), var(--lilac), var(--cyan)) border-box; box-shadow: 0 12px 30px -16px rgba(255,79,147,.8); }
+
+    /* Calculadoras */
+    .calc-options { display: grid; gap: 12px; margin-top: 22px; }
+    @media (min-width: 760px) { .calc-options { grid-template-columns: repeat(3, 1fr); } }
+    .option-icon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: rgba(255,79,147,.12); flex: none; font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--pink-soft); letter-spacing: .04em; }
+    .option small { display: block; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--pink-soft); }
+    .option strong { display: block; font-size: 15.5px; margin-top: 2px; color: #fff; }
+    .calc-split { display: grid; gap: 20px; align-items: start; }
+    @media (min-width: 960px) { .calc-split { grid-template-columns: 7fr 5fr; } }
+    .num-badge { width: 30px; height: 30px; border-radius: 10px; display: grid; place-items: center; font-family: var(--display); font-size: 13px; font-weight: 700; background: var(--grad); color: #fff; flex: none; }
+    .money { position: relative; }
+    .money > span { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-family: var(--display); font-weight: 700; font-size: 18px; color: var(--pink-soft); pointer-events: none; }
+    .money input { width: 100%; padding: 16px 16px 16px 64px; font-family: var(--display); font-size: 24px; font-weight: 700; border-radius: 16px; }
+    .calc-note { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 14px; font-size: 13.5px; line-height: 1.45; }
+    .calc-note svg { width: 18px; height: 18px; flex: none; margin-top: 1px; }
+    .calc-note.no { background: rgba(255,224,138,.07); border: 1px solid rgba(255,224,138,.3); color: var(--butter); }
+    .calc-note.yes { background: rgba(116,240,196,.07); border: 1px solid rgba(116,240,196,.3); color: var(--mint); }
+    .result-card { display: grid; gap: 10px; align-content: center; justify-items: center; text-align: center; min-height: 260px; }
+    .result-label { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--pink-soft); }
+    .result-value { font-family: var(--display); font-weight: 800; font-size: clamp(36px, 6vw, 52px); letter-spacing: -.02em; line-height: 1.05; color: var(--faint); }
+    .result-value.has { background: var(--holo); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: holo 6s linear infinite; }
+    .result-sub { color: var(--muted); font-size: 14px; max-width: 32ch; }
+
+    /* Fazer pedido: cartões com cara de capa de álbum */
+    .album { border-radius: 24px; overflow: hidden; background: linear-gradient(180deg, rgba(30,21,48,.85), rgba(19,13,31,.92)); border: 1px solid var(--line); display: flex; flex-direction: column; }
+    .album-cover { position: relative; aspect-ratio: 16 / 7; display: flex; align-items: flex-end; padding: 18px; overflow: hidden; }
+    .cover-0 { background: radial-gradient(circle at 20% 20%, #ffc2dc, transparent 45%), radial-gradient(circle at 85% 30%, #c9a8ff, transparent 50%), radial-gradient(circle at 50% 110%, #ff4f93, transparent 60%), #3a0d26; }
+    .cover-1 { background: radial-gradient(circle at 80% 20%, #9eeaff, transparent 45%), radial-gradient(circle at 15% 40%, #7a2cff, transparent 55%), radial-gradient(circle at 60% 120%, #b99bff, transparent 60%), #10142e; }
+    .cover-2 { background: radial-gradient(circle at 25% 25%, #fff1a8, transparent 45%), radial-gradient(circle at 85% 35%, #ff9cc4, transparent 50%), radial-gradient(circle at 50% 120%, #c45cff, transparent 60%), #2a1030; }
+    .album-cover svg { position: absolute; right: -6%; top: -20%; width: 52%; color: rgba(255,255,255,.22); }
+    .album-cover-text { position: relative; font-family: var(--display); font-weight: 800; font-size: clamp(20px, 3vw, 28px); line-height: .98; letter-spacing: -.01em; color: #fff; text-shadow: 0 6px 24px rgba(0,0,0,.35); overflow-wrap: anywhere; }
+    .sticker { position: absolute; top: 14px; left: 14px; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; padding: 6px 11px; border-radius: 999px; background: #fff; color: #2a0f2e; transform: rotate(-4deg); box-shadow: 0 6px 16px -6px rgba(0,0,0,.6); }
+    .price { font-family: var(--display); font-weight: 700; font-size: 18px; color: var(--pink-soft); white-space: nowrap; }
+    .price small { font-family: var(--body); font-size: 12.5px; color: var(--muted); font-weight: 600; margin-left: 2px; }
+
+    /* Guia e regras */
+    .seg-btn { border: 1px solid var(--line-2); background: rgba(255,255,255,.04); padding: 9px 16px; border-radius: 999px; font-size: 13.5px; font-weight: 600; color: var(--muted); transition: all .15s; }
+    .seg-btn:hover { color: #fff; }
+    .seg-btn.is-active { color: #fff; background: rgba(255,79,147,.14); border-color: rgba(255,79,147,.5); }
+    .guide-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+    .guide-list li { display: flex; gap: 12px; align-items: flex-start; }
+    .guide-list .dot { color: var(--pink); flex: none; line-height: 1.55; }
+    .guide-list .n { flex: none; min-width: 28px; height: 28px; padding: 0 6px; border-radius: 9px; display: grid; place-items: center; font-family: var(--display); font-size: 12px; font-weight: 700; background: rgba(255,79,147,.15); color: var(--pink-soft); }
+    .guide-p + .guide-p, .guide-p + .guide-list, .guide-list + .guide-p { margin-top: 12px; }
+
+    /* Animações */
+    @keyframes holo { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+    @keyframes shine { 0% { background-position: 160% 0; } 55%, 100% { background-position: -60% 0; } }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+    @keyframes twinkle { 0%, 100% { opacity: .25; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.15); } }
+    @keyframes ping { 0% { box-shadow: 0 0 0 0 rgba(116,240,196,.6); } 80%, 100% { box-shadow: 0 0 0 7px rgba(116,240,196,0); } }
+    @keyframes lightstick { 0%, 100% { box-shadow: 0 0 0 4px rgba(255,79,147,.22), 0 0 14px 2px rgba(255,79,147,.5); } 50% { box-shadow: 0 0 0 6px rgba(255,79,147,.12), 0 0 26px 8px rgba(255,79,147,.75); } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
   </style>
 </head>
 <body class="antialiased selection:bg-rose-800 selection:text-white flex flex-col">
@@ -129,39 +371,49 @@
   <div id="toastContainer" class="fixed top-4 right-4 z-[999] flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
 
   <!-- Top Navigation Header -->
-  <header class="site-header sticky top-0 z-40 backdrop-blur-xl">
+  <!-- Desenho da flor usado nos photocards e capas -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="bloom" viewBox="0 0 100 100">
+      <g fill="currentColor" opacity=".9">
+        <ellipse cx="50" cy="28" rx="14" ry="22"/>
+        <ellipse cx="50" cy="28" rx="14" ry="22" transform="rotate(72 50 50)"/>
+        <ellipse cx="50" cy="28" rx="14" ry="22" transform="rotate(144 50 50)"/>
+        <ellipse cx="50" cy="28" rx="14" ry="22" transform="rotate(216 50 50)"/>
+        <ellipse cx="50" cy="28" rx="14" ry="22" transform="rotate(288 50 50)"/>
+      </g>
+      <circle cx="50" cy="50" r="9" fill="#2a0f2e" opacity=".55"/>
+    </symbol>
+  </svg>
+
+  <header class="site-header sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-      <button type="button" onclick="switchMainTab('home')" class="flex items-center gap-3 text-left" aria-label="Ir para o início">
-        <span class="w-10 h-10 rounded-xl bg-rose-800 flex items-center justify-center shrink-0">
-          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c-1.8 2.6-4.5 3.8-4.5 7 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c0-3.2-2.7-4.4-4.5-7z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14.5V21M12 18c-2.5 0-4.5-1.2-5.5-3M12 18c2.5 0 4.5-1.2 5.5-3"/></svg>
-        </span>
+      <button type="button" onclick="switchMainTab('home')" class="brand" aria-label="Ir para o início">
+        <span class="brand-logo"><span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-1.8 2.6-4.5 3.8-4.5 7 0 2.5 2 4.5 4.5 4.5s4.5-2 4.5-4.5c0-3.2-2.7-4.4-4.5-7z"/><path d="M12 14.5V21M12 18c-2.5 0-4.5-1.2-5.5-3M12 18c2.5 0 4.5-1.2 5.5-3"/></svg>
+        </span></span>
         <span>
-          <span class="flex items-center gap-2">
-            <h1 class="font-serif text-2xl font-bold text-white leading-none">Dark Bloom Cegs</h1>
-            <span id="syncIndicator" class="inline-flex items-center gap-1.5 text-[11px] text-emerald-300"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Online</span>
+          <span class="brand-name">
+            <h1 class="brand-title">Dark Bloom</h1><em>CEGS</em>
+            <span id="syncIndicator" class="live"><span class="bg-emerald-400"></span>Online</span>
           </span>
-          <span class="block text-xs text-ash mt-1">Compras em grupo de K-Pop: álbuns, photocards e colecionáveis</span>
+          <span class="brand-sub">Compras em grupo de K-Pop: álbuns, photocards e colecionáveis</span>
         </span>
       </button>
 
-      <nav class="flex flex-wrap items-center gap-1" aria-label="Navegação principal">
+      <nav class="nav" aria-label="Navegação principal">
         <button id="nav-home" onclick="switchMainTab('home')" class="nav-tab is-active">Meu espaço</button>
         <button id="nav-shipping" onclick="switchMainTab('shipping')" class="nav-tab">Envio nacional</button>
         <button id="nav-order" onclick="switchMainTab('order')" class="nav-tab">Fazer pedido</button>
+        <button id="nav-calc" onclick="switchMainTab('calc')" class="nav-tab">Calculadoras</button>
         <button id="nav-guide" onclick="switchMainTab('guide')" class="nav-tab">Guia e regras</button>
-
-        <div class="relative" id="calcMenuWrapper">
-          <button type="button" onclick="toggleCalcDropdown()" class="nav-tab nav-ghost" aria-haspopup="true">Calculadoras ▾</button>
-          <div id="calcDropdownMenu" class="hidden absolute right-0 mt-2 w-60 rounded-xl bg-velvet border border-white/10 shadow-2xl z-50 overflow-hidden divide-y divide-white/5">
-            <a href="https://ivinagarcia.github.io/calculadora-db-ceg/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-4 py-3 text-sm text-white hover:bg-white/5"><span>Mercari (Japão)</span><span class="text-ash">↗</span></a>
-            <a href="https://ivinagarcia.github.io/calculadora-db-bunjang/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-4 py-3 text-sm text-white hover:bg-white/5"><span>Bunjang (Coreia)</span><span class="text-ash">↗</span></a>
-            <a href="https://ivinagarcia.github.io/calculadora-db-pocamarket/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-4 py-3 text-sm text-white hover:bg-white/5"><span>Pocamarket (Coreia)</span><span class="text-ash">↗</span></a>
-          </div>
-        </div>
-
-        <a id="headerWhatsappLink" href="https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU" target="_blank" rel="noopener noreferrer" class="nav-tab nav-ghost">Comunidade</a>
+        <span class="nav-sep" aria-hidden="true"></span>
+        <a id="headerWhatsappLink" href="https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU" target="_blank" rel="noopener noreferrer" class="nav-tab nav-ghost">Comunidade ↗</a>
         <button id="nav-admin" onclick="handleAdminNavClick()" class="nav-tab nav-ghost">Admin</button>
       </nav>
+    </div>
+
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track" id="tickerTrack"><span>ÁLBUNS</span><b>✦</b><span>PHOTOCARDS</span><b>✦</b><span>POBs</span><b>✦</b><span>LUCKY DRAWS</span><b>✦</b><span>COREIA DO SUL</span><b>✦</b><span>JAPÃO</span><b>✦</b><span>COLECIONÁVEIS</span><b>✦</b></div>
     </div>
   </header>
 
@@ -172,18 +424,18 @@
     <!-- TAB 1: MEU ESPAÇO (CLEAN HOME SCREEN — ONLY VISIBLE ON START)       -->
     <!-- =================================================================== -->
     <section id="tab-home" class="space-y-6 animate-fade">
-      <!-- Top Hero: Unified Combobox + Pix Quick Info -->
-      <div class="gothic-card rounded-3xl p-5 sm:p-7 gold-border-glow">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-          <div class="space-y-1 max-w-xl">
-            <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white">Acompanhe seus pedidos e pagamentos</h2>
-            <p class="text-sm sm:text-base text-ash">Busque seu nome ou @ para ver seus itens, o que falta pagar e até quando.</p>
-          </div>
+      <!-- Topo: busca da participante + Pix -->
+      <div class="gothic-card gold-border-glow rounded-3xl hero">
+        <div class="min-w-0">
+          <span class="eyebrow"><span class="dot">✦</span>Portal da participante</span>
+          <h2 class="hero-title">Acompanhe seus <span class="holo-text">pedidos</span> e pagamentos</h2>
+          <p class="lead">Busque seu nome ou @ para ver seus itens, o que falta pagar e até quando.</p>
 
-          <!-- Unified Intelligent Combobox (Single Input) -->
-          <div class="relative w-full lg:w-96" id="homeComboboxWrapper">
-            <label for="homeUnifiedInput" class="text-sm font-medium text-white block mb-1.5">Seu nome ou @</label>
-            <div class="relative">
+          <!-- Busca (mesma lógica de antes) -->
+          <div class="relative" id="homeComboboxWrapper">
+            <label for="homeUnifiedInput" class="search-lbl">Seu nome ou @</label>
+            <div class="search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
               <input
                 type="text"
                 id="homeUnifiedInput"
@@ -191,108 +443,128 @@
                 oninput="filterJoinerCombobox('home', this.value)"
                 onkeydown="handleJoinerComboboxKeydown(event, 'home')"
                 placeholder="Buscar por nome ou @"
-                class="input-gothic w-full pl-9 pr-14 py-3 rounded-2xl text-sm font-medium"
                 autocomplete="off"
               />
-              <svg class="absolute left-3 top-3.5 w-4 h-4 text-ash pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5" stroke-linecap="round"/></svg>
-              <div class="absolute right-2.5 top-2.5 flex items-center gap-1">
-                <button
-                  type="button"
-                  id="homeClearBtn"
-                  onclick="clearJoinerSelection()"
-                  title="Limpar seleção"
-                  class="hidden w-6 h-6 rounded-lg text-xs text-ash hover:text-rose-300 hover:bg-white/10 flex items-center justify-center transition"
-                >✕</button>
-                <button
-                  type="button"
-                  onclick="toggleJoinerCombobox('home')"
-                  title="Abrir lista"
-                  class="w-6 h-6 rounded-lg text-[11px] text-amber-300/80 hover:text-amber-200 hover:bg-white/10 flex items-center justify-center transition"
-                >▼</button>
-              </div>
+              <button type="button" id="homeClearBtn" onclick="clearJoinerSelection()" title="Limpar seleção" aria-label="Limpar seleção" class="hidden search-x">✕</button>
+              <button type="button" onclick="joinerSearchGo('home')" class="btn-crimson search-go">Buscar</button>
             </div>
             <div
               id="homeComboboxDropdown"
-              class="hidden absolute left-0 right-0 mt-1.5 max-h-72 overflow-y-auto rounded-2xl bg-velvet border border-amber-400/35 shadow-2xl z-50 divide-y divide-white/5"
+              class="hidden combo-dd absolute left-0 right-0 mt-1.5 max-h-72 overflow-y-auto rounded-2xl bg-velvet border border-rose-400/35 shadow-2xl z-50 divide-y divide-white/5"
             ></div>
+          </div>
+
+          <!-- Pix e contato -->
+          <div class="ticket">
+            <div class="ticket-main">
+              <div>
+                <span class="ticket-label">Pix (CNPJ)</span>
+                <span id="displayPixCnpj" class="mono">67.039.191/0001-76</span>
+              </div>
+              <button type="button" onclick="copyPixKey()" class="btn-pill btn-butter">Copiar chave Pix</button>
+            </div>
+            <div class="ticket-stub">
+              <span>Contato:</span>
+              <a id="displayContactEmail" href="mailto:darkbloomcegs@gmail.com">darkbloomcegs@gmail.com</a>
+            </div>
           </div>
         </div>
 
-        <!-- Compact Payment Bar (Pix CNPJ + Contact Email) -->
-        <div class="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div class="flex flex-wrap items-center gap-2 sm:gap-3">
-            <span class="px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-400/30 text-amber-200 font-semibold">
-              Pix (CNPJ): <span id="displayPixCnpj" class="font-mono">67.039.191/0001-76</span>
-            </span>
-            <button type="button" onclick="copyPixKey()" class="px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/40 font-semibold transition">
-              Copiar chave Pix
-            </button>
-          </div>
-          <div class="text-ash">
-            Contato: <a id="displayContactEmail" href="mailto:darkbloomcegs@gmail.com" class="text-rose-300 hover:underline font-medium">darkbloomcegs@gmail.com</a>
-          </div>
+        <!-- Photocards decorativos -->
+        <div class="hero-art" aria-hidden="true">
+          <div class="pc pc-1"><div class="pc-inner">
+            <div class="pc-top"><span>DB</span><span>01</span></div>
+            <svg class="pc-bloom" viewBox="0 0 100 100"><use href="#bloom"/></svg>
+            <div class="pc-bottom">DARK BLOOM<small>Coreia · Japão</small></div>
+          </div></div>
+          <div class="pc pc-2"><div class="pc-inner">
+            <div class="pc-top"><span>DB</span><span>02</span></div>
+            <svg class="pc-bloom" viewBox="0 0 100 100"><use href="#bloom"/></svg>
+            <div class="pc-bottom">PHOTOCARD<small>Pré-venda</small></div>
+          </div></div>
+          <div class="pc pc-3"><div class="pc-inner">
+            <div class="pc-top"><span>DB</span><span>03</span></div>
+            <svg class="pc-bloom" viewBox="0 0 100 100"><use href="#bloom"/></svg>
+            <div class="pc-bottom">CEGS<small>Lucky Draw</small></div>
+          </div></div>
+          <span class="sparkle s1">✦</span><span class="sparkle s2">✦</span><span class="sparkle s3">✦</span><span class="sparkle s4">✦</span>
         </div>
       </div>
 
       <!-- Resumo financeiro (aparece após selecionar a participante) -->
       <div id="kpiGrid" class="hidden">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="gothic-card rounded-2xl p-5 border-rose-500/30">
-            <p class="text-sm font-medium text-rose-200">Total pendente</p>
-            <p id="kpiPendingValue" class="text-3xl font-bold text-rose-300 mt-1">R$ 0,00</p>
-            <p id="kpiPendingCount" class="text-sm text-ash mt-1">0 cobranças em aberto</p>
-            <div id="kpiPendingDueDates" class="mt-3 pt-3 border-t border-white/10 text-sm text-amber-200/90 leading-snug">Vencimentos: —</div>
+        <div class="hello">
+          <span class="avatar"><span id="helloInitials">DB</span></span>
+          <div class="hello-text">
+            <span class="text-ash">Olá,</span> <strong id="helloHandle"></strong>
+            <p>Estes são os seus itens nesta CEG.</p>
           </div>
-          <div class="gothic-card rounded-2xl p-5 border-emerald-500/25">
-            <p class="text-sm font-medium text-emerald-200">Total já pago</p>
-            <p id="kpiPaidValue" class="text-3xl font-bold text-emerald-300 mt-1">R$ 0,00</p>
-            <p id="kpiReviewCount" class="text-sm text-amber-200 mt-1">0 comprovantes em análise</p>
+          <button type="button" onclick="clearJoinerSelection()" class="btn-pill btn-ghost">Trocar participante</button>
+        </div>
+        <div class="kpis">
+          <div class="kpi kpi-due">
+            <span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+            <span class="kpi-label">Total pendente</span>
+            <span id="kpiPendingValue" class="kpi-value">R$ 0,00</span>
+            <span id="kpiPendingCount" class="kpi-meta">0 cobranças em aberto</span>
+            <span id="kpiFineTotal" class="kpi-fine hidden"></span>
+            <div id="kpiPendingDueDates" class="kpi-foot">Vencimentos: —</div>
+            <div class="fine-note" role="note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4.5"/><path d="M12 17.5h.01"/></svg>
+              <span><strong>Multa por atraso:</strong> após o vencimento, R$ 1,00 por dia de atraso.</span>
+            </div>
+          </div>
+          <div class="kpi kpi-paid">
+            <span class="kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+            <span class="kpi-label">Total já pago</span>
+            <span id="kpiPaidValue" class="kpi-value">R$ 0,00</span>
+            <span id="kpiReviewCount" class="kpi-meta">0 comprovantes em análise</span>
           </div>
         </div>
       </div>
 
       <!-- Estado inicial: passo a passo -->
-      <div id="homeEmptyPrompt" class="gothic-card rounded-2xl p-6 sm:p-8">
-        <h3 class="font-serif text-2xl font-bold text-white">Como funciona</h3>
-        <ol class="mt-5 grid gap-5 sm:grid-cols-3 text-sm text-ash">
-          <li class="flex gap-3"><span class="step-dot">1</span><span><strong class="block text-white font-medium">Encontre seu nome</strong>Digite seu nome ou @ no campo acima.</span></li>
-          <li class="flex gap-3"><span class="step-dot">2</span><span><strong class="block text-white font-medium">Confira valores e prazos</strong>Veja o que falta pagar e a data de vencimento.</span></li>
-          <li class="flex gap-3"><span class="step-dot">3</span><span><strong class="block text-white font-medium">Envie o comprovante</strong>Depois do Pix, anexe o comprovante marcando os itens pagos.</span></li>
+      <div id="homeEmptyPrompt" class="gothic-card rounded-3xl p-5 sm:p-7">
+        <h3 class="font-serif text-xl font-bold text-white mb-5">Como funciona</h3>
+        <ol class="steps">
+          <li class="step"><span class="step-num">01</span><strong>Encontre seu nome</strong><p>Digite seu nome ou @ no campo acima.</p></li>
+          <li class="step"><span class="step-num">02</span><strong>Confira valores e prazos</strong><p>Veja o que falta pagar e a data de vencimento.</p></li>
+          <li class="step"><span class="step-num">03</span><strong>Envie o comprovante</strong><p>Depois do Pix, anexe o comprovante marcando os itens pagos.</p></li>
         </ol>
       </div>
 
-      <!-- Selected Participant Workspace (Hidden until a Joiner is chosen) -->
+      <!-- Área da participante (aparece depois da busca) -->
       <div id="homeJoinerContent" class="hidden space-y-5">
-        <!-- Cascading Filters + Attach Receipt Action -->
-        <div class="gothic-card rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          <div class="flex flex-wrap items-center gap-2">
-            <select id="homeFilterBox" onchange="onHomeBoxFilterChange()" class="input-gothic px-3 py-2 rounded-xl text-xs">
+        <!-- Filtros + enviar comprovante -->
+        <div class="gothic-card toolbar rounded-2xl p-3 sm:p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
+            <select id="homeFilterBox" onchange="onHomeBoxFilterChange()" class="input-gothic" aria-label="Caixa">
               <option value="">Todas as Caixas</option>
             </select>
-            <select id="homeFilterEra" onchange="onHomeEraFilterChange()" class="input-gothic px-3 py-2 rounded-xl text-xs">
+            <select id="homeFilterEra" onchange="onHomeEraFilterChange()" class="input-gothic" aria-label="Era">
               <option value="">Todas as Eras</option>
             </select>
-            <select id="homeFilterSet" onchange="renderHomeJoinerView()" class="input-gothic px-3 py-2 rounded-xl text-xs">
+            <select id="homeFilterSet" onchange="renderHomeJoinerView()" class="input-gothic" aria-label="Set">
               <option value="">Todos os Sets</option>
             </select>
-            <select id="homeFilterPay" onchange="renderHomeJoinerView()" class="input-gothic px-3 py-2 rounded-xl text-xs">
+            <select id="homeFilterPay" onchange="renderHomeJoinerView()" class="input-gothic" aria-label="Pagamento">
               <option value="all">Todos os Pagamentos</option>
               <option value="pending">Apenas Pendentes</option>
               <option value="paid">Apenas Quitados</option>
             </select>
           </div>
 
-          <button type="button" onclick="openProofModal()" class="btn-crimson px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white flex items-center justify-center gap-2 shadow-lg shrink-0">
+          <button type="button" onclick="openProofModal()" class="btn-crimson px-5 py-3 text-sm font-bold text-white flex items-center justify-center gap-2 shrink-0">
             Enviar comprovante
           </button>
         </div>
 
-        <!-- 4-Level Hierarchy Tree: Caixa -> Era -> Set -> Itens -->
+        <!-- Caixa → Era → Set → Itens -->
         <div id="homeHierarchyContainer" class="space-y-5"></div>
 
-        <!-- Participant Receipt History -->
-        <div class="gothic-card rounded-3xl p-5 space-y-3">
-          <h3 class="font-serif text-xl font-bold text-amber-200">Meus Comprovantes Enviados</h3>
+        <!-- Comprovantes enviados -->
+        <div class="gothic-card rounded-3xl p-5 sm:p-6 space-y-3">
+          <h3 class="font-serif text-lg font-bold text-white">Meus comprovantes enviados</h3>
           <div id="homeProofsHistory" class="space-y-2.5"></div>
         </div>
       </div>
@@ -305,8 +577,8 @@
       <div class="gothic-card rounded-3xl p-5 sm:p-7 gold-border-glow">
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <span class="text-[11px] uppercase tracking-[0.2em] text-amber-400 font-semibold">Logística Brasil • Dark Bloom Cegs</span>
-            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-0.5">Pedido de Envio Nacional</h2>
+            <span class="eyebrow"><span class="dot">✦</span>Logística Brasil</span>
+            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-3">Pedido de envio nacional</h2>
             <p class="text-xs sm:text-sm text-ash mt-1">
               Solicite o cálculo do frete pelo seu CEP ou preencha o formulário de envio via <strong class="text-white">SuperFrete</strong> / <strong class="text-emerald-300">Carta Registrada (R$ 18,00 fixo)</strong>.
             </p>
@@ -350,7 +622,7 @@
 
         <!-- Two Option Switcher -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
-          <button type="button" id="shipOptBtn-1" onclick="setShippingMode(1)" class="text-left p-4 rounded-2xl border-2 border-amber-400/70 bg-rose-950/35 transition-all flex items-start gap-3.5">
+          <button type="button" id="shipOptBtn-1" onclick="setShippingMode(1)" class="option is-active">
             <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-lg shrink-0">📐</div>
             <div>
               <span class="text-[11px] uppercase tracking-wider font-bold text-amber-300">Opção 1 • Orçamento</span>
@@ -359,7 +631,7 @@
             </div>
           </button>
 
-          <button type="button" id="shipOptBtn-2" onclick="setShippingMode(2)" class="text-left p-4 rounded-2xl border border-white/15 bg-black/30 hover:border-rose-400/40 transition-all flex items-start gap-3.5">
+          <button type="button" id="shipOptBtn-2" onclick="setShippingMode(2)" class="option">
             <div class="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-400/40 flex items-center justify-center text-lg shrink-0">🏷️</div>
             <div>
               <span class="text-[11px] uppercase tracking-wider font-bold text-rose-300">Opção 2 • Emissão de Etiqueta</span>
@@ -549,11 +821,57 @@
     <!-- =================================================================== -->
     <section id="tab-order" class="hidden space-y-6 animate-fade">
       <div class="gothic-card rounded-3xl p-5 sm:p-7 gold-border-glow">
-        <span class="text-[11px] uppercase tracking-[0.2em] text-amber-400 font-semibold">Claims & Pré-Vendas Abertas</span>
-        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-0.5">Fazer Pedido / Reservar Vaga</h2>
-        <p class="text-xs sm:text-sm text-ash mt-1">Escolha um formulário ativo abaixo para registrar sua vaga diretamente na planilha da CEG.</p>
+        <span class="eyebrow"><span class="dot">✦</span>Claims e pré-vendas abertas</span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-3">Fazer pedido · reservar vaga</h2>
+        <p class="text-sm text-ash mt-2">Escolha um formulário aberto abaixo para registrar sua vaga direto na planilha da CEG.</p>
       </div>
       <div id="publicFormsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- CALCULADORAS (dentro do site, sem abrir outro link)                 -->
+    <!-- =================================================================== -->
+    <section id="tab-calc" class="hidden space-y-6 animate-fade">
+      <div class="gothic-card rounded-3xl p-5 sm:p-7 gold-border-glow">
+        <span class="eyebrow"><span class="dot">✦</span>Calculadoras</span>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-3">Quanto vai custar?</h2>
+        <p class="text-sm text-ash mt-2">Escolha a loja, digite o valor do item e veja na hora o valor final em reais.</p>
+        <div class="calc-options">
+          <button type="button" class="option is-active" data-calc="mercari" aria-pressed="true" onclick="selectCalc('mercari')">
+            <span class="option-icon">JP</span>
+            <span><small>Japão · iene</small><strong>Mercari</strong></span>
+          </button>
+          <button type="button" class="option" data-calc="bunjang" aria-pressed="false" onclick="selectCalc('bunjang')">
+            <span class="option-icon">KR</span>
+            <span><small>Coreia · dólar</small><strong>Bunjang</strong></span>
+          </button>
+          <button type="button" class="option" data-calc="pocamarket" aria-pressed="false" onclick="selectCalc('pocamarket')">
+            <span class="option-icon">KR</span>
+            <span><small>Coreia · dólar</small><strong>Pocamarket</strong></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="calc-split">
+        <div class="gothic-card rounded-3xl p-5 sm:p-7 space-y-4">
+          <div class="flex items-center gap-3 pb-3 border-b border-white/10">
+            <span class="num-badge" id="calcBadge">¥</span>
+            <h3 class="font-serif text-lg font-bold text-white" id="calcTitle">Calculadora Mercari</h3>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-ash block mb-1.5" for="calcInput" id="calcLabel">Valor do item no Mercari (¥)</label>
+            <div class="money"><span id="calcPrefix">¥</span><input class="input-gothic" id="calcInput" type="text" inputmode="decimal" autocomplete="off" placeholder="Ex.: 2000" oninput="updateCalcResult()" /></div>
+          </div>
+          <p class="text-sm text-ash" id="calcRate"></p>
+          <div class="calc-note" id="calcNote"></div>
+        </div>
+        <div class="gothic-card gold-border-glow rounded-3xl p-5 sm:p-7 result-card" aria-live="polite">
+          <span class="result-label">Valor final</span>
+          <span class="result-value" id="calcResult">R$ 0,00</span>
+          <span class="result-sub" id="calcSub">Digite o valor do item para calcular.</span>
+          <button type="button" onclick="switchMainTab('order')" class="btn-pill btn-ghost">Ver pedidos abertos</button>
+        </div>
+      </div>
     </section>
 
     <!-- =================================================================== -->
@@ -562,23 +880,17 @@
     <section id="tab-guide" class="hidden space-y-6 animate-fade">
       <div class="gothic-card rounded-3xl p-5 sm:p-7 gold-border-glow space-y-5">
         <div>
-          <span class="text-[11px] uppercase tracking-[0.2em] text-amber-400 font-semibold">Central Informativa • Dark Bloom Cegs</span>
-          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-0.5">Guia & Regras da Comunidade</h2>
+          <span class="eyebrow"><span class="dot">✦</span>Central informativa</span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-3">Guia e regras da comunidade</h2>
         </div>
 
-        <div class="flex flex-wrap gap-2">
-          <button type="button" id="guideSubBtn-rules" onclick="switchGuideSubTab('rules')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-950/80 text-amber-200 border border-amber-400/40">
-            📜 Regras da Comunidade
-          </button>
-          <button type="button" id="guideSubBtn-about" onclick="switchGuideSubTab('about')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-ash hover:text-white">
-            🥀 Sobre a CEG
-          </button>
-          <button type="button" id="guideSubBtn-tutorials" onclick="switchGuideSubTab('tutorials')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-ash hover:text-white">
-            🎓 Tutoriais de Compra
-          </button>
+        <div class="flex flex-wrap gap-2" role="tablist">
+          <button type="button" id="guideSubBtn-rules" onclick="switchGuideSubTab('rules')" class="seg-btn is-active" role="tab">📜 Regras da comunidade</button>
+          <button type="button" id="guideSubBtn-about" onclick="switchGuideSubTab('about')" class="seg-btn" role="tab">🥀 Sobre a CEG</button>
+          <button type="button" id="guideSubBtn-tutorials" onclick="switchGuideSubTab('tutorials')" class="seg-btn" role="tab">🎓 Tutoriais de compra</button>
         </div>
 
-        <div id="guideContentBox" class="rounded-2xl bg-black/40 border border-white/10 p-5 sm:p-6 text-xs sm:text-sm text-ash whitespace-pre-line leading-relaxed"></div>
+        <div id="guideContentBox" class="rounded-2xl bg-black/30 border border-white/10 p-5 sm:p-6 text-sm sm:text-[15px] text-white/90 leading-relaxed" role="tabpanel"></div>
       </div>
     </section>
 
@@ -899,12 +1211,12 @@
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-white/10 py-6 px-4 sm:px-6 text-sm text-ash">
+  <footer class="border-t border-white/10 py-7 px-4 sm:px-6 text-sm text-ash">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-      <div><strong class="font-serif text-lg text-white">Dark Bloom Cegs</strong><span class="ml-2">Compras em grupo de K-Pop</span></div>
+      <div><strong class="font-serif text-base text-white">Dark Bloom Cegs</strong><span class="ml-2">Compras em grupo de K-Pop</span></div>
       <div class="flex flex-wrap items-center gap-5">
-        <a id="footerEmailLink" href="mailto:darkbloomcegs@gmail.com" class="hover:text-white">darkbloomcegs@gmail.com</a>
-        <a id="footerWhatsappLink" href="https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU" target="_blank" rel="noopener noreferrer" class="hover:text-white">Comunidade no WhatsApp</a>
+        <a id="footerEmailLink" href="mailto:darkbloomcegs@gmail.com" class="text-rose-300 hover:text-white">darkbloomcegs@gmail.com</a>
+        <a id="footerWhatsappLink" href="https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU" target="_blank" rel="noopener noreferrer" class="text-rose-300 hover:text-white">Comunidade no WhatsApp ↗</a>
       </div>
     </div>
   </footer>
@@ -1401,15 +1713,7 @@
     // -----------------------------------------------------------------------
     // TOP NAVIGATION (STRICT TAB ISOLATION)
     // -----------------------------------------------------------------------
-    function toggleCalcDropdown() {
-      document.getElementById('calcDropdownMenu').classList.toggle('hidden');
-    }
-
     document.addEventListener('click', (e) => {
-      const calcWrap = document.getElementById('calcMenuWrapper');
-      if (calcWrap && !calcWrap.contains(e.target)) {
-        document.getElementById('calcDropdownMenu').classList.add('hidden');
-      }
       ['home', 'shipping'].forEach(ctx => {
         const w = document.getElementById(`${ctx}ComboboxWrapper`);
         const d = document.getElementById(`${ctx}ComboboxDropdown`);
@@ -1423,7 +1727,7 @@
 
     function switchMainTab(tab) {
       if (tab === 'admin' && !window.state.loggedAdmin) { handleAdminNavClick(); return; }
-      const tabs = ['home', 'shipping', 'order', 'guide', 'admin'];
+      const tabs = ['home', 'shipping', 'order', 'calc', 'guide', 'admin'];
       tabs.forEach(t => {
         const sec = document.getElementById(`tab-${t}`);
         if (sec) sec.classList.toggle('hidden', t !== tab);
@@ -1432,9 +1736,30 @@
           btn.className = t === tab ? 'nav-tab is-active' : 'nav-tab';
         }
       });
+      // No celular o menu rola de lado: centraliza a aba escolhida
+      const nav = document.querySelector('.nav');
+      const ativo = document.querySelector('.nav-tab.is-active');
+      if (nav && ativo && nav.scrollWidth > nav.clientWidth) {
+        const ra = ativo.getBoundingClientRect(), rn = nav.getBoundingClientRect();
+        nav.scrollLeft = nav.scrollLeft + (ra.left - rn.left) - (rn.width - ra.width) / 2;
+      }
       if (tab === 'shipping') syncShippingTab();
       if (tab === 'order') renderPublicForms();
+      if (tab === 'calc') renderCalc();
       if (tab === 'guide') renderGuideContent();
+    }
+
+    // Botão "Buscar": escolhe o primeiro nome da lista ou abre a lista
+    function joinerSearchGo(ctx) {
+      const inp = document.getElementById(`${ctx}UnifiedInput`);
+      const dd = document.getElementById(`${ctx}ComboboxDropdown`);
+      if (inp && inp.value.trim()) {
+        renderComboboxDropdown(ctx, inp.value);
+        const first = dd && dd.querySelector('button[data-handle]');
+        if (first) { selectJoiner(first.getAttribute('data-handle')); return; }
+      }
+      inp?.focus();
+      openJoinerCombobox(ctx);
     }
 
     // -----------------------------------------------------------------------
@@ -1566,14 +1891,52 @@
     // -----------------------------------------------------------------------
     // PARTICIPANT HOME ('MEU ESPAÇO') — PENDING TOTAL + DUE DATES + 4-LEVELS
     // -----------------------------------------------------------------------
+    // ---- Multa por atraso ----
+    // Regra: depois do vencimento, cada cobrança em aberto (item, frete ou taxa) ganha
+    // R$ 1,00 por dia de atraso. O atraso conta a partir do dia seguinte ao vencimento,
+    // pela data de Brasília. Quando a cobrança é marcada como paga, a multa sai da conta.
+    const MULTA_POR_DIA = 1;
+    function hojeBrasilia() {
+      return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+    }
+    function diasDeAtraso(due, today) {
+      if (!due || !/^\d{4}-\d{2}-\d{2}$/.test(due)) return 0;
+      const a = Date.UTC(+due.slice(0, 4), +due.slice(5, 7) - 1, +due.slice(8, 10));
+      const b = Date.UTC(+today.slice(0, 4), +today.slice(5, 7) - 1, +today.slice(8, 10));
+      const d = Math.round((b - a) / 86400000);
+      return Number.isFinite(d) && d > 0 ? d : 0;
+    }
+
     function getOrderPendingBreakdown(o) {
-      const itemPend = !o.itemPaid ? (parseFloat(o.itemPrice) || 0) : 0;
-      const shipPend = !o.intlShippingPaid ? (parseFloat(o.intlShipping) || 0) : 0;
-      const taxPend = !o.customsPaid ? (parseFloat(o.customsFee) || 0) : 0;
+      const today = hojeBrasilia();
+      const dues = getDues(o);
+      const itemBase = !o.itemPaid ? (parseFloat(o.itemPrice) || 0) : 0;
+      const shipBase = !o.intlShippingPaid ? (parseFloat(o.intlShipping) || 0) : 0;
+      const taxBase = !o.customsPaid ? (parseFloat(o.customsFee) || 0) : 0;
+      const itemLate = itemBase > 0.009 ? diasDeAtraso(dues.item, today) : 0;
+      const shipLate = shipBase > 0.009 ? diasDeAtraso(dues.ship, today) : 0;
+      const taxLate = taxBase > 0.009 ? diasDeAtraso(dues.tax, today) : 0;
+      const itemFine = itemLate * MULTA_POR_DIA;
+      const shipFine = shipLate * MULTA_POR_DIA;
+      const taxFine = taxLate * MULTA_POR_DIA;
+      const fine = itemFine + shipFine + taxFine;
+      const itemPend = itemBase + itemFine;
+      const shipPend = shipBase + shipFine;
+      const taxPend = taxBase + taxFine;
       const total = (parseFloat(o.itemPrice) || 0) + (parseFloat(o.intlShipping) || 0) + (parseFloat(o.customsFee) || 0);
-      const pending = itemPend + shipPend + taxPend;
-      const paid = Math.max(0, total - pending);
-      return { itemPend, shipPend, taxPend, total, pending, paid };
+      const pendingBase = itemBase + shipBase + taxBase;
+      const pending = pendingBase + fine;
+      const paid = Math.max(0, total - pendingBase);
+      const lateCount = (itemLate > 0 ? 1 : 0) + (shipLate > 0 ? 1 : 0) + (taxLate > 0 ? 1 : 0);
+      return {
+        itemPend, shipPend, taxPend, total, pending, paid,
+        pendingBase, fine, itemFine, shipFine, taxFine, itemLate, shipLate, taxLate, lateCount
+      };
+    }
+
+    // Texto curto da multa para o painel Admin
+    function fineHint(fine, late) {
+      return fine > 0 ? ` <span class="text-rose-300 font-semibold">+ multa ${formatBRL(fine)} (${late} ${late === 1 ? 'dia' : 'dias'})</span>` : '';
     }
 
     function populateHomeCascadeFilters() {
@@ -1716,15 +2079,19 @@
       let totalSum = 0;
       let pendingSum = 0;
       let paidSum = 0;
+      let fineSum = 0;
+      let lateCount = 0;
       let pendingItemsCount = 0;
       let inHandCount = 0;
-      const dueDateMap = new Map();
+      const dueDateMap = new Map(); // data -> { amt, late }
 
       myOrders.forEach(o => {
         const b = getOrderPendingBreakdown(o);
         totalSum += b.total;
         pendingSum += b.pending;
         paidSum += b.paid;
+        fineSum += b.fine;
+        lateCount += b.lateCount;
 
         const boxMeta = window.state.boxesMeta.find(bm => bm.name === o.box);
         const st = (boxMeta?.status || o.status || 'em andamento').toLowerCase();
@@ -1733,26 +2100,40 @@
         if (b.pending > 0.01) {
           pendingItemsCount++;
           const dd = getDues(o);
-          [[dd.item, b.itemPend], [dd.ship, b.shipPend], [dd.tax, b.taxPend]].forEach(([dt, amt]) => { if (dt && amt > 0.01) dueDateMap.set(dt, (dueDateMap.get(dt) || 0) + amt); });
+          [[dd.item, b.itemPend, b.itemLate], [dd.ship, b.shipPend, b.shipLate], [dd.tax, b.taxPend, b.taxLate]].forEach(([dt, amt, late]) => {
+            if (dt && amt > 0.01) {
+              const cur = dueDateMap.get(dt) || { amt: 0, late: false };
+              cur.amt += amt;
+              cur.late = cur.late || late > 0;
+              dueDateMap.set(dt, cur);
+            }
+          });
         }
       });
 
       const inAnalysis = myProofs.filter(p => p.status === 'pending').length;
 
       document.getElementById('kpiGrid').classList.remove('hidden');
+      document.getElementById('helloHandle').textContent = handle;
+      document.getElementById('helloInitials').textContent = (handle.replace(/^@/, '').replace(/[^A-Za-zÀ-ÿ0-9]/g, '').slice(0, 2) || 'DB').toUpperCase();
       document.getElementById('kpiPendingValue').textContent = formatBRL(pendingSum);
-      document.getElementById('kpiPendingCount').textContent = `${pendingItemsCount} ${pendingItemsCount === 1 ? 'item com saldo' : 'itens com saldo'}`;
+      document.getElementById('kpiPendingCount').textContent =
+        `${pendingItemsCount} ${pendingItemsCount === 1 ? 'item com saldo' : 'itens com saldo'}` +
+        (lateCount ? ` · ${lateCount} ${lateCount === 1 ? 'cobrança vencida' : 'cobranças vencidas'}` : '');
+      const fineEl = document.getElementById('kpiFineTotal');
+      fineEl.textContent = `Inclui ${formatBRL(fineSum)} de multa por atraso`;
+      fineEl.classList.toggle('hidden', fineSum <= 0);
       document.getElementById('kpiPaidValue').textContent = formatBRL(paidSum);
-      document.getElementById('kpiReviewCount').textContent = `${inAnalysis} comprovante(s) em análise`;
+      document.getElementById('kpiReviewCount').textContent = `${inAnalysis} ${inAnalysis === 1 ? 'comprovante em análise' : 'comprovantes em análise'}`;
 
-      // Render due dates in smaller text inside Pending Card
+      // Vencimentos no quadro de pendências (vencidos em vermelho, já com a multa)
       const dueEl = document.getElementById('kpiPendingDueDates');
       if (dueDateMap.size === 0) {
-        dueEl.innerHTML = pendingSum > 0.01 ? 'Vencimentos: Sem data definida' : 'Vencimentos: Tudo quitado ✓';
+        dueEl.innerHTML = pendingSum > 0.01 ? 'Vencimentos: sem data definida' : 'Vencimentos: tudo quitado ✓';
       } else {
         const sortedDates = Array.from(dueDateMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-        dueEl.innerHTML = 'Vencimentos: ' + sortedDates.map(([dt, amt]) =>
-          `<span class="inline-block mr-2"><strong>${formatDateBR(dt)}</strong> (${formatBRL(amt)})</span>`
+        dueEl.innerHTML = 'Vencimentos: ' + sortedDates.map(([dt, v]) =>
+          `<span class="date-pill${v.late ? ' late' : ''}">${shortDate(dt)}${v.late ? ' · vencido' : ''} · ${formatBRL(v.amt)}</span>`
         ).join('');
       }
 
@@ -1792,118 +2173,110 @@
           const bMeta = window.state.boxesMeta.find(b => b.name === boxName);
           const stage = (bMeta?.status || 'em andamento').toLowerCase();
           const stageIdx = Math.max(0, LOGISTIC_STAGES.indexOf(stage));
-          const progressPct = Math.round(((stageIdx + 1) / LOGISTIC_STAGES.length) * 100);
+          const lastIdx = LOGISTIC_STAGES.length - 1;
 
           return `
-            <div class="gothic-card rounded-3xl p-5 space-y-4">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-500/20 pb-3">
-                <div class="flex items-center gap-2">
-                  <span class="px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-400/35 text-amber-300 text-xs font-bold">📦 CAIXA</span>
-                  <h3 class="font-serif text-xl font-bold text-white">${escapeHtml(boxName)}</h3>
-                </div>
-                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-950 text-purple-200 border border-purple-500/35 uppercase tracking-wider">
-                  Status: ${escapeHtml(stage)}
-                </span>
+            <div class="gothic-card rounded-3xl p-5 sm:p-6">
+              <div class="box-head">
+                <div class="box-title"><span class="tag tag-butter">📦 Caixa</span><h3>${escapeHtml(boxName)}</h3></div>
+                <span class="status"><i></i>${escapeHtml(stage)}</span>
               </div>
 
-              <!-- Logistic Progress Bar -->
-              <div class="space-y-1">
-                <div class="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
-                  <div class="h-full bg-gradient-to-r from-rose-600 via-purple-500 to-emerald-400" style="width:${progressPct}%"></div>
-                </div>
-                <div class="flex justify-between text-[10px] text-ash">
-                  ${LOGISTIC_STAGES.map((st, idx) => `<span class="${idx <= stageIdx ? 'text-amber-300 font-semibold' : ''}">${st}</span>`).join('')}
-                </div>
-              </div>
+              <!-- Etapas da caixa -->
+              <ol class="track" aria-label="Etapas da caixa">
+                ${LOGISTIC_STAGES.map((st, idx) => {
+                  const cls = (idx < stageIdx || stageIdx === lastIdx) ? 'done' : idx === stageIdx ? 'current' : '';
+                  return `<li class="${cls}"${idx === stageIdx ? ' aria-current="step"' : ''}><i></i>${st}</li>`;
+                }).join('')}
+              </ol>
 
-              <div class="space-y-4">
-                ${Object.entries(eras).map(([eraName, sets]) => `
-                  <div class="rounded-2xl bg-black/35 border border-purple-500/25 p-4 space-y-3">
-                    <div class="flex items-center gap-2">
-                      <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-purple-950 text-purple-200 border border-purple-500/30 font-semibold">Era</span>
-                      <h4 class="font-semibold text-sm sm:text-base text-purple-200">${escapeHtml(eraName)}</h4>
-                    </div>
-
-                    <div class="space-y-3">
-                      ${Object.entries(sets).map(([setName, items]) => {
-                        const sMeta = window.state.setsMeta.find(s => s.box === boxName && s.era === eraName && s.name === setName);
-                        return `
-                          <div data-setcard class="rounded-2xl bg-velvet/85 border border-white/10 p-4 space-y-3">
-                            <div class="flex flex-wrap items-center justify-between gap-3">
-                              <div class="flex items-center gap-3 min-w-0">
-                                ${sMeta?.imageUrl ? `<img src="${escapeHtml(sMeta.imageUrl)}" onclick="openImageLightbox(this.src, this.alt)" class="w-12 h-12 rounded-xl object-cover border border-white/15 cursor-zoom-in shrink-0" alt="${escapeHtml(setName)}" />` : ''}
-                                ${setToggleBtn(setKey('h', boxName, eraName, setName), setName, `<span class="block text-sm sm:text-base font-semibold text-white">${escapeHtml(setName)}</span>${sMeta?.description ? `<span class="block text-xs text-ash">${escapeHtml(sMeta.description)}</span>` : ''}`)}
-                              </div>
-                              <span class="text-xs text-ash">${items.length} ${items.length === 1 ? 'card' : 'cards'}</span>
-                            </div>
-                            <div data-setbody class="${_collapsed().has(setKey('h', boxName, eraName, setName)) ? 'hidden ' : ''}divide-y divide-white/5">
-                              ${sMeta?.coverUrl ? `<div class="pb-3"><img src="${escapeHtml(sMeta.coverUrl)}" onclick="openImageLightbox(this.src, this.alt)" alt="Capa de ${escapeHtml(setName)}" class="w-full aspect-[3/1] object-cover rounded-xl border border-white/10 cursor-zoom-in" /></div>` : ''}
-                              ${items.map(it => {
-                                const b = getOrderPendingBreakdown(it);
-                                const d = getDues(it);
-                                return `
-                                  <div class="py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                                    <div class="space-y-1">
-                                      <div class="flex flex-wrap items-center gap-2">
-                                        <span class="font-bold text-white text-sm">${escapeHtml(it.itemCode)}</span>
-                                        ${it.cardDesc ? `<span class="text-ash">— ${escapeHtml(it.cardDesc)}</span>` : ''}
-                                        
-                                      </div>
-                                      <div class="flex flex-wrap gap-1.5 text-[10px]">
-                                        <span class="px-2 py-0.5 rounded-full ${it.itemPaid ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30' : 'bg-rose-950 text-rose-300 border border-rose-500/30'}">
-                                          Item: ${formatBRL(it.itemPrice)} (${it.itemPaid ? 'Pago' : 'Pendente'})${dueInline(d.item, it.itemPaid)}
-                                        </span>
-                                        ${(parseFloat(it.intlShipping) || 0) > 0 ? `
-                                          <span class="px-2 py-0.5 rounded-full ${it.intlShippingPaid ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30' : 'bg-amber-950 text-amber-300 border border-amber-500/30'}">
-                                            Frete: ${formatBRL(it.intlShipping)} (${it.intlShippingPaid ? 'Pago' : 'Pendente'})${dueInline(d.ship, it.intlShippingPaid)}
-                                          </span>
-                                        ` : ''}
-                                        ${(parseFloat(it.customsFee) || 0) > 0 ? `
-                                          <span class="px-2 py-0.5 rounded-full ${it.customsPaid ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30' : 'bg-purple-950 text-purple-200 border border-purple-500/30'}">
-                                            Taxa: ${formatBRL(it.customsFee)} (${it.customsPaid ? 'Pago' : 'Pendente'})${dueInline(d.tax, it.customsPaid)}
-                                          </span>
-                                        ` : ''}
-                                      </div>
-                                    </div>
-                                    <div class="sm:text-right shrink-0">
-                                      <span class="text-[10px] text-ash block">Saldo deste card</span>
-                                      <span class="text-sm font-bold ${b.pending > 0.01 ? 'text-rose-400' : 'text-emerald-400'}">
-                                        ${b.pending > 0.01 ? formatBRL(b.pending) : 'Quitado ✓'}
-                                      </span>
-                                    </div>
-                                  </div>
-                                `;
-                              }).join('')}
-                            </div>
-                          </div>
-                        `;
-                      }).join('')}
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
+              ${Object.entries(eras).map(([eraName, sets]) => `
+                <div class="era">
+                  <div class="era-head"><span class="tag tag-lilac">Era</span><h4>${escapeHtml(eraName)}</h4></div>
+                  ${Object.entries(sets).map(([setName, items]) => {
+                    const sMeta = window.state.setsMeta.find(s => s.box === boxName && s.era === eraName && s.name === setName);
+                    const key = setKey('h', boxName, eraName, setName);
+                    return `
+                      <div data-setcard class="set">
+                        <div class="set-head">
+                          <span class="set-thumb">${sMeta?.imageUrl
+                            ? `<img src="${escapeHtml(sMeta.imageUrl)}" onclick="openImageLightbox(this.src, this.alt)" alt="${escapeHtml(setName)}" />`
+                            : `<svg viewBox="0 0 100 100" aria-hidden="true"><use href="#bloom"/></svg>`}</span>
+                          ${setToggleBtn(key, setName, `<span class="set-name">${escapeHtml(setName)}</span>${sMeta?.description ? `<span class="set-sub">${escapeHtml(sMeta.description)}</span>` : ''}`)}
+                          <span class="count">${items.length} ${items.length === 1 ? 'card' : 'cards'}</span>
+                        </div>
+                        <div data-setbody class="${_collapsed().has(key) ? 'hidden' : ''}">
+                          ${sMeta?.coverUrl ? `<div class="pb-3"><img src="${escapeHtml(sMeta.coverUrl)}" onclick="openImageLightbox(this.src, this.alt)" alt="Capa de ${escapeHtml(setName)}" class="w-full aspect-[3/1] object-cover rounded-xl border border-white/10 cursor-zoom-in" /></div>` : ''}
+                          ${items.map(it => itemRowHtml(it)).join('')}
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              `).join('')}
             </div>
           `;
         }).join('');
       }
 
-      // Render Joiner Proof History
+      // Comprovantes enviados pela participante
       const histBox = document.getElementById('homeProofsHistory');
       if (myProofs.length === 0) {
-        histBox.innerHTML = `<p class="text-xs text-ash">Nenhum comprovante enviado ainda.</p>`;
+        histBox.innerHTML = `<p class="text-sm text-ash">Nenhum comprovante enviado ainda.</p>`;
       } else {
         histBox.innerHTML = myProofs.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)).map(p => `
-          <div class="rounded-2xl bg-black/40 border border-white/10 p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div>
-              <strong class="text-white">${formatBRL(p.amount)}</strong> • <span class="text-ash">${escapeHtml(p.description || '')}</span>
-              ${p.rejectReason ? `<p class="text-rose-300 text-[11px] mt-0.5">Motivo recusa: ${escapeHtml(p.rejectReason)}</p>` : ''}
+          <div class="proof">
+            <div class="min-w-0">
+              <strong>${formatBRL(p.amount)}</strong> · <span class="desc">${escapeHtml(p.description || '')}</span>
+              ${p.rejectReason ? `<span class="reason">Motivo da recusa: ${escapeHtml(p.rejectReason)}</span>` : ''}
             </div>
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${p.status === 'approved' ? 'bg-emerald-950 text-emerald-300' : p.status === 'rejected' ? 'bg-rose-950 text-rose-300' : 'bg-amber-950 text-amber-300'}">
+            <span class="pill ${p.status === 'approved' ? 'ok' : p.status === 'rejected' ? 'no' : 'wait'}">
               ${p.status === 'approved' ? 'Aprovado ✓' : p.status === 'rejected' ? 'Recusado' : 'Em análise'}
             </span>
           </div>
         `).join('');
       }
+    }
+
+    // ---- Linha de cada card: valores, vencimentos e multa ----
+    function shortDate(iso) {
+      return /^\d{4}-\d{2}-\d{2}$/.test(iso || '') ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}` : formatDateBR(iso);
+    }
+    function chipHtml(kind, label, value, paid, due, late, fine) {
+      const nome = `${label} ${formatBRL(value)}`;
+      if (paid) return `<span class="chip ok">${nome} · Pago</span>`;
+      if (late > 0) {
+        return `<span class="chip late">${nome} · venceu ${escapeHtml(shortDate(due))} · ${late} ${late === 1 ? 'dia' : 'dias'} de atraso <b>+ ${formatBRL(fine)} de multa</b></span>`;
+      }
+      const quando = !due ? '' : (due === hojeBrasilia() ? ' · vence hoje' : ` · vence ${escapeHtml(shortDate(due))}`);
+      const cor = kind === 'item' ? 'due' : kind === 'ship' ? 'ship' : 'tax';
+      return `<span class="chip ${cor}">${nome} · Pendente${quando}</span>`;
+    }
+    function miniCode(code) {
+      const s = String(code || '').trim();
+      const m = s.match(/(\d{1,3})\s*$/);
+      if (m) return m[1];
+      return (s.replace(/[^A-Za-zÀ-ÿ0-9]/g, '').slice(0, 2) || 'PC').toUpperCase();
+    }
+    function itemRowHtml(it) {
+      const b = getOrderPendingBreakdown(it);
+      const d = getDues(it);
+      const chips = [chipHtml('item', 'Item', it.itemPrice, it.itemPaid, d.item, b.itemLate, b.itemFine)];
+      if ((parseFloat(it.intlShipping) || 0) > 0) chips.push(chipHtml('ship', 'Frete', it.intlShipping, it.intlShippingPaid, d.ship, b.shipLate, b.shipFine));
+      if ((parseFloat(it.customsFee) || 0) > 0) chips.push(chipHtml('tax', 'Taxa', it.customsFee, it.customsPaid, d.tax, b.taxLate, b.taxFine));
+      const bal = b.pending > 0.01
+        ? `<strong class="is-due">${formatBRL(b.pending)}</strong>${b.fine > 0 ? `<small>inclui ${formatBRL(b.fine)} de multa</small>` : ''}`
+        : `<strong class="is-paid">Quitado ✓</strong>`;
+      return `
+        <div class="item">
+          <span class="mini-pc"><span>${escapeHtml(miniCode(it.itemCode))}</span></span>
+          <div class="min-w-0">
+            <div class="item-title"><strong>${escapeHtml(it.itemCode)}</strong>${it.cardDesc ? `<span>— ${escapeHtml(it.cardDesc)}</span>` : ''}</div>
+            <div class="chips">${chips.join('')}</div>
+          </div>
+          <div class="item-bal"><span>Saldo deste card</span>${bal}</div>
+        </div>
+      `;
     }
 
     // -----------------------------------------------------------------------
@@ -1933,7 +2306,7 @@
                 <input type="checkbox" value="${escapeHtml(o.id)}" data-amt="${b.pending}" onchange="recalcProofChecklistTotal()" class="proof-cb accent-rose-500" />
                 <span class="text-white">${escapeHtml(o.itemCode)} (${escapeHtml(o.set || '')})</span>
               </span>
-              <span class="text-rose-300 font-semibold">${formatBRL(b.pending)}</span>
+              <span class="text-rose-300 font-semibold text-right">${formatBRL(b.pending)}${b.fine > 0 ? `<span class="block text-[11px] text-rose-200/80 font-medium">inclui ${formatBRL(b.fine)} de multa</span>` : ''}</span>
             </label>
           `;
         }).join('');
@@ -2073,13 +2446,13 @@
       if (mode === 1) {
         p1.classList.remove('hidden'); p1.classList.add('grid');
         p2.classList.add('hidden'); p2.classList.remove('grid');
-        b1.className = 'text-left p-4 rounded-2xl border-2 border-amber-400/70 bg-rose-950/35 transition-all flex items-start gap-3.5';
-        b2.className = 'text-left p-4 rounded-2xl border border-white/15 bg-black/30 hover:border-rose-400/40 transition-all flex items-start gap-3.5';
+        b1.className = 'option is-active';
+        b2.className = 'option';
       } else {
         p2.classList.remove('hidden'); p2.classList.add('grid');
         p1.classList.add('hidden'); p1.classList.remove('grid');
-        b2.className = 'text-left p-4 rounded-2xl border-2 border-rose-400/70 bg-rose-950/35 transition-all flex items-start gap-3.5';
-        b1.className = 'text-left p-4 rounded-2xl border border-white/15 bg-black/30 hover:border-amber-400/40 transition-all flex items-start gap-3.5';
+        b2.className = 'option is-active';
+        b1.className = 'option';
       }
     }
 
@@ -2306,25 +2679,34 @@
         box.innerHTML = `<div class="gothic-card rounded-2xl p-8 text-center text-xs text-ash sm:col-span-2">Nenhum formulário aberto no momento.</div>`;
         return;
       }
-      box.innerHTML = window.state.publicForms.map(f => {
+      box.innerHTML = window.state.publicForms.map((f, i) => {
         const opts = (f.options || '').split(',').map(s => s.trim()).filter(Boolean);
+        const capa = (f.era || f.title || '').trim();
         return `
-          <div class="gothic-card rounded-3xl p-5 space-y-3 text-xs">
-            <div class="flex justify-between items-start">
-              <div>
-                <h3 class="font-serif text-xl font-bold text-amber-200">${escapeHtml(f.title)}</h3>
-                <p class="text-ash">${escapeHtml(f.box)} • ${escapeHtml(f.era)} • ${escapeHtml(f.set)}</p>
-              </div>
-              <span class="font-bold text-rose-300 text-sm">${formatBRL(f.unitPrice)} / un</span>
+          <article class="album">
+            <div class="album-cover cover-${i % 3}">
+              <span class="sticker">Vaga aberta</span>
+              <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#bloom"/></svg>
+              <div class="album-cover-text">${escapeHtml(capa)}</div>
             </div>
-            <form onsubmit="submitPublicOrderForm(event, '${escapeHtml(f.id)}')" class="space-y-2.5">
-              <input type="text" id="fJoiner-${f.id}" required placeholder="Seu Nome ou @" value="${escapeHtml(window.state.selectedJoiner || '')}" class="input-gothic w-full px-3 py-2 rounded-xl" />
-              <select id="fChoice-${f.id}" class="input-gothic w-full px-3 py-2 rounded-xl">
-                ${opts.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('')}
-              </select>
-              <button type="submit" class="btn-crimson w-full py-2.5 rounded-xl font-semibold text-white">Reservar Vaga</button>
-            </form>
-          </div>
+            <div class="p-5 space-y-3">
+              <div class="flex justify-between items-start gap-3">
+                <div class="min-w-0">
+                  <h3 class="font-serif text-lg font-bold text-white">${escapeHtml(f.title)}</h3>
+                  <p class="text-sm text-ash mt-1">${[f.box, f.era, f.set].filter(Boolean).map(escapeHtml).join(' · ')}</p>
+                  ${f.dueDate ? `<p class="text-xs text-amber-200 mt-1">Vencimento do pagamento: ${escapeHtml(formatDateBR(f.dueDate))}</p>` : ''}
+                </div>
+                <span class="price">${formatBRL(f.unitPrice)}<small>/un</small></span>
+              </div>
+              <form onsubmit="submitPublicOrderForm(event, '${escapeHtml(f.id)}')" class="space-y-2.5">
+                <input type="text" id="fJoiner-${f.id}" required placeholder="Seu nome ou @" value="${escapeHtml(window.state.selectedJoiner || '')}" class="input-gothic w-full px-3.5 py-2.5 rounded-xl text-sm" />
+                <select id="fChoice-${f.id}" class="input-gothic w-full px-3.5 py-2.5 rounded-xl text-sm">
+                  ${opts.map(o => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('')}
+                </select>
+                <button type="submit" class="btn-crimson w-full py-3 text-sm font-bold text-white">Reservar vaga</button>
+              </form>
+            </div>
+          </article>
         `;
       }).join('');
     }
@@ -2357,16 +2739,37 @@
       window.state.guideSubTab = sub;
       ['rules', 'about', 'tutorials'].forEach(k => {
         const b = document.getElementById(`guideSubBtn-${k}`);
-        b.className = k === sub
-          ? 'px-4 py-2 rounded-xl text-xs font-semibold bg-rose-950/80 text-amber-200 border border-amber-400/40'
-          : 'px-4 py-2 rounded-xl text-xs font-semibold bg-white/5 text-ash hover:text-white';
+        b.className = k === sub ? 'seg-btn is-active' : 'seg-btn';
+        b.setAttribute('aria-selected', String(k === sub));
       });
       renderGuideContent();
     }
 
+    // Mostra o texto do guia (editado no Admin) com marcadores:
+    // linhas com "•" ou "-" viram lista com ✦; linhas com "1." viram passos numerados.
     function renderGuideContent() {
       const el = document.getElementById('guideContentBox');
-      if (el) el.textContent = window.state.guide[window.state.guideSubTab] || '';
+      if (!el) return;
+      const txt = window.state.guide[window.state.guideSubTab] || '';
+      let html = '', list = null;
+      const close = () => { if (list) { html += `</${list}>`; list = null; } };
+      txt.split(/\r?\n/).forEach(raw => {
+        const line = raw.trim();
+        if (!line) { close(); return; }
+        let m;
+        if ((m = line.match(/^[•\-\*·]\s*(.+)$/))) {
+          if (list !== 'ul') { close(); html += '<ul class="guide-list">'; list = 'ul'; }
+          html += `<li><span class="dot">✦</span><span>${escapeHtml(m[1])}</span></li>`;
+        } else if ((m = line.match(/^(\d{1,2})[.)]\s*(.+)$/))) {
+          if (list !== 'ol') { close(); html += '<ol class="guide-list">'; list = 'ol'; }
+          html += `<li><span class="n">${m[1].padStart(2, '0')}</span><span>${escapeHtml(m[2])}</span></li>`;
+        } else {
+          close();
+          html += `<p class="guide-p">${escapeHtml(line)}</p>`;
+        }
+      });
+      close();
+      el.innerHTML = html;
     }
 
     // -----------------------------------------------------------------------
@@ -2545,6 +2948,7 @@
                       <div data-setbody class="${_collapsed().has(setKey('a', bx, er, st)) ? 'hidden ' : ''}divide-y divide-white/5">
                         ${rows.map(r => {
                           const checked = window.state.selectedOrderIds.has(r.id);
+                          const fb = getOrderPendingBreakdown(r);
                           return `
                             <div class="py-2 flex flex-col lg:flex-row lg:items-center justify-between gap-2 text-xs">
                               <div class="flex items-start gap-2.5 flex-1">
@@ -2564,9 +2968,9 @@
                                 </div>
                               </div>
                               <div class="flex flex-wrap items-center gap-2 shrink-0">
-                                <label class="flex items-center gap-1"><input type="checkbox" ${r.itemPaid ? 'checked' : ''} onchange="window.fb.update('orders', '${r.id}', { itemPaid: this.checked })" class="accent-emerald-500" /> Item (${formatBRL(r.itemPrice)})</label>
-                                <label class="flex items-center gap-1"><input type="checkbox" ${r.intlShippingPaid ? 'checked' : ''} onchange="window.fb.update('orders', '${r.id}', { intlShippingPaid: this.checked })" class="accent-emerald-500" /> Frete (${formatBRL(r.intlShipping)})</label>
-                                <label class="flex items-center gap-1"><input type="checkbox" ${r.customsPaid ? 'checked' : ''} onchange="window.fb.update('orders', '${r.id}', { customsPaid: this.checked })" class="accent-emerald-500" /> Taxa (${formatBRL(r.customsFee)})</label>
+                                <label class="flex items-center gap-1"><input type="checkbox" ${r.itemPaid ? 'checked' : ''} onchange="window.fb.update('orders', '${r.id}', { itemPaid: this.checked })" class="accent-emerald-500" /> Item (${formatBRL(r.itemPrice)})${fineHint(fb.itemFine, fb.itemLate)}</label>
+                                <label class="flex items-center gap-1"><input type="checkbox" ${r.intlShippingPaid ? 'checked' : ''} onchange="window.fb.update('orders', '${r.id}', { intlShippingPaid: this.checked })" class="accent-emerald-500" /> Frete (${formatBRL(r.intlShipping)})${fineHint(fb.shipFine, fb.shipLate)}</label>
+                                <label class="flex items-center gap-1"><input type="checkbox" ${r.customsPaid ? 'checked' : ''} onchange="window.fb.update('orders', '${r.id}', { customsPaid: this.checked })" class="accent-emerald-500" /> Taxa (${formatBRL(r.customsFee)})${fineHint(fb.taxFine, fb.taxLate)}</label>
                                 <button type="button" onclick='openNewOrderModal(${JSON.stringify(r).replace(/'/g, "&#39;")})' class="px-2 py-1 rounded bg-white/10 hover:bg-white/20">✏️</button>
                                 <button type="button" onclick="window.fb.del('orders', '${r.id}')" class="px-2 py-1 rounded bg-rose-950 text-rose-300">✕</button>
                               </div>
@@ -3345,6 +3749,123 @@
       showToast('Configurações salvas!', 'success');
     }
 
+    // -----------------------------------------------------------------------
+    // CALCULADORAS (mesmas contas das calculadoras antigas no GitHub)
+    // COTAÇÕES E TAXAS: quando mudarem, atualizar só aqui.
+    // -----------------------------------------------------------------------
+    const COTACAO_IENE = 0.0404;          // Mercari: câmbio do iene + IOF/spread do cartão
+    const MULTIPLICADOR_BUNJANG = 8.40;   // Bunjang: dólar + IOF/spread + taxas + margem
+    const COTACAO_DOLAR_POCA = 6.15;      // Pocamarket: dólar + IOF/spread do cartão
+    const CALCS = {
+      mercari: {
+        nome: 'Mercari', badge: '¥', moeda: '¥', inteiro: true, inclui: false,
+        label: 'Valor do item no Mercari (¥)', placeholder: 'Ex.: 2000',
+        cotacao: () => `Cotação efetiva do iene (com IOF): <strong class="text-white">R$ ${COTACAO_IENE.toFixed(4).replace('.', ',')}</strong>`,
+        calc: (v) => {
+          const taxaFixaProxy = 100;                                    // taxa fixa da proxy (¥ 100)
+          const taxaCartao = Math.round((v + taxaFixaProxy) * 0.0765);  // 7,65% do cartão sobre item + 100
+          return (v + taxaFixaProxy + taxaCartao) * COTACAO_IENE + 10;  // + taxa Dark Bloom (R$ 10,00)
+        }
+      },
+      bunjang: {
+        nome: 'Bunjang', badge: '$', moeda: 'US$', inteiro: false, inclui: false,
+        label: 'Valor do item (US$)', placeholder: 'Ex.: 10',
+        cotacao: () => `Cotação base com taxas e IOF: <strong class="text-white">R$ ${MULTIPLICADOR_BUNJANG.toFixed(2).replace('.', ',')}</strong>`,
+        calc: (v) => v * MULTIPLICADOR_BUNJANG
+      },
+      pocamarket: {
+        nome: 'Pocamarket', badge: '$', moeda: 'US$', inteiro: false, inclui: true,
+        label: 'Valor do item (US$)', placeholder: 'Ex.: 5,50',
+        cotacao: () => `Cotação efetiva do dólar (com IOF): <strong class="text-white">R$ ${COTACAO_DOLAR_POCA.toFixed(2).replace('.', ',')}</strong>`,
+        calc: (v) => v * COTACAO_DOLAR_POCA + 15                         // + R$ 15,00 (taxa Dark Bloom, frete e Receita)
+      }
+    };
+    let calcAtual = 'mercari';
+
+    function parseValorCalc(texto, inteiro) {
+      const s = String(texto).trim().replace(/[^\d.,]/g, '');
+      if (!s) return NaN;
+      if (inteiro) return parseInt(s.replace(/[.,]/g, ''), 10);
+      const ult = Math.max(s.lastIndexOf(','), s.lastIndexOf('.'));
+      if (ult === -1) return parseFloat(s);
+      return parseFloat(s.slice(0, ult).replace(/[.,]/g, '') + '.' + s.slice(ult + 1));
+    }
+    function updateCalcResult() {
+      const c = CALCS[calcAtual];
+      const inp = document.getElementById('calcInput');
+      const out = document.getElementById('calcResult');
+      const sub = document.getElementById('calcSub');
+      if (!inp || !out || !sub) return;
+      const v = parseValorCalc(inp.value, c.inteiro);
+      if (!(v > 0)) {
+        out.textContent = 'R$ 0,00';
+        out.classList.remove('has');
+        sub.textContent = 'Digite o valor do item para calcular.';
+        return;
+      }
+      out.textContent = formatBRL(Number(c.calc(v).toFixed(2)));
+      out.classList.add('has');
+      sub.textContent = c.inclui ? 'Já com frete internacional e taxa da Receita Federal.' : 'Sem frete internacional e sem a taxa da Receita Federal.';
+    }
+    function renderCalc() {
+      const c = CALCS[calcAtual];
+      const el = (id) => document.getElementById(id);
+      if (!el('calcTitle')) return;
+      el('calcTitle').textContent = 'Calculadora ' + c.nome;
+      el('calcBadge').textContent = c.badge;
+      el('calcLabel').textContent = c.label;
+      el('calcPrefix').textContent = c.moeda;
+      el('calcInput').placeholder = c.placeholder;
+      el('calcRate').innerHTML = c.cotacao();
+      const note = el('calcNote');
+      note.className = 'calc-note ' + (c.inclui ? 'yes' : 'no');
+      note.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><span>' +
+        (c.inclui ? 'Os valores já incluem frete internacional e a taxa da Receita Federal.' : 'Os valores não incluem frete internacional nem a taxa da Receita Federal.') + '</span>';
+      document.querySelectorAll('[data-calc]').forEach(b => {
+        const on = b.dataset.calc === calcAtual;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+      updateCalcResult();
+    }
+    function selectCalc(key) {
+      if (!CALCS[key]) return;
+      calcAtual = key;
+      const inp = document.getElementById('calcInput');
+      if (inp) inp.value = '';
+      renderCalc();
+      inp?.focus();
+    }
+
+    // -----------------------------------------------------------------------
+    // FAIXA CORRIDA: repete os nomes até cobrir a tela e roda sem emenda
+    // -----------------------------------------------------------------------
+    let tickerBase = null;
+    function buildTicker() {
+      const track = document.getElementById('tickerTrack');
+      if (!track) return;
+      if (tickerBase === null) tickerBase = track.innerHTML;
+      track.style.animation = 'none';
+      track.innerHTML = tickerBase;
+      const unit = track.scrollWidth;
+      if (!unit) return;
+      const reps = Math.max(1, Math.ceil(window.innerWidth / unit));
+      const half = tickerBase.repeat(reps);
+      track.innerHTML = half + half;
+      void track.offsetWidth;
+      track.style.animation = '';
+      track.style.animationDuration = ((unit * reps) / 22) + 's';
+    }
+    (function () {
+      let timer, lastW = window.innerWidth;
+      window.addEventListener('resize', () => {
+        if (window.innerWidth === lastW) return;
+        lastW = window.innerWidth;
+        clearTimeout(timer);
+        timer = setTimeout(buildTicker, 200);
+      });
+    })();
+
     function refreshAllUI() {
       const boxes = Array.from(new Set([...window.state.boxesMeta.map(b => b.name), ...window.state.orders.map(o => o.box)].filter(Boolean)));
       document.getElementById('boxesDatalist').innerHTML = boxes.map(b => `<option value="${escapeHtml(b)}">`).join('');
@@ -3380,6 +3901,9 @@
       applySettingsToUI();
       syncGuideAdminFields();
       refreshAllUI();
+      renderCalc();
+      buildTicker();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(buildTicker);
     });
   </script>
 </body>
