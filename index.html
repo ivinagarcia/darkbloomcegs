@@ -1402,6 +1402,7 @@
       </div>
       <form onsubmit="saveJoinerRecord(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
         <input type="hidden" id="editJoinerId" />
+        <input type="hidden" id="editJoinerOldHandle" />
         <div>
           <label class="text-ash block mb-1">Nome Oficial / @ *</label>
           <input type="text" id="jHandle" required class="input-gothic w-full px-3 py-2 rounded-xl" />
@@ -1454,6 +1455,26 @@
           <button type="submit" class="btn-crimson w-full py-2.5 rounded-xl text-sm font-semibold text-white">Salvar Cadastro</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL: EXCLUIR JOINER -->
+  <div id="joinerDeleteModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="gothic-card rounded-3xl max-w-md w-full p-6 space-y-4 my-auto">
+      <div class="flex items-center justify-between border-b border-white/10 pb-3">
+        <h3 class="font-serif text-lg font-bold text-amber-200">Excluir joiner</h3>
+        <button type="button" onclick="closeModal('joinerDeleteModal')" class="text-ash hover:text-white" aria-label="Fechar">✕</button>
+      </div>
+      <p class="text-sm text-white">Excluir <strong id="joinerDelName"></strong>? Esta ação não pode ser desfeita.</p>
+      <p id="joinerDelInfo" class="text-xs text-ash"></p>
+      <label id="joinerDelDataWrap" class="flex items-start gap-2 text-sm text-ash">
+        <input type="checkbox" id="joinerDelData" class="mt-1 accent-rose-500" />
+        <span>Excluir também os <strong class="text-white">pedidos, comprovantes, fretes e cotações</strong> dessa joiner.</span>
+      </label>
+      <div class="flex justify-end gap-2 pt-1">
+        <button type="button" onclick="closeModal('joinerDeleteModal')" class="px-4 py-2.5 rounded-xl text-sm text-ash bg-white/10">Cancelar</button>
+        <button type="button" id="joinerDelBtn" onclick="confirmJoinerDelete()" class="bg-rose-700 hover:bg-rose-600 px-5 py-2.5 rounded-xl text-sm font-semibold text-white">Excluir</button>
+      </div>
     </div>
   </div>
 
@@ -3169,6 +3190,22 @@
     const _dec = v => (v ? decodeURIComponent(v) : '');
     let _sm = null;
 
+    // Sets cadastrados (setsMeta) + sets que só existem nos pedidos (importados/lançados)
+    function getSetsForEra(bn, er) {
+      const st = window.state;
+      const meta = st.setsMeta.filter(x => x.box === bn && x.era === er)
+        .map(x => ({ ...x, nItems: st.orders.filter(o => o.box === bn && o.era === er && o.set === x.name).length }));
+      const known = new Set(meta.map(x => x.name));
+      const counts = new Map();
+      st.orders.forEach(o => {
+        if (o.box === bn && o.era === er && o.set && !known.has(o.set)) counts.set(o.set, (counts.get(o.set) || 0) + 1);
+      });
+      const virt = Array.from(counts.entries()).map(([name, nItems]) => ({
+        id: 'v:' + _enc(name), virtual: true, box: bn, era: er, name, description: '', imageUrl: '', coverUrl: '', nItems
+      }));
+      return [...meta, ...virt].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+    }
+
     function renderAdminStructure() {
       const st = window.state, box = document.getElementById('adminStructureList');
       const names = Array.from(new Set([...st.boxesMeta.map(b => b.name), ...st.orders.map(o => o.box)].filter(Boolean)));
@@ -3198,7 +3235,7 @@
               </div>
             </div>
             ${eras.length ? eras.map(er => {
-              const eo = _enc(er), sets = st.setsMeta.filter(x => x.box === bn && x.era === er);
+              const eo = _enc(er), sets = getSetsForEra(bn, er);
               return `
               <div class="rounded-xl border border-white/10 p-3 space-y-3">
                 <div class="flex flex-wrap items-center justify-between gap-2">
@@ -3211,11 +3248,11 @@
                 </div>
                 ${sets.length ? `<div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">${sets.map(x => `
                   <div class="rounded-xl bg-black/30 border border-white/10 overflow-hidden">
-                    ${x.coverUrl ? `<img src="${escapeHtml(x.coverUrl)}" alt="Capa de ${escapeHtml(x.name)}" class="w-full aspect-[3/1] object-cover" />` : `<label class="flex items-center justify-center w-full aspect-[3/1] cursor-pointer text-sm text-ash border-b border-dashed border-white/15 hover:bg-white/5 hover:text-white">Adicionar capa (3:1)<input type="file" accept="image/*" class="sr-only" onchange="uploadSetCover(this, '${x.id}')" /></label>`}
+                    ${x.virtual ? `<div class="flex items-center justify-center w-full aspect-[3/1] text-xs text-ash border-b border-dashed border-white/15 px-3 text-center">Set vindo dos pedidos · clique em Editar para salvar e adicionar capa</div>` : x.coverUrl ? `<img src="${escapeHtml(x.coverUrl)}" alt="Capa de ${escapeHtml(x.name)}" class="w-full aspect-[3/1] object-cover" />` : `<label class="flex items-center justify-center w-full aspect-[3/1] cursor-pointer text-sm text-ash border-b border-dashed border-white/15 hover:bg-white/5 hover:text-white">Adicionar capa (3:1)<input type="file" accept="image/*" class="sr-only" onchange="uploadSetCover(this, '${x.id}')" /></label>`}
                     <div class="p-3 flex items-center gap-3">
                       ${x.imageUrl ? `<img src="${escapeHtml(x.imageUrl)}" alt="" class="w-12 h-12 rounded-lg object-cover shrink-0" />` : '<div class="w-12 h-12 rounded-lg bg-white/5 shrink-0"></div>'}
                       <div class="min-w-0 flex-1">
-                        <p class="font-medium text-white truncate">${escapeHtml(x.name)}</p>
+                        <p class="font-medium text-white truncate">${escapeHtml(x.name)} <span class="text-xs text-ash font-normal">· ${x.nItems} ${x.nItems === 1 ? 'item' : 'itens'}</span></p>
                         <div class="flex flex-wrap gap-x-3 gap-y-1 mt-1 text-sm">
                           <button type="button" class="text-amber-200 hover:underline" onclick="structOpen('editSet','${bo}','${eo}','${x.id}')">Editar</button>
                           ${x.coverUrl ? `<label class="text-amber-200 hover:underline cursor-pointer">Trocar capa<input type="file" accept="image/*" class="sr-only" onchange="uploadSetCover(this, '${x.id}')" /></label>` : ''}
@@ -3232,10 +3269,12 @@
 
     function structOpen(mode, box, era, setId) {
       const st = window.state, b = _dec(box), er = _dec(era);
-      const set = setId ? st.setsMeta.find(x => x.id === setId) : null;
+      const set = !setId ? null : setId.startsWith('v:')
+        ? { id: setId, virtual: true, box: b, era: er, name: _dec(setId.slice(2)), description: '', imageUrl: '', coverUrl: '' }
+        : st.setsMeta.find(x => x.id === setId);
       _sm = { mode, b, er, set };
       const F = (id, label, val, type, req) => `<div><label for="${id}" class="block text-sm text-white mb-1.5">${label}</label><input id="${id}" type="${type || 'text'}" value="${escapeHtml(val || '')}" ${req ? 'required' : ''} class="input-gothic w-full px-3.5 py-2.5 rounded-xl text-sm" /></div>`;
-      const delBox = (k, what) => k ? `<label class="flex items-start gap-2 text-sm text-ash"><input type="checkbox" id="sfDelItems" class="mt-1 accent-rose-500" /><span>Excluir também os <strong class="text-white">${k} ${k === 1 ? 'item' : 'itens'}</strong> de participantes ${what}. Se não marcar, os itens são mantidos e ${what.includes('caixa') ? 'a caixa continua aparecendo enquanto houver itens nela' : 'a era continua aparecendo enquanto houver itens nela'}.</span></label>` : '';
+      const delBox = (k, what) => k ? `<label class="flex items-start gap-2 text-sm text-ash"><input type="checkbox" id="sfDelItems" class="mt-1 accent-rose-500" /><span>Excluir também os <strong class="text-white">${k} ${k === 1 ? 'item' : 'itens'}</strong> de participantes ${what}. Se não marcar, os itens são mantidos e ${what.includes('caixa') ? 'a caixa continua aparecendo enquanto houver itens nela' : what.includes('set') ? 'o set continua aparecendo enquanto houver itens nele' : 'a era continua aparecendo enquanto houver itens nela'}.</span></label>` : '';
       const ords = pred => st.orders.filter(pred);
       let title = '', help = '', html = '', btn = 'Salvar', danger = false;
       if (mode === 'newEra') { title = 'Nova era'; help = `Caixa: ${b}`; html = F('sf1', 'Nome da era', '', 'text', true); }
@@ -3318,7 +3357,15 @@
           else if (cu || !cov.startsWith('data:')) cov = cu;
           if (document.getElementById('sfRmCover')?.checked) cov = '';
           const data = { name: v('sf1'), description: v('sf3'), imageUrl: img, coverUrl: cov };
-          if (set) {
+          if (set && set.virtual) {
+            data.era = v('sf2');
+            await window.fb.add('setsMeta', { box: set.box, ...data });
+            if (data.name !== set.name || data.era !== set.era) {
+              await upd('orders', st.orders.filter(o => o.box === set.box && o.era === set.era && o.set === set.name), { set: data.name, era: data.era });
+            }
+            if (data.era !== set.era && !st.erasMeta.some(x => x.box === set.box && x.name === data.era)) await window.fb.add('erasMeta', { box: set.box, name: data.era });
+            showToast('Set salvo!', 'success');
+          } else if (set) {
             data.era = v('sf2');
             await window.fb.update('setsMeta', set.id, data);
             if (data.name !== set.name || data.era !== set.era) {
@@ -3331,7 +3378,7 @@
             showToast('Set adicionado!', 'success');
           }
         } else if (mode === 'deleteSet') {
-          await window.fb.del('setsMeta', set.id);
+          if (!set.virtual) await window.fb.del('setsMeta', set.id);
           if (delItems) await del('orders', st.orders.filter(o => o.box === set.box && o.era === set.era && o.set === set.name));
           showToast('Set excluído.', 'success');
         } else if (mode === 'deleteEra') {
@@ -3444,7 +3491,8 @@
     // JOINERS CRM & UNIFICATION
     // -----------------------------------------------------------------------
     function openJoinerModal(j = null) {
-      document.getElementById('editJoinerId').value = j ? j.id : '';
+      document.getElementById('editJoinerId').value = j ? (j.id || '') : '';
+      document.getElementById('editJoinerOldHandle').value = j ? (j.handle || '') : '';
       document.getElementById('jHandle').value = j ? (j.handle || '') : '';
       document.getElementById('jAliases').value = j ? (j.aliases || '') : '';
       document.getElementById('jFullName').value = j ? (j.fullName || '') : '';
@@ -3479,10 +3527,94 @@
         city: document.getElementById('jCity').value.trim(),
         state: document.getElementById('jState').value.trim().toUpperCase()
       };
-      if (id) await window.fb.update('joiners', id, payload);
-      else await window.fb.add('joiners', payload);
-      closeModal('joinerModal');
-      showToast('Cadastro salvo!', 'success');
+      const oldHandle = document.getElementById('editJoinerOldHandle').value.trim();
+      const st = window.state;
+      const sameName = (a, b) => (a || '').trim().toLowerCase() === (b || '').trim().toLowerCase();
+      const btn = e.target.querySelector('button[type="submit"]');
+      if (btn) btn.disabled = true;
+      try {
+        // evita criar cadastro duplicado quando o nome já tem registro
+        let recId = id;
+        if (!recId) {
+          const found = st.joiners.find(j => sameName(j.handle, oldHandle || payload.handle));
+          if (found) recId = found.id;
+        }
+        // não permitir renomear para o nome de outra joiner existente (use "Unificar")
+        if (oldHandle && !sameName(oldHandle, payload.handle) &&
+            (st.joiners.some(j => j.id !== recId && sameName(j.handle, payload.handle)) ||
+             st.orders.some(o => sameName(o.joiner, payload.handle)))) {
+          showToast('Já existe uma joiner com esse nome. Use "Unificar" para juntar as duas.', 'error');
+          return;
+        }
+        if (recId) await window.fb.update('joiners', recId, payload);
+        else await window.fb.add('joiners', payload);
+
+        // se o nome mudou, propaga para pedidos, comprovantes, fretes e cotações
+        if (oldHandle && oldHandle !== payload.handle) {
+          const ren = (col, list) => Promise.all(list.filter(x => sameName(x.joiner, oldHandle)).map(x => window.fb.update(col, x.id, { joiner: payload.handle })));
+          await Promise.all([
+            ren('orders', st.orders), ren('proofs', st.proofs),
+            ren('cepQuotes', st.cepQuotes), ren('nationalShipments', st.nationalShipments)
+          ]);
+          if (sameName(st.selectedJoiner, oldHandle)) st.selectedJoiner = payload.handle;
+        }
+        closeModal('joinerModal');
+        showToast('Cadastro salvo!', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Não foi possível salvar. Tente novamente.', 'error');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    function openJoinerByHandle(enc) {
+      const h = _dec(enc);
+      const j = window.state.joiners.find(x => (x.handle || '').toLowerCase() === h.toLowerCase());
+      openJoinerModal(j || { handle: h });
+    }
+
+    let _delJoiner = '';
+    function openJoinerDelete(enc) {
+      const h = _dec(enc), st = window.state;
+      const eq = v => (v || '').trim().toLowerCase() === h.toLowerCase();
+      const nOrd = st.orders.filter(o => eq(o.joiner)).length;
+      const nPr = st.proofs.filter(p => eq(p.joiner)).length;
+      _delJoiner = h;
+      document.getElementById('joinerDelName').textContent = h;
+      const cb = document.getElementById('joinerDelData');
+      cb.checked = false;
+      document.getElementById('joinerDelInfo').textContent = nOrd || nPr
+        ? `Esta joiner tem ${nOrd} ${nOrd === 1 ? 'item' : 'itens'} e ${nPr} ${nPr === 1 ? 'comprovante' : 'comprovantes'}. Se não marcar a opção abaixo, só o cadastro é apagado — e o nome continuará aparecendo na lista enquanto houver pedidos nele.`
+        : 'Esta joiner não tem pedidos nem comprovantes.';
+      document.getElementById('joinerDelDataWrap').classList.toggle('hidden', !(nOrd || nPr));
+      document.getElementById('joinerDeleteModal').classList.remove('hidden');
+    }
+
+    async function confirmJoinerDelete() {
+      const h = _delJoiner, st = window.state;
+      if (!h) return;
+      const eq = v => (v || '').trim().toLowerCase() === h.toLowerCase();
+      const withData = document.getElementById('joinerDelData').checked;
+      const btn = document.getElementById('joinerDelBtn'); btn.disabled = true;
+      try {
+        const jobs = st.joiners.filter(j => eq(j.handle)).map(j => window.fb.del('joiners', j.id));
+        if (withData) {
+          st.orders.filter(o => eq(o.joiner)).forEach(o => jobs.push(window.fb.del('orders', o.id)));
+          st.proofs.filter(p => eq(p.joiner)).forEach(p => jobs.push(window.fb.del('proofs', p.id)));
+          st.cepQuotes.filter(q => eq(q.joiner)).forEach(q => jobs.push(window.fb.del('cepQuotes', q.id)));
+          st.nationalShipments.filter(x => eq(x.joiner)).forEach(x => jobs.push(window.fb.del('nationalShipments', x.id)));
+        }
+        await Promise.all(jobs);
+        if (eq(st.selectedJoiner)) clearJoinerSelection();
+        closeModal('joinerDeleteModal');
+        showToast(`"${h}" excluída.`, 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Não foi possível excluir. Tente novamente.', 'error');
+      } finally {
+        btn.disabled = false; _delJoiner = '';
+      }
     }
 
     async function syncJoinersFromOrders() {
@@ -3501,13 +3633,55 @@
     async function unifyDuplicateJoiners() {
       const from = document.getElementById('unifyFromSel').value;
       const to = document.getElementById('unifyToSel').value;
-      if (!from || !to || from === to) return;
-      for (const o of window.state.orders) {
-        if ((o.joiner || '').toLowerCase() === from.toLowerCase()) {
-          await window.fb.update('orders', o.id, { joiner: to });
-        }
+      if (!from || !to || from.toLowerCase() === to.toLowerCase()) {
+        showToast('Escolha dois nomes diferentes para unificar.', 'error');
+        return;
       }
-      showToast(`Pedidos de "${from}" unificados em "${to}"!`, 'success');
+      const st = window.state;
+      const eq = (a, b) => (a || '').trim().toLowerCase() === (b || '').trim().toLowerCase();
+      const btn = document.querySelector('button[onclick="unifyDuplicateJoiners()"]');
+      if (btn) btn.disabled = true;
+      try {
+        // 1) move tudo que está no nome absorvido para o nome oficial
+        const move = (col, list) => list.filter(x => eq(x.joiner, from)).map(x => window.fb.update(col, x.id, { joiner: to }));
+        await Promise.all([
+          ...move('orders', st.orders), ...move('proofs', st.proofs),
+          ...move('cepQuotes', st.cepQuotes), ...move('nationalShipments', st.nationalShipments)
+        ]);
+
+        // 2) cadastro: aproveita dados do absorvido e remove o registro dele
+        const fromRecs = st.joiners.filter(j => eq(j.handle, from));
+        const toRec = st.joiners.find(j => eq(j.handle, to));
+        const fields = ['fullName','cpf','phone','email','cep','street','number','complement','neighborhood','city','state'];
+        if (fromRecs.length) {
+          const src = fromRecs[0];
+          const aliasList = [toRec?.aliases, src.aliases, from].filter(Boolean).join(', ')
+            .split(',').map(x => x.trim()).filter(Boolean);
+          const aliases = Array.from(new Set(aliasList.filter(x => !eq(x, to)))).join(', ');
+          if (toRec) {
+            const patch = { aliases };
+            fields.forEach(f => { if (!toRec[f] && src[f]) patch[f] = src[f]; });
+            await window.fb.update('joiners', toRec.id, patch);
+          } else {
+            const data = { handle: to, aliases };
+            fields.forEach(f => { if (src[f]) data[f] = src[f]; });
+            await window.fb.add('joiners', data);
+          }
+          await Promise.all(fromRecs.map(j => window.fb.del('joiners', j.id)));
+        } else if (toRec) {
+          const aliases = Array.from(new Set([...(toRec.aliases || '').split(',').map(x => x.trim()).filter(Boolean), from])).join(', ');
+          await window.fb.update('joiners', toRec.id, { aliases });
+        }
+
+        // 3) se o nome absorvido estava selecionado na busca, troca pelo oficial
+        if (eq(st.selectedJoiner, from)) selectJoiner(to);
+        showToast(`"${from}" unificada em "${to}" e removida da lista!`, 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Não foi possível unificar. Tente novamente.', 'error');
+      } finally {
+        if (btn) btn.disabled = false;
+      }
     }
 
     function renderAdminJoiners() {
@@ -3527,7 +3701,8 @@
             </div>
             <div class="flex gap-1.5">
               <button type="button" onclick="copyText('${escapeHtml(label)}', 'Etiqueta')" class="px-2.5 py-1.5 rounded-lg bg-white/10">Etiqueta</button>
-              <button type="button" onclick='openJoinerModal(${JSON.stringify(j || { handle: h }).replace(/'/g, "&#39;")})' class="px-2.5 py-1.5 rounded-lg bg-purple-950 text-purple-200">Editar</button>
+              <button type="button" onclick="openJoinerByHandle('${_enc(h)}')" class="px-2.5 py-1.5 rounded-lg bg-purple-950 text-purple-200">Editar</button>
+              <button type="button" onclick="openJoinerDelete('${_enc(h)}')" class="px-2.5 py-1.5 rounded-lg bg-rose-950 text-rose-300">Excluir</button>
             </div>
           </div>
         `;
