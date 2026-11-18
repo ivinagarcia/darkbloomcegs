@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dark Bloom • Portal CEG</title>
+    <title>Dark Bloom Cegs</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -68,70 +68,69 @@
         .bloom-checkbox {
             appearance: none;
             width: 1.25rem;
-            height: 1.25rem;
-            border-radius: 0.375rem;
-            border: 1.5px solid #4B4663;
-            background-color: #16151D;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s ease;
-        }
-        .bloom-checkbox:checked {
-            background-color: #10B981;
-            border-color: #10B981;
-        }
-        .bloom-checkbox:checked::after {
-            content: '\f00c';
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            color: #0E0D12;
-            font-size: 0.7rem;
-        }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col selection:bg-bloom-purple selection:text-white">
-
-    <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-xs w-full pointer-events-none"></div>
-
-    <!-- Header Navigation -->
-    <header class="glass-header sticky top-0 z-40 border-b border-bloom-border">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-            <!-- Brand -->
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-bloom-purple to-bloom-pink flex items-center justify-center shadow-lg shadow-bloom-purple/20">
-                    <i class="fa-solid fa-moon text-white text-lg"></i>
+            <!-- Mode Switcher & Calculators / Community -->
+            <div class="flex items-center gap-2 flex-wrap justify-end">
+                <!-- Dropdown Calculadoras CEG -->
+                <div class="relative" id="calc-dropdown-wrapper">
+                    <button type="button" onclick="toggleCalculatorsMenu(event)" class="px-2.5 sm:px-3 py-2 rounded-xl bg-bloom-surface hover:bg-bloom-card border border-bloom-border text-xs font-semibold text-amber-300 hover:text-amber-200 transition flex items-center gap-1.5 whitespace-nowrap">
+                        <i class="fa-solid fa-calculator"></i>
+                        <span>Calculadoras CEG</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-80"></i>
+                    </button>
+                    <div id="calc-dropdown-menu" class="hidden absolute right-0 mt-2 w-64 bg-bloom-card border border-bloom-border rounded-2xl shadow-2xl p-2 z-50 space-y-1">
+                        <div class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400 border-b border-bloom-border/70">
+                            Simuladores Oficiais Dark Bloom
+                        </div>
+                        <a href="https://ivinagarcia.github.io/calculadora-db-ceg/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-bloom-surface text-xs text-white transition group">
+                            <span class="flex items-center gap-2">
+                                <span class="text-sm">🇯🇵</span>
+                                <span class="font-medium group-hover:text-bloom-purple transition">Mercari Japão</span>
+                            </span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-500 group-hover:text-bloom-purple"></i>
+                        </a>
+                        <a href="https://ivinagarcia.github.io/calculadora-db-bunjang/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-bloom-surface text-xs text-white transition group">
+                            <span class="flex items-center gap-2">
+                                <span class="text-sm">🇰🇷</span>
+                                <span class="font-medium group-hover:text-bloom-purple transition">Bunjang Korea</span>
+                            </span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-500 group-hover:text-bloom-purple"></i>
+                        </a>
+                        <a href="https://ivinagarcia.github.io/calculadora-db-pocamarket/" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-bloom-surface text-xs text-white transition group">
+                            <span class="flex items-center gap-2">
+                                <span class="text-sm">🃏</span>
+                                <span class="font-medium group-hover:text-bloom-purple transition">Pocamarket Korea</span>
+                            </span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-gray-500 group-hover:text-bloom-purple"></i>
+                        </a>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="font-bold text-base sm:text-lg tracking-tight text-white flex items-center gap-1.5">
-                        Dark Bloom
-                        <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-bloom-purple/20 text-bloom-purple border border-bloom-purple/30 font-semibold">CEG</span>
-                        <span id="cloud-sync-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-medium inline-flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
-                            <span>Conectando...</span>
-                        </span>
-                    </h1>
-                    <p class="text-xs text-gray-400 hidden sm:block">Portal de Acompanhamento & Financeiro</p>
-                </div>
-            </div>
 
-            <!-- Mode Switcher -->
-            <div class="flex items-center bg-bloom-surface p-1 rounded-xl border border-bloom-border overflow-x-auto max-w-full">
-                <button id="btn-mode-client" onclick="switchMode('client')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 bg-bloom-purple text-white shadow whitespace-nowrap">
-                    <i class="fa-solid fa-user"></i>
-                    <span>Meus Pedidos</span>
-                </button>
-                <button id="btn-mode-forms" onclick="switchMode('forms')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-gray-400 hover:text-white whitespace-nowrap">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span>Fazer Pedido</span>
-                    <span id="open-forms-badge" class="text-[10px] px-1.5 py-0.2 rounded-full bg-bloom-pink/20 text-bloom-pink font-bold">0</span>
-                </button>
-                <button id="btn-mode-admin" onclick="requestAdminMode()" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-gray-400 hover:text-white whitespace-nowrap">
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <span>Admin</span>
-                </button>
+                <!-- Botão Comunidade WhatsApp -->
+                <a id="header-community-link" href="https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU" target="_blank" rel="noopener noreferrer" class="px-2.5 sm:px-3 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-xs font-semibold text-emerald-300 transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span class="hidden md:inline">Comunidade</span>
+                </a>
+
+                <!-- Navegação Principal -->
+                <div class="flex items-center bg-bloom-surface p-1 rounded-xl border border-bloom-border overflow-x-auto max-w-full">
+                    <button id="btn-mode-client" onclick="switchMode('client')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 bg-bloom-purple text-white shadow whitespace-nowrap">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Meus Pedidos</span>
+                    </button>
+                    <button id="btn-mode-forms" onclick="switchMode('forms')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-gray-400 hover:text-white whitespace-nowrap">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        <span>Fazer Pedido</span>
+                        <span id="open-forms-badge" class="text-[10px] px-1.5 py-0.2 rounded-full bg-bloom-pink/20 text-bloom-pink font-bold">0</span>
+                    </button>
+                    <button id="btn-mode-guide" onclick="switchMode('guide')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-gray-400 hover:text-white whitespace-nowrap">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span>Guia & Regras</span>
+                    </button>
+                    <button id="btn-mode-admin" onclick="requestAdminMode()" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 text-gray-400 hover:text-white whitespace-nowrap">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Admin</span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -345,7 +344,6 @@
                     <span class="text-xs font-medium text-gray-400">Itens com a Dark Bloom</span>
                     <div class="w-8 h-8 rounded-lg bg-bloom-purple/15 text-bloom-purple flex items-center justify-center">
                         <i class="fa-solid fa-box-open"></i>
-                    </div>
                 </div>
                 <div id="stat-total-items" class="text-2xl sm:text-3xl font-bold text-white tracking-tight">0</div>
                 <p id="stat-batches-count" class="text-[11px] text-gray-500 mt-1.5">Distribuídos em 0 lotes</p>
@@ -359,14 +357,19 @@
                     <i class="fa-brands fa-pix text-lg"></i>
                 </div>
                 <div class="min-w-0">
-                    <p class="text-xs text-gray-400">Chave Pix Oficial Dark Bloom</p>
-                    <p id="display-pix-key" class="text-sm font-semibold text-white truncate">darkbloom.ceg@gmail.com</p>
+                    <p class="text-xs text-gray-400">Chave Pix Oficial Dark Bloom Cegs</p>
+                    <p id="display-pix-key" class="text-sm font-semibold text-white truncate">CNPJ: 67.039.191/0001-76 (67039191000176)</p>
+                    <p class="text-[11px] text-gray-400 mt-0.5 flex items-center gap-1.5">
+                        <i class="fa-regular fa-envelope text-bloom-purple"></i>
+                        <span>Contato:</span>
+                        <a id="display-contact-email" href="mailto:darkbloomcegs@gmail.com" class="text-bloom-purple hover:underline font-medium">darkbloomcegs@gmail.com</a>
+                    </p>
                 </div>
             </div>
             <div class="flex flex-wrap sm:flex-nowrap gap-2">
                 <button onclick="copyPixKey()" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-bloom-card hover:bg-bloom-border border border-bloom-border text-white text-xs font-semibold transition flex items-center justify-center gap-2">
                     <i class="fa-regular fa-copy text-bloom-purple"></i>
-                    <span>Copiar Chave Pix</span>
+                    <span>Copiar CNPJ Pix</span>
                 </button>
                 <button onclick="openReceiptModal()" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/20">
                     <i class="fa-solid fa-file-invoice-dollar text-sm"></i>
@@ -414,7 +417,7 @@
             <span class="text-xs font-semibold uppercase tracking-wider text-bloom-purple flex items-center gap-1.5 mb-1">
                 <i class="fa-solid fa-sparkles"></i> Formulários de CEG Abertos
             </span>
-            <h2 class="text-lg sm:text-xl font-bold text-white">Reserve seus itens na Dark Bloom</h2>
+            <h2 class="text-lg sm:text-xl font-bold text-white">Reserve seus itens na Dark Bloom Cegs</h2>
             <p class="text-xs text-gray-400 mt-1">Selecione uma CEG aberta abaixo, confira a foto numerada do Set e envie seu pedido. Ele aparecerá automaticamente no seu painel!</p>
         </section>
 
@@ -422,6 +425,83 @@
         <div id="public-forms-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <!-- Rendered via JS -->
         </div>
+    </main>
+
+    <!-- =====================================================================
+         1.7 ABA PÚBLICA: GUIA & REGRAS (REGRAS, SOBRE A CEG, TUTORIAIS)
+    ====================================================================== -->
+    <main id="view-guide" class="hidden flex-1 max-w-5xl w-full mx-auto px-4 py-6 space-y-6">
+        <!-- Cabeçalho + Acesso Rápido Comunidade & Calculadoras -->
+        <section class="bg-gradient-to-r from-[#1E172B] to-bloom-surface border border-bloom-purple/30 rounded-2xl p-5 shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+                <span class="text-xs font-semibold uppercase tracking-wider text-bloom-pink flex items-center gap-1.5 mb-1">
+                    <i class="fa-solid fa-book-bookmark"></i> Central de Informações Dark Bloom Cegs
+                </span>
+                <h2 class="text-lg sm:text-xl font-bold text-white">Regras, Funcionamento & Tutoriais de Compra</h2>
+                <p class="text-xs text-gray-400 mt-1">Leia com atenção antes de reservar seus itens ou enviar pedidos nas compras em grupo.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+                <a id="guide-community-btn" href="https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU" target="_blank" rel="noopener noreferrer" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg shadow-emerald-950/30 transition flex items-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-base"></i>
+                    <span>Entrar na Comunidade WhatsApp</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Atalhos das Calculadoras da CEG -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <a href="https://ivinagarcia.github.io/calculadora-db-ceg/" target="_blank" rel="noopener noreferrer" class="bg-bloom-card hover:bg-bloom-surface border border-bloom-border hover:border-bloom-purple/60 rounded-2xl p-4 flex items-center justify-between transition group">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-bloom-purple/15 text-bloom-purple flex items-center justify-center text-lg">🇯🇵</div>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Calculadora CEG</p>
+                        <h3 class="text-sm font-bold text-white group-hover:text-bloom-purple transition">Mercari Japão</h3>
+                    </div>
+                </div>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-500 group-hover:text-bloom-purple"></i>
+            </a>
+            <a href="https://ivinagarcia.github.io/calculadora-db-bunjang/" target="_blank" rel="noopener noreferrer" class="bg-bloom-card hover:bg-bloom-surface border border-bloom-border hover:border-bloom-pink/60 rounded-2xl p-4 flex items-center justify-between transition group">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-bloom-pink/15 text-bloom-pink flex items-center justify-center text-lg">🇰🇷</div>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Calculadora CEG</p>
+                        <h3 class="text-sm font-bold text-white group-hover:text-bloom-pink transition">Bunjang Korea</h3>
+                    </div>
+                </div>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-500 group-hover:text-bloom-pink"></i>
+            </a>
+            <a href="https://ivinagarcia.github.io/calculadora-db-pocamarket/" target="_blank" rel="noopener noreferrer" class="bg-bloom-card hover:bg-bloom-surface border border-bloom-border hover:border-amber-400/60 rounded-2xl p-4 flex items-center justify-between transition group">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-300 flex items-center justify-center text-lg">🃏</div>
+                    <div>
+                        <p class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Calculadora CEG</p>
+                        <h3 class="text-sm font-bold text-white group-hover:text-amber-300 transition">Pocamarket Korea</h3>
+                    </div>
+                </div>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-500 group-hover:text-amber-300"></i>
+            </a>
+        </section>
+
+        <!-- Sub-abas: Regras da Comunidade / Sobre a CEG / Tutoriais de Compra -->
+        <div class="flex flex-wrap gap-2 bg-bloom-surface p-2 rounded-2xl border border-bloom-border">
+            <button id="subtab-guide-rules" onclick="switchGuideSubtab('rules')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-bloom-purple text-white transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-scale-balanced"></i>
+                <span>Regras da Comunidade</span>
+            </button>
+            <button id="subtab-guide-about" onclick="switchGuideSubtab('about')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-moon"></i>
+                <span>Sobre a CEG</span>
+            </button>
+            <button id="subtab-guide-tutorials" onclick="switchGuideSubtab('tutorials')" class="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Tutoriais de Compra</span>
+            </button>
+        </div>
+
+        <!-- Conteúdo Renderizado da Sub-aba Ativa -->
+        <section id="guide-content-card" class="bg-bloom-card border border-bloom-border rounded-2xl p-5 sm:p-7 shadow-lg space-y-4">
+            <!-- Preenchido via JS -->
+        </section>
     </main>
 
     <!-- =====================================================================
@@ -480,6 +560,10 @@
                     <i class="fa-solid fa-users-gear"></i>
                     <span>Equipe & Permissões</span>
                 </button>
+                <button onclick="switchAdminTab('guide')" id="tab-admin-guide" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Guia & Regras</span>
+                </button>
                 <button onclick="switchAdminTab('settings')" id="tab-admin-settings" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition flex items-center gap-2">
                     <i class="fa-solid fa-gear"></i>
                     <span>Configurações</span>
@@ -520,349 +604,16 @@
                     </div>
                     <div class="grid grid-cols-3 gap-2 lg:col-span-2">
                         <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">Valor Item (R$)</label>
-                            <input type="number" step="0.01" id="new-order-price" value="0" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">Frete Inter (R$)</label>
-                            <input type="number" step="0.01" id="new-order-shipping" value="0" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">Taxa Alf. (R$)</label>
-                            <input type="number" step="0.01" id="new-order-tax" value="0" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                        </div>
-                    </div>
-
-                    <div class="sm:col-span-2 lg:col-span-6 flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-bloom-border/60">
-                        <div class="flex flex-wrap items-center gap-4 text-xs text-gray-300">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" id="new-order-paid-item" class="bloom-checkbox">
-                                <span>Item Pago</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" id="new-order-paid-shipping" class="bloom-checkbox">
-                                <span>Frete Pago</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" id="new-order-paid-tax" class="bloom-checkbox">
-                                <span>Taxa Paga</span>
-                            </label>
-                        </div>
-                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-bloom-purple hover:bg-bloom-purpleDark text-white text-xs font-semibold transition flex items-center gap-2">
-                            <i class="fa-solid fa-plus"></i>
-                            <span>Cadastrar na Planilha</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Bulk Action Tool (Aplicar Frete/Taxa para todo um Lote) -->
-            <div class="bg-bloom-card border border-bloom-border rounded-2xl p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-bloom-gold/15 text-bloom-gold flex items-center justify-center shrink-0">
-                        <i class="fa-solid fa-bolt"></i>
+                        <label class="block text-xs text-gray-400 mb-1">Chave Pix da Dark Bloom Cegs (CNPJ)</label>
+                        <input type="text" id="setting-pix-key" placeholder="67039191000176" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-bloom-purple">
                     </div>
                     <div>
-                        <h4 class="text-xs font-bold text-white">Lançamento Rápido em Lote</h4>
-                        <p class="text-[11px] text-gray-400">Aplique frete internacional ou taxa alfandegária para todos os itens de um lote de uma só vez.</p>
-                    </div>
-                </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <select id="bulk-batch-select" class="bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
-                        <!-- Populated via JS -->
-                    </select>
-                    <select id="bulk-field-select" class="bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
-                        <option value="shipping">Frete Internacional</option>
-                        <option value="tax">Taxa Alfandegária</option>
-                    </select>
-                    <input type="number" step="0.01" id="bulk-amount-input" placeholder="Valor R$" class="w-24 bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none">
-                    <button onclick="applyBulkFee()" class="px-3.5 py-2 rounded-xl bg-bloom-gold/20 hover:bg-bloom-gold/30 text-bloom-gold border border-bloom-gold/30 text-xs font-semibold transition">
-                        Aplicar na Caixa
-                    </button>
-                </div>
-            </div>
-
-            <!-- Filters & Editable Orders Table -->
-            <div class="bg-bloom-surface border border-bloom-border rounded-2xl overflow-hidden">
-                <div class="p-4 border-b border-bloom-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <input type="text" id="admin-search-input" oninput="renderAdminOrders()" placeholder="Filtrar participante, set ou item..." class="bg-bloom-card border border-bloom-border rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                        <select id="admin-filter-batch" onchange="renderAdminOrders()" class="bg-bloom-card border border-bloom-border rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none">
-                            <option value="ALL">Todas as Caixas</option>
-                        </select>
-                        <label class="flex items-center gap-1.5 text-xs text-gray-300 bg-bloom-card px-3 py-1.5 rounded-xl border border-bloom-border cursor-pointer">
-                            <input type="checkbox" id="admin-filter-pending" onchange="renderAdminOrders()" class="rounded text-bloom-purple">
-                            <span>Apenas com pendências</span>
-                        </label>
-                    </div>
-                    <span id="admin-orders-count" class="text-xs text-gray-400">0 registros</span>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="border-b border-bloom-border bg-bloom-card/60 text-[11px] uppercase tracking-wider text-gray-400">
-                                <th class="py-3 px-4">Participante</th>
-                                <th class="py-3 px-4">Caixa • Set & Item</th>
-                                <th class="py-3 px-4">Valor Item</th>
-                                <th class="py-3 px-4">Frete Inter</th>
-                                <th class="py-3 px-4">Taxa Alf.</th>
-                                <th class="py-3 px-4 text-right">Devendo</th>
-                                <th class="py-3 px-4 text-center">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-orders-tbody" class="divide-y divide-bloom-border/60 text-xs">
-                            <!-- Populated via JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB A2: CONFERÊNCIA DE COMPROVANTES (ADMIN) -->
-        <div id="admin-panel-receipts" class="hidden space-y-6">
-            <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-file-circle-check text-emerald-400"></i>
-                        <span>Conferência de Comprovantes Enviados</span>
-                    </h3>
-                    <p class="text-xs text-gray-400 mt-0.5">Confira a foto anexada ou o link do Google Drive. Ao clicar em <strong class="text-emerald-400">Aprovar e Dar Baixa</strong>, os pagamentos são marcados automaticamente na planilha.</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="setAdminReceiptFilter('pending')" id="filter-admin-rec-pending" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                        Pendentes
-                    </button>
-                    <button onclick="setAdminReceiptFilter('all')" id="filter-admin-rec-all" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-bloom-card text-gray-400 hover:text-white border border-bloom-border">
-                        Todos / Histórico
-                    </button>
-                </div>
-            </div>
-
-            <div id="admin-receipts-list" class="space-y-4">
-                <!-- Preenchido via JS -->
-            </div>
-        </div>
-
-        <!-- TAB B: CAIXAS & SETS ABERTOS COM FOTO (MASTERLIST) -->
-        <div id="admin-panel-batches" class="hidden space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <!-- 1. Create New Batch (Caixa) -->
-                <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5">
-                    <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-box-archive text-bloom-purple"></i>
-                        <span>1. Criar Nova Caixa na Masterlist</span>
-                    </h3>
-                    <form onsubmit="addNewBatch(event)" class="space-y-3">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            <input type="text" id="new-batch-name" required placeholder="Nome da Caixa (ex: COREIA 7 - PHOTOCARDS)" class="bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                            <input type="text" id="new-batch-deadline" placeholder="Obs / Prazo Geral" class="bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                        </div>
-                        <div class="flex gap-2">
-                            <select id="new-batch-status" class="flex-1 bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                                <option value="abertas">abertas</option>
-                                <option value="em andamento">em andamento</option>
-                                <option value="na warehouse">na warehouse</option>
-                                <option value="a caminho">a caminho</option>
-                                <option value="em mãos">em mãos</option>
-                                <option value="concluídas">concluídas</option>
-                            </select>
-                            <button type="submit" class="px-5 py-2.5 rounded-xl bg-bloom-purple hover:bg-bloom-purpleDark text-white text-xs font-semibold transition">
-                                Criar Caixa
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- 2. Create New Set inside a Box (With Photo Upload / URL) -->
-                <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5">
-                    <h3 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-images text-bloom-pink"></i>
-                        <span>2. Adicionar Set Aberto + Foto dentro de uma Caixa</span>
-                    </h3>
-                    <form onsubmit="addNewSet(event)" class="space-y-3">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            <select id="new-set-batch" required class="bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                                <!-- Populated via JS -->
-                            </select>
-                            <input type="text" id="new-set-name" required placeholder="Nome do Set (ex: WONHO [CORE] POBs)" class="bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            <input type="text" id="new-set-deadline" placeholder="Prazo (ex: PRAZO ATÉ 10/09)" class="bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                            <input type="number" step="0.01" id="new-set-price" placeholder="Valor unitário padrão (R$)" class="bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                        </div>
-                        <!-- Photo Upload or URL -->
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                            <label class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-bloom-card hover:bg-bloom-border border border-dashed border-bloom-purple/50 text-xs text-gray-300 cursor-pointer transition">
-                                <i class="fa-solid fa-camera text-bloom-purple"></i>
-                                <span id="new-set-file-label" class="truncate">Escolher Foto da Galeria</span>
-                                <input type="file" id="new-set-photo-file" accept="image/*" onchange="handleSetPhotoUpload(this)" class="hidden">
-                            </label>
-                            <input type="url" id="new-set-photo-url" placeholder="Ou cole link da imagem..." class="flex-1 bg-bloom-card border border-bloom-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                            <button type="submit" class="px-4 py-2 rounded-xl bg-bloom-pink hover:bg-pink-500 text-white text-xs font-semibold transition whitespace-nowrap">
-                                Salvar Set
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Legend matching user's Notion screenshot -->
-            <div class="bg-bloom-card/60 border border-bloom-border rounded-2xl p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
-                <div><span class="text-purple-400 font-semibold">● abertas</span> → ainda aceitando pedidos</div>
-                <div><span class="text-pink-400 font-semibold">● em andamento</span> → pedido feito + indo p/ warehouse</div>
-                <div><span class="text-sky-400 font-semibold">● na warehouse</span> → chegou na warehouse + aguardando envio</div>
-                <div><span class="text-orange-400 font-semibold">● a caminho</span> → CEGs a caminho para o Brasil</div>
-                <div><span class="text-amber-400 font-semibold">● em mãos</span> → chegou até mim + empacotamento</div>
-                <div><span class="text-emerald-400 font-semibold">● concluídas</span> → todos os itens enviados e finalizados</div>
-            </div>
-
-            <!-- Boxes & Their Sets Container -->
-            <div id="admin-batches-grid" class="space-y-5">
-                <!-- Populated via JS -->
-            </div>
-        </div>
-
-        <!-- TAB C: CRIADOR DE FORMULÁRIOS DE PEDIDO -->
-        <div id="admin-panel-forms" class="hidden space-y-6">
-            <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5">
-                <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-                    <i class="fa-solid fa-wand-magic-sparkles text-bloom-pink"></i>
-                    <span>Criar Formulário para Receber Pedidos</span>
-                </h3>
-                <p class="text-xs text-gray-400 mb-4">Escolha a Caixa e o Set (com a foto já cadastrada), defina as opções disponíveis e publique para suas participantes preencherem.</p>
-
-                <form onsubmit="createOrderForm(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
-                    <div>
-                        <label class="block text-[11px] text-gray-400 mb-1">1. Selecione a Caixa *</label>
-                        <select id="form-builder-batch" onchange="syncFormBuilderSets()" required class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                            <!-- Populated via JS -->
-                        </select>
+                        <label class="block text-xs text-gray-400 mb-1">E-mail de Contato da CEG</label>
+                        <input type="email" id="setting-contact-email" placeholder="darkbloomcegs@gmail.com" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-bloom-purple">
                     </div>
                     <div>
-                        <label class="block text-[11px] text-gray-400 mb-1">2. Selecione o Set (com Foto) *</label>
-                        <select id="form-builder-set" onchange="syncFormBuilderDefaults()" required class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                            <!-- Populated via JS -->
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[11px] text-gray-400 mb-1">3. Valor por Opção Selecionada (R$) *</label>
-                        <input type="number" step="0.01" id="form-builder-price" required placeholder="45.00" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label class="block text-[11px] text-gray-400 mb-1">4. Opções de Itens / Membros (separadas por vírgula) *</label>
-                        <input type="text" id="form-builder-options" required value="Card #1, Card #2, Card #3, Set Completo" placeholder="Ex: Card #1, Card #2, Card #3 ou Bang Chan, Lee Know, Hyunjin" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] text-gray-400 mb-1">5. Prazo / Observação do Formulário</label>
-                        <input type="text" id="form-builder-deadline" placeholder="Ex: Pagamento até 10/09" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                    </div>
-
-                    <div class="sm:col-span-2 lg:col-span-3 flex items-center justify-end pt-2 border-t border-bloom-border/60">
-                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-bloom-purple to-bloom-pink text-white text-xs font-semibold shadow-lg hover:opacity-95 transition flex items-center gap-2">
-                            <i class="fa-solid fa-paper-plane"></i>
-                            <span>Publicar Formulário de Pedido</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Active & Closed Forms List -->
-            <div class="space-y-3">
-                <h4 class="text-sm font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-clipboard-list text-bloom-purple"></i>
-                    <span>Formulários Criados</span>
-                </h4>
-                <div id="admin-forms-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Populated via JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB E: EQUIPE & PERMISSÕES (MULTI-ADMIN) -->
-        <div id="admin-panel-team" class="hidden space-y-6">
-            <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5">
-                <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
-                    <i class="fa-solid fa-user-plus text-bloom-purple"></i>
-                    <span>Adicionar Membro da Equipe / Ajudante</span>
-                </h3>
-                <p class="text-xs text-gray-400 mb-4">Cadastre pessoas de confiança para ajudar a conferir comprovantes, criar formulários ou atualizar caixas com PIN individual e permissões personalizadas.</p>
-
-                <form onsubmit="addTeamMember(event)" class="space-y-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">Nome do Membro *</label>
-                            <input type="text" id="new-member-name" required placeholder="Ex: Mariana Costa" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">Cargo / Função *</label>
-                            <input type="text" id="new-member-role" required placeholder="Ex: Conferente Financeiro" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-bloom-purple">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] text-gray-400 mb-1">PIN Individual (4 dígitos) *</label>
-                            <input type="text" id="new-member-pin" required maxlength="6" pattern="[0-9]{4,6}" placeholder="Ex: 2580" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-xs text-white tracking-widest focus:outline-none focus:border-bloom-purple">
-                        </div>
-                    </div>
-
-                    <div class="bg-bloom-card/70 border border-bloom-border rounded-xl p-3.5">
-                        <span class="block text-[11px] font-semibold text-gray-300 mb-2.5">Permissões deste membro no Painel Admin:</span>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs text-gray-200">
-                            <label class="flex items-center gap-2.5 p-2 rounded-lg bg-bloom-surface border border-bloom-border/70 cursor-pointer hover:border-bloom-purple/50">
-                                <input type="checkbox" id="perm-receipts" checked class="bloom-checkbox">
-                                <span>Conferir e Aprovar Comprovantes</span>
-                            </label>
-                            <label class="flex items-center gap-2.5 p-2 rounded-lg bg-bloom-surface border border-bloom-border/70 cursor-pointer hover:border-bloom-purple/50">
-                                <input type="checkbox" id="perm-forms" checked class="bloom-checkbox">
-                                <span>Criar e Gerenciar Formulários</span>
-                            </label>
-                            <label class="flex items-center gap-2.5 p-2 rounded-lg bg-bloom-surface border border-bloom-border/70 cursor-pointer hover:border-bloom-purple/50">
-                                <input type="checkbox" id="perm-batches" class="bloom-checkbox">
-                                <span>Gerenciar Caixas, Sets e Fotos</span>
-                            </label>
-                            <label class="flex items-center gap-2.5 p-2 rounded-lg bg-bloom-surface border border-bloom-border/70 cursor-pointer hover:border-bloom-purple/50">
-                                <input type="checkbox" id="perm-orders" class="bloom-checkbox">
-                                <span>Editar Pedidos, Fretes e Taxas</span>
-                            </label>
-                            <label class="flex items-center gap-2.5 p-2 rounded-lg bg-bloom-surface border border-bloom-border/70 cursor-pointer hover:border-bloom-purple/50">
-                                <input type="checkbox" id="perm-team" class="bloom-checkbox">
-                                <span>Gerenciar Equipe & Configurações</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end">
-                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-bloom-purple hover:bg-bloom-purpleDark text-white text-xs font-semibold transition flex items-center gap-2">
-                            <i class="fa-solid fa-user-check"></i>
-                            <span>Cadastrar Membro na Equipe</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Team Members List -->
-            <div class="space-y-3">
-                <h4 class="text-sm font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-users text-bloom-pink"></i>
-                    <span>Membros Cadastrados & Permissões Ativas</span>
-                </h4>
-                <div id="admin-team-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Populated via JS -->
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB D: CONFIGURAÇÕES & BACKUP -->
-        <div id="admin-panel-settings" class="hidden space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Store Settings -->
-                <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5 space-y-4">
-                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-store text-bloom-purple"></i>
-                        <span>Dados de Pagamento & Contato</span>
-                    </h3>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Chave Pix da Dark Bloom</label>
-                        <input type="text" id="setting-pix-key" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-bloom-purple">
+                        <label class="block text-xs text-gray-400 mb-1">Link da Comunidade WhatsApp</label>
+                        <input type="url" id="setting-community-link" placeholder="https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU" class="w-full bg-bloom-card border border-bloom-border rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-bloom-purple">
                     </div>
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">WhatsApp para Comprovantes (com DDD, só números)</label>
@@ -904,11 +655,74 @@
             </div>
         </div>
 
+        <!-- TAB G: EDITOR DE GUIA & REGRAS -->
+        <div id="admin-panel-guide" class="hidden space-y-6">
+            <div class="bg-bloom-surface border border-bloom-border rounded-2xl p-5 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-bloom-border">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-pen-to-square text-bloom-purple"></i>
+                            <span>Editar Textos da Aba "Guia & Regras"</span>
+                        </h3>
+                        <p class="text-xs text-gray-400 mt-0.5">Personalize as regras da comunidade, a apresentação da CEG e os tutoriais. As alterações aparecem na hora na aba pública.</p>
+                    </div>
+                    <button onclick="switchMode('guide')" class="px-3.5 py-2 rounded-xl bg-bloom-card hover:bg-bloom-border border border-bloom-border text-xs font-semibold text-bloom-purple transition self-start">
+                        <i class="fa-solid fa-eye mr-1.5"></i>Ver Aba Pública
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <!-- Bloco 1: Regras da Comunidade -->
+                    <div class="bg-bloom-card border border-bloom-border rounded-2xl p-4 space-y-2.5">
+                        <label class="block text-xs font-bold text-bloom-pink flex items-center gap-1.5">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                            <span>1. Regras da Comunidade</span>
+                        </label>
+                        <input type="text" id="edit-guide-rules-title" placeholder="Título da seção" class="w-full bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-bloom-purple">
+                        <textarea id="edit-guide-rules-body" rows="10" placeholder="Escreva aqui as regras da comunidade..." class="w-full bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-gray-200 leading-relaxed focus:outline-none focus:border-bloom-purple"></textarea>
+                    </div>
+
+                    <!-- Bloco 2: Sobre a CEG -->
+                    <div class="bg-bloom-card border border-bloom-border rounded-2xl p-4 space-y-2.5">
+                        <label class="block text-xs font-bold text-bloom-purple flex items-center gap-1.5">
+                            <i class="fa-solid fa-moon"></i>
+                            <span>2. Sobre a CEG</span>
+                        </label>
+                        <input type="text" id="edit-guide-about-title" placeholder="Título da seção" class="w-full bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-bloom-purple">
+                        <textarea id="edit-guide-about-body" rows="10" placeholder="Conte como funciona a Dark Bloom Cegs..." class="w-full bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-gray-200 leading-relaxed focus:outline-none focus:border-bloom-purple"></textarea>
+                    </div>
+
+                    <!-- Bloco 3: Tutoriais de Compra -->
+                    <div class="bg-bloom-card border border-bloom-border rounded-2xl p-4 space-y-2.5">
+                        <label class="block text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            <span>3. Tutoriais de Compra</span>
+                        </label>
+                        <input type="text" id="edit-guide-tutorials-title" placeholder="Título da seção" class="w-full bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-bloom-purple">
+                        <textarea id="edit-guide-tutorials-body" rows="10" placeholder="Adicione o passo a passo para Mercari, Bunjang, Pocamarket..." class="w-full bg-bloom-surface border border-bloom-border rounded-xl px-3 py-2.5 text-xs text-gray-200 leading-relaxed focus:outline-none focus:border-bloom-purple"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button onclick="saveGuideContent()" class="px-6 py-2.5 rounded-xl bg-bloom-purple hover:bg-bloom-purpleDark text-white text-xs font-bold shadow-lg transition flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Salvar Textos de Guia & Regras</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-bloom-border/60 py-4 px-4 text-center text-xs text-gray-500">
-        Dark Bloom • Gestão de CEGs & Compras Internacionais
+    <footer class="border-t border-bloom-border/60 py-4 px-4 text-center text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+        <span>Dark Bloom Cegs • Gestão de CEGs & Compras Internacionais</span>
+        <span class="hidden sm:inline">•</span>
+        <span>Contato: <a id="footer-contact-email" href="mailto:darkbloomcegs@gmail.com" class="text-bloom-purple hover:underline">darkbloomcegs@gmail.com</a></span>
+        <span class="hidden sm:inline">•</span>
+        <a id="footer-community-link" href="https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:underline inline-flex items-center gap-1 font-medium">
+            <i class="fa-brands fa-whatsapp"></i> Comunidade Oficial
+        </a>
     </footer>
 
     <!-- =====================================================================
@@ -1037,12 +851,30 @@
         }
 
         // --- INITIAL MOCK DATA BASED ON USER'S NOTION SCREENSHOTS ---
+        const DEFAULT_GUIDE = {
+            rules: {
+                title: 'Regras da Comunidade Dark Bloom Cegs',
+                body: `1. Compromisso com os prazos: Ao reservar um item ou preencher um formulário, você assume o compromisso de realizar o pagamento dentro do prazo estipulado.\n\n2. Envio de comprovantes: Todo pagamento (item, frete internacional ou taxa alfandegária) deve ser anexado aqui no portal na aba "Meus Pedidos" para conferência e baixa.\n\n3. Respeito mútuo: Mantenha um ambiente acolhedor e respeitoso no grupo da comunidade.\n\n(Espaço reservado — você pode editar este texto completo no Painel Admin > Guia & Regras).`
+            },
+            about: {
+                title: 'Sobre a Dark Bloom Cegs',
+                body: `Bem-vinda à Dark Bloom Cegs! Somos uma compra em grupo dedicada a facilitar a aquisição de photocards, POBs, álbuns e itens oficiais da Coreia do Sul e do Japão.\n\nComo funciona:\n• Fase 1: Pagamento do item (valor do card/produto + taxas locais da plataforma).\n• Fase 2: Chegada na Warehouse e rateio do Frete Internacional.\n• Fase 3: Chegada ao Brasil, conferência e envio nacional.\n\n(Espaço reservado — personalize a história e informações da CEG no Painel Admin > Guia & Regras).`
+            },
+            tutorials: {
+                title: 'Tutoriais de Compra (Mercari, Bunjang & Pocamarket)',
+                body: `Passo a passo para simular valores antes de pedir:\n\n1. Escolha a calculadora correspondente no botão "Calculadoras CEG" no topo do site (Mercari Japão, Bunjang Korea ou Pocamarket Korea).\n2. Insira o valor original na moeda do anúncio (Ienes ¥ ou Wons ₩) para descobrir o valor estimado em Reais.\n3. Envie o link do anúncio ou preencha o formulário aberto da CEG.\n\n(Espaço reservado — adicione aqui seus tutoriais detalhados no Painel Admin > Guia & Regras).`
+            }
+        };
+
         const DEFAULT_DATA = {
             settings: {
-                pixKey: 'darkbloom.ceg@gmail.com',
+                pixKey: '67039191000176',
+                contactEmail: 'darkbloomcegs@gmail.com',
+                communityLink: 'https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU',
                 whatsapp: '5511999999999',
                 adminPin: '1234'
             },
+            guide: JSON.parse(JSON.stringify(DEFAULT_GUIDE)),
             batches: [
                 { id: 'b1', name: 'COREIA 6 - PHOTOCARDS', status: 'na warehouse', deadline: 'Caixa consolidada KR' },
                 { id: 'b2', name: 'Hey, Somebody [PRÉ-VENDA]', status: 'abertas', deadline: 'Pré-venda oficial' },
@@ -1176,6 +1008,7 @@
         let tempReceiptFileName = '';
         let adminReceiptFilter = 'pending';
         let activeAdminId = null;
+        let currentGuideSubtab = 'rules';
 
         // --- STORAGE FUNCTIONS ---
         function loadData() {
@@ -1187,6 +1020,17 @@
                     if (!parsed.forms) parsed.forms = DEFAULT_DATA.forms;
                     if (!parsed.receipts) parsed.receipts = DEFAULT_DATA.receipts;
                     if (!parsed.team || parsed.team.length === 0) parsed.team = JSON.parse(JSON.stringify(DEFAULT_DATA.team));
+                    if (!parsed.settings) parsed.settings = JSON.parse(JSON.stringify(DEFAULT_DATA.settings));
+                    if (!parsed.guide) parsed.guide = JSON.parse(JSON.stringify(DEFAULT_GUIDE));
+                    if (!parsed.settings.pixKey || parsed.settings.pixKey === 'darkbloom.ceg@gmail.com') {
+                        parsed.settings.pixKey = '67039191000176';
+                    }
+                    if (!parsed.settings.contactEmail) {
+                        parsed.settings.contactEmail = 'darkbloomcegs@gmail.com';
+                    }
+                    if (!parsed.settings.communityLink) {
+                        parsed.settings.communityLink = 'https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU';
+                    }
                     // Mantém sincronia do PIN da Dona com settings.adminPin
                     const owner = parsed.team.find(m => m.isOwner);
                     if (owner && parsed.settings && parsed.settings.adminPin) {
@@ -1215,8 +1059,26 @@
         // Recebe atualizações instantâneas vindas do Firestore em outros dispositivos
         window.applyCloudState = function(cloudData) {
             if (!cloudData || typeof cloudData !== 'object') return;
+            const mergedSettings = {
+                ...JSON.parse(JSON.stringify(DEFAULT_DATA.settings)),
+                ...(cloudData.settings || {})
+            };
+            if (!mergedSettings.pixKey || mergedSettings.pixKey === 'darkbloom.ceg@gmail.com') {
+                mergedSettings.pixKey = '67039191000176';
+            }
+            if (!mergedSettings.contactEmail) {
+                mergedSettings.contactEmail = 'darkbloomcegs@gmail.com';
+            }
+            if (!mergedSettings.communityLink) {
+                mergedSettings.communityLink = 'https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU';
+            }
             appData = {
-                settings: cloudData.settings || JSON.parse(JSON.stringify(DEFAULT_DATA.settings)),
+                settings: mergedSettings,
+                guide: cloudData.guide ? {
+                    rules: { ...DEFAULT_GUIDE.rules, ...(cloudData.guide.rules || {}) },
+                    about: { ...DEFAULT_GUIDE.about, ...(cloudData.guide.about || {}) },
+                    tutorials: { ...DEFAULT_GUIDE.tutorials, ...(cloudData.guide.tutorials || {}) }
+                } : JSON.parse(JSON.stringify(DEFAULT_GUIDE)),
                 batches: Array.isArray(cloudData.batches) ? cloudData.batches : [],
                 sets: Array.isArray(cloudData.sets) ? cloudData.sets : [],
                 forms: Array.isArray(cloudData.forms) ? cloudData.forms : [],
@@ -1241,26 +1103,26 @@
         };
 
         // --- TOAST FEEDBACK ---
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            if (!container) return;
-            const toast = document.createElement('div');
-            const isError = type === 'error';
-            toast.className = `pointer-events-auto px-4 py-3 rounded-xl border shadow-xl text-xs font-semibold flex items-center gap-2.5 transition-all duration-300 ${
-                isError
-                    ? 'bg-red-950/95 border-red-500/40 text-red-200'
-                    : 'bg-bloom-card/95 border-bloom-purple/40 text-white'
-            }`;
-            toast.innerHTML = `
-                <i class="fa-solid ${isError ? 'fa-circle-exclamation text-red-400' : 'fa-circle-check text-emerald-400'}"></i>
-                <span>${message}</span>
-            `;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(6px)';
-                setTimeout(() => toast.remove(), 250);
-            }, 3200);
+        function formatPixDisplay(rawKey) {
+            const cleanDigits = String(rawKey || '').replace(/\D/g, '');
+            if (cleanDigits.length === 14) {
+                const formatted = cleanDigits.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+                return `CNPJ: ${formatted} (${cleanDigits})`;
+            }
+            return rawKey || 'CNPJ: 67.039.191/0001-76 (67039191000176)';
+        }
+
+        function copyPixKey() {
+            const rawKey = String(appData.settings.pixKey || '67039191000176').trim();
+            const cleanDigits = rawKey.replace(/\D/g, '');
+            const keyToCopy = cleanDigits.length === 14 ? cleanDigits : rawKey;
+            const tempInput = document.createElement('input');
+            tempInput.value = keyToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            tempInput.remove();
+            showToast(`Chave Pix CNPJ (${keyToCopy}) copiada!`);
         }
 
         // --- ADMIN PERMISSIONS & AUTH HELPERS ---
@@ -1313,6 +1175,7 @@
                 batches: hasAdminPermission('batches'),
                 forms: hasAdminPermission('forms'),
                 team: hasAdminPermission('team'),
+                guide: hasAdminPermission('team') || hasAdminPermission('forms'),
                 settings: hasAdminPermission('team')
             };
 
@@ -1458,7 +1321,7 @@
             const phone = (appData.settings.whatsapp || '').replace(/\D/g, '');
             const userOrders = appData.orders.filter(o => o.participant.toLowerCase() === selectedParticipant.toLowerCase());
             const totalDue = userOrders.reduce((acc, o) => acc + getOrderDue(o), 0);
-            const msg = `Olá Dark Bloom! 🌙 Aqui é *${selectedParticipant}*. Acabei de enviar um comprovante no portal (Saldo pendente total: ${formatBRL(totalDue)}).`;
+            const msg = `Olá Dark Bloom Cegs! 🌙 Aqui é *${selectedParticipant}*. Acabei de enviar um comprovante no portal (Saldo pendente total: ${formatBRL(totalDue)}).`;
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
@@ -1712,7 +1575,7 @@
 
             closeReceiptModal();
             saveData();
-            showToast('Comprovante enviado! Aguardando conferência da Dark Bloom.');
+            showToast('Comprovante enviado! Aguardando conferência da Dark Bloom Cegs.');
         }
 
         function renderClientReceiptsHistory() {
@@ -1770,6 +1633,20 @@
         }
 
         // --- MODE SWITCHING & ADMIN AUTH ---
+        function toggleCalculatorsMenu(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('calc-dropdown-menu');
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', function(e) {
+            const wrapper = document.getElementById('calc-dropdown-wrapper');
+            const menu = document.getElementById('calc-dropdown-menu');
+            if (wrapper && menu && !wrapper.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
         function switchMode(mode) {
             if (mode === 'admin' && !getActiveAdmin()) {
                 requestAdminMode();
@@ -1779,15 +1656,18 @@
             const views = {
                 client: document.getElementById('view-client'),
                 forms: document.getElementById('view-forms'),
+                guide: document.getElementById('view-guide'),
                 admin: document.getElementById('view-admin')
             };
             const btns = {
                 client: document.getElementById('btn-mode-client'),
                 forms: document.getElementById('btn-mode-forms'),
+                guide: document.getElementById('btn-mode-guide'),
                 admin: document.getElementById('btn-mode-admin')
             };
 
             Object.keys(views).forEach(k => {
+                if (!views[k] || !btns[k]) return;
                 if (k === mode) {
                     views[k].classList.remove('hidden');
                     btns[k].className = 'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 bg-bloom-purple text-white shadow whitespace-nowrap';
@@ -1799,6 +1679,7 @@
 
             if (mode === 'client') renderClientDashboard();
             if (mode === 'forms') renderPublicForms();
+            if (mode === 'guide') renderGuideView();
             if (mode === 'admin') {
                 applyAdminPermissionsUI();
                 const defaultTab = getFirstAllowedAdminTab(getActiveAdmin());
@@ -1808,6 +1689,7 @@
                 renderAdminBatches();
                 renderAdminForms();
                 renderAdminTeam();
+                loadAdminGuideForm();
             }
         }
 
@@ -1928,7 +1810,19 @@
         }
 
         function renderClientDashboard() {
-            document.getElementById('display-pix-key').textContent = appData.settings.pixKey;
+            document.getElementById('display-pix-key').textContent = formatPixDisplay(appData.settings.pixKey);
+            const emailVal = appData.settings.contactEmail || 'darkbloomcegs@gmail.com';
+            const emailLink = document.getElementById('display-contact-email');
+            if (emailLink) {
+                emailLink.textContent = emailVal;
+                emailLink.href = `mailto:${emailVal}`;
+            }
+            const footerEmailLink = document.getElementById('footer-contact-email');
+            if (footerEmailLink) {
+                footerEmailLink.textContent = emailVal;
+                footerEmailLink.href = `mailto:${emailVal}`;
+            }
+            syncCommunityLinks();
 
             const userOrders = appData.orders.filter(o => o.participant.toLowerCase() === selectedParticipant.toLowerCase());
             
@@ -2497,7 +2391,7 @@
 
             rec.status = 'approved';
             rec.rejectReason = '';
-            rec.reviewedBy = admin ? `${admin.name} (${admin.role})` : 'Admin Dark Bloom';
+            rec.reviewedBy = admin ? `${admin.name} (${admin.role})` : 'Admin Dark Bloom Cegs';
             rec.reviewedAt = reviewedAt;
             saveData();
             showToast(`Comprovante de ${rec.participant} aprovado por ${admin ? admin.name : 'Admin'}!`);
@@ -2522,7 +2416,7 @@
 
             rec.status = 'rejected';
             rec.rejectReason = reason;
-            rec.reviewedBy = admin ? `${admin.name} (${admin.role})` : 'Admin Dark Bloom';
+            rec.reviewedBy = admin ? `${admin.name} (${admin.role})` : 'Admin Dark Bloom Cegs';
             rec.reviewedAt = reviewedAt;
             saveData();
             showToast(`Comprovante recusado. Aviso enviado para ${rec.participant}.`);
@@ -2797,6 +2691,92 @@
         }
 
         // --- ORDER FORMS BUILDER (ADMIN) ---
+        function syncCommunityLinks() {
+            const url = appData.settings.communityLink || 'https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU';
+            ['header-community-link', 'guide-community-btn', 'footer-community-link'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.href = url;
+            });
+        }
+
+        function switchGuideSubtab(subtab) {
+            currentGuideSubtab = subtab;
+            ['rules', 'about', 'tutorials'].forEach(k => {
+                const btn = document.getElementById(`subtab-guide-${k}`);
+                if (!btn) return;
+                if (k === subtab) {
+                    btn.className = 'flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-bloom-purple text-white transition flex items-center justify-center gap-2';
+                } else {
+                    btn.className = 'flex-1 sm:flex-initial px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-400 hover:text-white transition flex items-center justify-center gap-2';
+                }
+            });
+            renderGuideView();
+        }
+
+        function renderGuideView() {
+            syncCommunityLinks();
+            const card = document.getElementById('guide-content-card');
+            if (!card) return;
+            const guideData = appData.guide || DEFAULT_GUIDE;
+            const section = guideData[currentGuideSubtab] || guideData.rules;
+
+            const iconMap = {
+                rules: { icon: 'fa-scale-balanced', color: 'text-bloom-pink', bg: 'bg-bloom-pink/15' },
+                about: { icon: 'fa-moon', color: 'text-bloom-purple', bg: 'bg-bloom-purple/15' },
+                tutorials: { icon: 'fa-graduation-cap', color: 'text-amber-300', bg: 'bg-amber-500/15' }
+            };
+            const meta = iconMap[currentGuideSubtab] || iconMap.rules;
+
+            const safeHtml = String(section.body || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\n/g, '<br>');
+
+            card.innerHTML = `
+                <div class="flex items-center gap-3 pb-4 border-b border-bloom-border">
+                    <div class="w-10 h-10 rounded-xl ${meta.bg} ${meta.color} flex items-center justify-center shrink-0">
+                        <i class="fa-solid ${meta.icon} text-lg"></i>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-bold text-white">${section.title}</h3>
+                </div>
+                <div class="text-xs sm:text-sm text-gray-300 leading-relaxed space-y-2">
+                    ${safeHtml}
+                </div>
+            `;
+        }
+
+        function loadAdminGuideForm() {
+            const g = appData.guide || DEFAULT_GUIDE;
+            const rT = document.getElementById('edit-guide-rules-title');
+            if (!rT) return;
+            rT.value = g.rules.title || '';
+            document.getElementById('edit-guide-rules-body').value = g.rules.body || '';
+            document.getElementById('edit-guide-about-title').value = g.about.title || '';
+            document.getElementById('edit-guide-about-body').value = g.about.body || '';
+            document.getElementById('edit-guide-tutorials-title').value = g.tutorials.title || '';
+            document.getElementById('edit-guide-tutorials-body').value = g.tutorials.body || '';
+        }
+
+        function saveGuideContent() {
+            appData.guide = {
+                rules: {
+                    title: document.getElementById('edit-guide-rules-title').value.trim() || DEFAULT_GUIDE.rules.title,
+                    body: document.getElementById('edit-guide-rules-body').value
+                },
+                about: {
+                    title: document.getElementById('edit-guide-about-title').value.trim() || DEFAULT_GUIDE.about.title,
+                    body: document.getElementById('edit-guide-about-body').value
+                },
+                tutorials: {
+                    title: document.getElementById('edit-guide-tutorials-title').value.trim() || DEFAULT_GUIDE.tutorials.title,
+                    body: document.getElementById('edit-guide-tutorials-body').value
+                }
+            };
+            saveData();
+            showToast('Textos de Guia & Regras atualizados com sucesso!');
+        }
+
         function syncFormBuilderSets() {
             const batchId = document.getElementById('form-builder-batch').value;
             const setsInBatch = appData.sets.filter(s => s.batchId === batchId);
@@ -2904,7 +2884,9 @@
 
         // --- SETTINGS & BACKUP ---
         function loadSettingsForm() {
-            document.getElementById('setting-pix-key').value = appData.settings.pixKey;
+            document.getElementById('setting-pix-key').value = appData.settings.pixKey || '67039191000176';
+            document.getElementById('setting-contact-email').value = appData.settings.contactEmail || 'darkbloomcegs@gmail.com';
+            document.getElementById('setting-community-link').value = appData.settings.communityLink || 'https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU';
             document.getElementById('setting-whatsapp').value = appData.settings.whatsapp;
             document.getElementById('setting-admin-pin').value = appData.settings.adminPin;
         }
@@ -2915,7 +2897,9 @@
                 return;
             }
             const newPin = document.getElementById('setting-admin-pin').value.trim() || '1234';
-            appData.settings.pixKey = document.getElementById('setting-pix-key').value.trim() || 'darkbloom.ceg@gmail.com';
+            appData.settings.pixKey = document.getElementById('setting-pix-key').value.trim() || '67039191000176';
+            appData.settings.contactEmail = document.getElementById('setting-contact-email').value.trim() || 'darkbloomcegs@gmail.com';
+            appData.settings.communityLink = document.getElementById('setting-community-link').value.trim() || 'https://chat.whatsapp.com/LjRS4xCTIuWEEcEN0hVDnU';
             appData.settings.whatsapp = document.getElementById('setting-whatsapp').value.trim() || '5511999999999';
             appData.settings.adminPin = newPin;
 
@@ -3082,6 +3066,7 @@
 
         // --- GLOBAL REFRESH ---
         function refreshAllViews() {
+            syncCommunityLinks();
             initParticipantSelectors();
             populateAdminDropdowns();
             const openForms = appData.forms.filter(f => f.isOpen);
@@ -3096,6 +3081,8 @@
                 renderClientDashboard();
             } else if (currentMode === 'forms') {
                 renderPublicForms();
+            } else if (currentMode === 'guide') {
+                renderGuideView();
             } else {
                 applyAdminPermissionsUI();
                 renderAdminOrders();
@@ -3103,6 +3090,7 @@
                 renderAdminBatches();
                 renderAdminForms();
                 renderAdminTeam();
+                loadAdminGuideForm();
             }
         }
 
